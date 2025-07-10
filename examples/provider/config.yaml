@@ -1,0 +1,12 @@
+apiVersion: btcpay.crossplane.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: default
+spec:
+  baseURL: "https://btcpay.golder.tech"  # Your BTCPay Server URL
+  credentials:
+    source: Secret
+    secretRef:
+      name: btcpay-credentials
+      namespace: crossplane-system
+      key: credentials

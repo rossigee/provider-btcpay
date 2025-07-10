@@ -1,0 +1,35 @@
+apiVersion: store.btcpay.crossplane.io/v1alpha1
+kind: Store
+metadata:
+  name: lightning-enabled-store
+spec:
+  forProvider:
+    name: "Lightning Bitcoin Store"
+    defaultCurrency: "BTC"
+    website: "https://lightning.example.com"
+    invoiceExpiration: 3600  # 1 hour for Lightning
+    paymentTolerance: 0.01   # 1% tolerance
+    networkFeeMode: "Never"
+    speedPolicy: "High"      # Fast confirmations
+    lightningAmountInSatoshi: true
+    lightningPrivateRouteHints: true
+    onChainWithLnInvoiceFallback: true
+    redirectAutomatically: false
+    showRecommendedFee: false
+    defaultLang: "en"
+    monitoringExpiration: 3600
+    checkoutType: "V2"
+    receipt:
+      enabled: true
+      showQR: true
+      showPayments: true
+    branding:
+      logoUrl: "https://lightning.example.com/logo.svg"
+      htmlTitle: "Lightning Store - Instant Bitcoin Payments"
+      css: |
+        .checkout {
+          background: linear-gradient(45deg, #f39c12, #e67e22);
+          color: white;
+        }
+  providerConfigRef:
+    name: default

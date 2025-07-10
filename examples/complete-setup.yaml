@@ -1,0 +1,156 @@
+# Complete BTCPay Provider Setup Example
+# This demonstrates a full BTCPay Server configuration using Crossplane
+
+---
+# Provider Configuration
+apiVersion: btcpay.crossplane.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: golder-btcpay
+spec:
+  baseURL: "https://btcpay.golder.tech"
+  credentials:
+    source: Secret
+    secretRef:
+      name: btcpay-credentials
+      namespace: crossplane-system
+      key: credentials
+
+---
+# Production Bitcoin Store
+apiVersion: store.btcpay.crossplane.io/v1alpha1
+kind: Store
+metadata:
+  name: golder-production-store
+  labels:
+    environment: production
+    team: golder
+spec:
+  forProvider:
+    name: "Golder Production Store"
+    defaultCurrency: "USD"
+    website: "https://golder.tech"
+    invoiceExpiration: 900
+    paymentTolerance: 0.0
+    networkFeeMode: "Never"
+    speedPolicy: "Medium"
+    lightningAmountInSatoshi: true
+    lightningPrivateRouteHints: true
+    onChainWithLnInvoiceFallback: true
+    redirectAutomatically: true
+    showRecommendedFee: true
+    recommendedFeeBlockTarget: 6
+    defaultLang: "en"
+    monitoringExpiration: 900
+    checkoutType: "V2"
+    receipt:
+      enabled: true
+      showQR: true
+      showPayments: true
+    branding:
+      logoUrl: "https://golder.tech/logo.png"
+      htmlTitle: "Golder - Secure Bitcoin Payments"
+  providerConfigRef:
+    name: golder-btcpay
+
+---
+# Development Store for Testing
+apiVersion: store.btcpay.crossplane.io/v1alpha1
+kind: Store
+metadata:
+  name: golder-dev-store
+  labels:
+    environment: development
+    team: golder
+spec:
+  forProvider:
+    name: "Golder Development Store"
+    defaultCurrency: "BTC"
+    website: "https://dev.golder.tech"
+    invoiceExpiration: 3600  # Longer expiration for testing
+    paymentTolerance: 0.1    # Higher tolerance for testing
+    networkFeeMode: "Always"
+    speedPolicy: "Low"       # Cheaper fees for testing
+    lightningAmountInSatoshi: true
+    redirectAutomatically: false
+    showRecommendedFee: false
+    defaultLang: "en"
+    checkoutType: "V1"       # Use older checkout for compatibility testing
+    receipt:
+      enabled: false         # Disable receipts in dev
+      showQR: false
+      showPayments: false
+  providerConfigRef:
+    name: golder-btcpay
+
+---
+# Sample Product Purchase Invoice
+apiVersion: invoice.btcpay.crossplane.io/v1alpha1
+kind: Invoice
+metadata:
+  name: infrastructure-consultation
+  labels:
+    service: consultation
+    client: enterprise
+spec:
+  forProvider:
+    storeRef:
+      name: golder-production-store
+    amount: 2500.00
+    currency: "USD"
+    orderId: "INF-CONSULT-2024-001"
+    itemDesc: "Infrastructure Consultation Services"
+    itemCode: "CONSULT-INF-01"
+    notificationURL: "https://api.golder.tech/webhooks/btcpay"
+    redirectURL: "https://golder.tech/services/success"
+    notificationEmail: "billing@golder.tech"
+    buyerName: "Enterprise Client"
+    buyerEmail: "procurement@enterprise.com"
+    buyerCountry: "US"
+    buyerCity: "San Francisco"
+    buyerState: "CA"
+    buyerZip: "94102"
+    extendedNotifications: true
+    fullNotifications: true
+    metadata:
+      serviceType: "consultation"
+      duration: "8-hours"
+      expertise: "infrastructure"
+      projectId: "PROJ-2024-ENT-001"
+      salesRepId: "REP-001"
+    receipt:
+      enabled: true
+      showQR: true
+      showPayments: true
+  providerConfigRef:
+    name: golder-btcpay
+
+---
+# Lightning Micropayment Example
+apiVersion: invoice.btcpay.crossplane.io/v1alpha1
+kind: Invoice
+metadata:
+  name: api-usage-payment
+  labels:
+    service: api
+    payment-type: micropayment
+spec:
+  forProvider:
+    storeRef:
+      name: golder-production-store
+    amount: 0.05
+    currency: "USD"
+    orderId: "API-USAGE-2024-07-001"
+    itemDesc: "API Usage - 1000 requests"
+    itemCode: "API-REQ-1K"
+    notificationURL: "https://api.golder.tech/webhooks/usage-payment"
+    redirectURL: "https://portal.golder.tech/billing/success"
+    buyerEmail: "developer@startup.com"
+    extendedNotifications: true
+    metadata:
+      apiKey: "ak_prod_123456"
+      requestCount: "1000"
+      billingPeriod: "2024-07"
+      autoTopup: "true"
+  providerConfigRef:
+    name: golder-btcpay

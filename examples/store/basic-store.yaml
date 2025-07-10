@@ -1,0 +1,28 @@
+apiVersion: store.btcpay.crossplane.io/v1alpha1
+kind: Store
+metadata:
+  name: my-bitcoin-store
+spec:
+  forProvider:
+    name: "My Bitcoin Store"
+    defaultCurrency: "USD"
+    website: "https://mystore.example.com"
+    invoiceExpiration: 900  # 15 minutes
+    paymentTolerance: 0.0
+    networkFeeMode: "Never"
+    speedPolicy: "Medium"
+    lightningAmountInSatoshi: true
+    redirectAutomatically: true
+    showRecommendedFee: true
+    recommendedFeeBlockTarget: 6
+    defaultLang: "en"
+    checkoutType: "V2"
+    receipt:
+      enabled: true
+      showQR: true
+      showPayments: true
+    branding:
+      logoUrl: "https://mystore.example.com/logo.png"
+      htmlTitle: "My Bitcoin Store - Secure Payments"
+  providerConfigRef:
+    name: default

@@ -1,0 +1,30 @@
+apiVersion: invoice.btcpay.crossplane.io/v1alpha1
+kind: Invoice
+metadata:
+  name: lightning-payment
+spec:
+  forProvider:
+    storeRef:
+      name: lightning-enabled-store
+    amount: 0.00025
+    currency: "BTC"
+    orderId: "lightning-order-567"
+    itemDesc: "Lightning Network Coffee"
+    itemCode: "COFFEE-LN-001"
+    notificationURL: "https://myapp.example.com/webhook/lightning"
+    redirectURL: "https://myapp.example.com/success/lightning"
+    buyerName: "Lightning User"
+    buyerEmail: "user@lightning.example.com"
+    extendedNotifications: true
+    fullNotifications: true
+    metadata:
+      paymentType: "lightning"
+      productCategory: "coffee"
+      storefront: "mobile-app"
+      customerTier: "premium"
+    receipt:
+      enabled: true
+      showQR: true
+      showPayments: true
+  providerConfigRef:
+    name: default

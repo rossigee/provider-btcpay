@@ -1,0 +1,34 @@
+apiVersion: invoice.btcpay.crossplane.io/v1alpha1
+kind: Invoice
+metadata:
+  name: product-purchase-001
+spec:
+  forProvider:
+    storeRef:
+      name: my-bitcoin-store
+    amount: 29.99
+    currency: "USD"
+    orderId: "order-12345"
+    itemDesc: "Premium Software License"
+    itemCode: "SOFT-PREM-001"
+    notificationURL: "https://mystore.example.com/webhook/btcpay"
+    redirectURL: "https://mystore.example.com/success"
+    notificationEmail: "orders@mystore.example.com"
+    buyerName: "John Doe"
+    buyerEmail: "john@example.com"
+    buyerCountry: "US"
+    buyerCity: "San Francisco"
+    buyerState: "CA"
+    buyerZip: "94102"
+    extendedNotifications: true
+    fullNotifications: true
+    metadata:
+      productId: "prod-456"
+      customerId: "cust-789"
+      campaignId: "camp-123"
+    receipt:
+      enabled: true
+      showQR: true
+      showPayments: true
+  providerConfigRef:
+    name: default
