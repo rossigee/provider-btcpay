@@ -1,6 +1,6 @@
-# Contributing to provider-plausible
+# Contributing to provider-btcpay
 
-Thank you for your interest in contributing to the Crossplane Plausible provider! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to the Crossplane BTCPay provider! This document provides guidelines and information for contributors.
 
 ## Code of Conduct
 
@@ -14,15 +14,15 @@ This project adheres to the [Crossplane Code of Conduct](https://github.com/cros
 - Docker
 - kubectl
 - A Kubernetes cluster (local or remote)
-- Access to a Plausible Analytics instance with Sites API enabled
+- Access to a BTCPay Server instance with Greenfield API enabled
 
 ### Development Setup
 
 1. Fork the repository
 2. Clone your fork:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/provider-plausible.git
-   cd provider-plausible
+   git clone https://github.com/YOUR_USERNAME/provider-btcpay.git
+   cd provider-btcpay
    ```
 
 3. Install dependencies:
@@ -93,7 +93,7 @@ Unit tests should:
 
 #### Integration Tests
 
-Integration tests require a running Kubernetes cluster and Plausible instance:
+Integration tests require a running Kubernetes cluster and BTCPay Server instance:
 ```bash
 make test-integration
 ```
@@ -107,7 +107,7 @@ make test-integration
 
 2. Install in your cluster:
    ```bash
-   kubectl crossplane install provider your-registry/provider-plausible:dev
+   kubectl crossplane install provider your-registry/provider-btcpay:dev
    ```
 
 3. Create test resources and verify behavior
@@ -158,12 +158,12 @@ Include:
 ### Provider Structure
 
 ```
-provider-plausible/
+provider-btcpay/
 ├── apis/                 # API definitions
-│   ├── site/            # Site resource API
-│   └── goal/            # Goal resource API
+│   ├── store/           # Store resource API
+│   └── invoice/         # Invoice resource API
 ├── internal/
-│   ├── clients/         # Plausible API client
+│   ├── clients/         # BTCPay API client
 │   └── controller/      # Resource controllers
 ├── package/             # Crossplane package configuration
 └── examples/            # Usage examples
@@ -173,7 +173,7 @@ provider-plausible/
 
 - **API Types**: Define Kubernetes resources (CRDs)
 - **Controllers**: Implement resource lifecycle management
-- **Clients**: Handle Plausible API communication
+- **Clients**: Handle BTCPay API communication
 - **Webhooks**: Validation and defaulting logic
 
 ### Crossplane Patterns
@@ -269,7 +269,7 @@ We follow semantic versioning:
 
 ## Getting Help
 
-- [GitHub Issues](https://github.com/crossplane-contrib/provider-plausible/issues) - Bug reports and feature requests
+- [GitHub Issues](https://github.com/crossplane-contrib/provider-btcpay/issues) - Bug reports and feature requests
 - [Crossplane Slack](https://slack.crossplane.io/) - #providers channel for questions
 - [Crossplane Documentation](https://crossplane.io/docs/) - General Crossplane information
 

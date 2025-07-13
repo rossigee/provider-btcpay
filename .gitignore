@@ -64,3 +64,6 @@ examples/**/*-actual.yaml
 
 # Generated cluster configuration
 cluster/
+
+# Manual testing utilities
+test_manual/
