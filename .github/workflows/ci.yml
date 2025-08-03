@@ -11,8 +11,8 @@ on:
 
 env:
   # Common versions
-  GO_VERSION: '1.23'
-  GOLANGCI_VERSION: 'v1.61'
+  GO_VERSION: '1.24.5'
+  GOLANGCI_VERSION: 'v2.3.1'
   DOCKER_BUILDX_VERSION: 'v0.22.0'
 
   # Registry configuration - PRIMARY: GitHub Container Registry only
@@ -192,7 +192,10 @@ jobs:
 
       - name: Build and Publish Artifacts
         run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Repository owner: ${{ github.repository_owner }}"
+          echo "Using registry: ghcr.io/${{ github.repository_owner }}"
           make build
-          make publish REGISTRY_ORGS="${{ env.REGISTRY_ORG }}"
+          make publish REGISTRY_ORGS="ghcr.io/${{ github.repository_owner }}" XPKG_REG_ORGS="ghcr.io/${{ github.repository_owner }}"
         env:
           BUILD_ARGS: "--load"
