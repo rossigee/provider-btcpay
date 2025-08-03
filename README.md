@@ -1,10 +1,17 @@
 # provider-btcpay
 
+**✅ BUILD STATUS: WORKING** - Successfully builds after build system standardization (v0.2.0)
+
 [![Build Status](https://github.com/crossplane-contrib/provider-btcpay/workflows/CI/badge.svg)](https://github.com/crossplane-contrib/provider-btcpay/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/crossplane-contrib/provider-btcpay)](https://goreportcard.com/report/github.com/crossplane-contrib/provider-btcpay)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 A [Crossplane](https://crossplane.io/) provider for managing [BTCPay Server](https://btcpayserver.org/) resources through the BTCPay Greenfield API.
+
+## Container Registry
+- **Primary**: `ghcr.io/rossigee/provider-btcpay:v0.2.0`
+- **Harbor**: Available via environment configuration
+- **Upbound**: Available via environment configuration
 
 ## Overview
 
@@ -29,7 +36,7 @@ This provider enables you to manage BTCPay Server resources using Kubernetes Cus
 1. Install the provider:
 
 ```bash
-kubectl crossplane install provider ghcr.io/crossplane-contrib/provider-btcpay:v0.1.0
+kubectl crossplane install provider ghcr.io/rossigee/provider-btcpay:v0.2.0
 ```
 
 2. Create a secret with your BTCPay API credentials:

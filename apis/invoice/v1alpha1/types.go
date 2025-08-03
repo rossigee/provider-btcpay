@@ -344,4 +344,3 @@ type CheckoutSettings struct {
 	// +optional
 	CheckoutType *string `json:"checkoutType,omitempty"`
 }
-

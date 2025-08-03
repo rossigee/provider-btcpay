@@ -261,9 +261,9 @@ func TestObserveErrorScenarios(t *testing.T) {
 				client: tc.mock(),
 				kube:   tc.kube(),
 			}
-			
+
 			got, err := e.Observe(context.Background(), tc.args.mg)
-			
+
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Observe(...): -want error, +got error:\n%s", diff)
 			}
@@ -484,9 +484,9 @@ func TestCreateErrorScenarios(t *testing.T) {
 				client: tc.mock(),
 				kube:   tc.kube(),
 			}
-			
+
 			got, err := e.Create(context.Background(), tc.args.mg)
-			
+
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Create(...): -want error, +got error:\n%s", diff)
 			}
@@ -665,9 +665,9 @@ func TestDeleteErrorScenarios(t *testing.T) {
 				client: tc.mock(),
 				kube:   tc.kube(),
 			}
-			
+
 			err := e.Delete(context.Background(), tc.args.mg)
-			
+
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Delete(...): -want error, +got error:\n%s", diff)
 			}

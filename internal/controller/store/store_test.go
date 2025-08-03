@@ -21,10 +21,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
-	"github.com/pkg/errors"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/test"
+	"github.com/google/go-cmp/cmp"
+	"github.com/pkg/errors"
 
 	"github.com/crossplane-contrib/provider-btcpay/apis/store/v1alpha1"
 	"github.com/crossplane-contrib/provider-btcpay/internal/clients"
@@ -216,17 +216,17 @@ func TestObserve(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			// Create a real clients.Client that wraps our mock
 			client := &clients.Client{}
-			// We need to use reflection or interface to inject our mock, 
+			// We need to use reflection or interface to inject our mock,
 			// but for now we'll use external struct directly
 			e := external{client: client}
-			
+
 			// Override the client with our mock
 			if tc.args.c != nil {
 				// This won't work directly with the current design
 				// We'd need to refactor the client interface
 				// For now, let's test what we can
 			}
-			
+
 			// Since we can't easily mock the client, let's just test the
 			// logic that doesn't require external calls
 			if tc.args.cr.Status.AtProvider.ID == "" {

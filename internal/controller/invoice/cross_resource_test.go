@@ -255,9 +255,9 @@ func TestCrossResourceDependencies(t *testing.T) {
 				client: tc.mock(),
 				kube:   tc.kube(),
 			}
-			
+
 			got, err := e.Observe(context.Background(), tc.args.mg)
-			
+
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Observe(...): -want error, +got error:\n%s", diff)
 			}
@@ -319,7 +319,7 @@ func TestCrossResourceCreateFlow(t *testing.T) {
 						if req.OrderID != "order-999" {
 							t.Errorf("Expected OrderID 'order-999', got %v", req.OrderID)
 						}
-						
+
 						return &clients.Invoice{
 							ID:           "new-invoice-999",
 							StoreID:      storeID,
@@ -430,9 +430,9 @@ func TestCrossResourceCreateFlow(t *testing.T) {
 				client: tc.mock(),
 				kube:   tc.kube(),
 			}
-			
+
 			got, err := e.Create(context.Background(), tc.args.mg)
-			
+
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Create(...): -want error, +got error:\n%s", diff)
 			}
@@ -587,9 +587,9 @@ func TestCrossResourceDeleteFlow(t *testing.T) {
 				client: tc.mock(),
 				kube:   tc.kube(),
 			}
-			
+
 			err := e.Delete(context.Background(), tc.args.mg)
-			
+
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Delete(...): -want error, +got error:\n%s", diff)
 			}
@@ -599,11 +599,11 @@ func TestCrossResourceDeleteFlow(t *testing.T) {
 
 func TestStoreLifecycleImpactOnInvoices(t *testing.T) {
 	type scenario struct {
-		name         string
-		storeState   string // "creating", "ready", "updating", "deleting", "deleted"
-		invoiceOp    string // "observe", "create", "delete"
-		expectError  bool
-		expectedErr  string
+		name        string
+		storeState  string // "creating", "ready", "updating", "deleting", "deleted"
+		invoiceOp   string // "observe", "create", "delete"
+		expectError bool
+		expectedErr string
 	}
 
 	scenarios := []scenario{

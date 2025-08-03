@@ -39,16 +39,16 @@ import (
 )
 
 const (
-	errNotStore          = "managed resource is not a Store custom resource"
-	errTrackPCUsage      = "cannot track ProviderConfig usage"
-	errGetPC             = "cannot get ProviderConfig"
-	errGetCreds          = "cannot get credentials"
-	errNewClient         = "cannot create new BTCPay client"
-	errCreateStore       = "cannot create store"
-	errUpdateStore       = "cannot update store"
-	errDeleteStore       = "cannot delete store"
-	errGetStore          = "cannot get store"
-	errStoreNotFound     = "store not found"
+	errNotStore      = "managed resource is not a Store custom resource"
+	errTrackPCUsage  = "cannot track ProviderConfig usage"
+	errGetPC         = "cannot get ProviderConfig"
+	errGetCreds      = "cannot get credentials"
+	errNewClient     = "cannot create new BTCPay client"
+	errCreateStore   = "cannot create store"
+	errUpdateStore   = "cannot update store"
+	errDeleteStore   = "cannot delete store"
+	errGetStore      = "cannot get store"
+	errStoreNotFound = "store not found"
 )
 
 // Setup adds a controller that reconciles Store managed resources.
@@ -151,7 +151,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	cr.Status.AtProvider.InvoiceExpiration = store.InvoiceExpiration
 	cr.Status.AtProvider.PaymentMethods = store.PaymentMethods
 	cr.Status.AtProvider.DerivationSchemes = convertDerivationSchemes(store.DerivationSchemes)
-	
+
 	if store.CreatedAt != nil {
 		cr.Status.AtProvider.CreatedAt = &metav1.Time{Time: *store.CreatedAt}
 	}

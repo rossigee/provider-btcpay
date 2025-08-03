@@ -147,9 +147,9 @@ func TestObserveErrorScenarios(t *testing.T) {
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
 			e := external{client: tc.mock()}
-			
+
 			got, err := e.Observe(context.Background(), tc.args.mg)
-			
+
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Observe(...): -want error, +got error:\n%s", diff)
 			}
@@ -281,9 +281,9 @@ func TestCreateErrorScenarios(t *testing.T) {
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
 			e := external{client: tc.mock()}
-			
+
 			got, err := e.Create(context.Background(), tc.args.mg)
-			
+
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Create(...): -want error, +got error:\n%s", diff)
 			}
@@ -405,9 +405,9 @@ func TestUpdateErrorScenarios(t *testing.T) {
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
 			e := external{client: tc.mock()}
-			
+
 			got, err := e.Update(context.Background(), tc.args.mg)
-			
+
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Update(...): -want error, +got error:\n%s", diff)
 			}
@@ -534,9 +534,9 @@ func TestDeleteErrorScenarios(t *testing.T) {
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
 			e := external{client: tc.mock()}
-			
+
 			err := e.Delete(context.Background(), tc.args.mg)
-			
+
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Delete(...): -want error, +got error:\n%s", diff)
 			}

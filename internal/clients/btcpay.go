@@ -64,7 +64,7 @@ type BTCPayClient interface {
 	CreateStore(req CreateStoreRequest) (*Store, error)
 	UpdateStore(storeID string, req UpdateStoreRequest) (*Store, error)
 	DeleteStore(storeID string) error
-	
+
 	// Invoice operations
 	GetInvoice(storeID, invoiceID string) (*Invoice, error)
 	ListInvoices(storeID string) ([]Invoice, error)
@@ -177,45 +177,45 @@ func parseResponse(resp *http.Response, target interface{}) error {
 
 // Store represents a BTCPay Server store
 type Store struct {
-	ID                  string                 `json:"id"`
-	Name                string                 `json:"name"`
-	Website             string                 `json:"website,omitempty"`
-	DefaultCurrency     string                 `json:"defaultCurrency"`
-	InvoiceExpiration   int32                  `json:"invoiceExpiration"`
-	MonitoringExpiration int32                 `json:"monitoringExpiration"`
-	PaymentTolerance    float64                `json:"paymentTolerance"`
-	PaymentMethods      []string               `json:"paymentMethods,omitempty"`
-	DerivationSchemes   map[string]interface{} `json:"derivationSchemes,omitempty"`
-	SpeedPolicy         int                    `json:"speedPolicy"`
-	LightningSettings   map[string]interface{} `json:"lightningSettings,omitempty"`
-	OnChainSettings     map[string]interface{} `json:"onChainSettings,omitempty"`
-	CreatedAt           *time.Time             `json:"createdAt,omitempty"`
+	ID                   string                 `json:"id"`
+	Name                 string                 `json:"name"`
+	Website              string                 `json:"website,omitempty"`
+	DefaultCurrency      string                 `json:"defaultCurrency"`
+	InvoiceExpiration    int32                  `json:"invoiceExpiration"`
+	MonitoringExpiration int32                  `json:"monitoringExpiration"`
+	PaymentTolerance     float64                `json:"paymentTolerance"`
+	PaymentMethods       []string               `json:"paymentMethods,omitempty"`
+	DerivationSchemes    map[string]interface{} `json:"derivationSchemes,omitempty"`
+	SpeedPolicy          int                    `json:"speedPolicy"`
+	LightningSettings    map[string]interface{} `json:"lightningSettings,omitempty"`
+	OnChainSettings      map[string]interface{} `json:"onChainSettings,omitempty"`
+	CreatedAt            *time.Time             `json:"createdAt,omitempty"`
 }
 
 // CreateStoreRequest represents a request to create a store
 type CreateStoreRequest struct {
-	Name                string                 `json:"name"`
-	Website             string                 `json:"website,omitempty"`
-	DefaultCurrency     string                 `json:"defaultCurrency"`
-	InvoiceExpiration   int32                  `json:"invoiceExpiration,omitempty"`
-	MonitoringExpiration int32                 `json:"monitoringExpiration,omitempty"`
-	PaymentTolerance    float64                `json:"paymentTolerance,omitempty"`
-	SpeedPolicy         int                    `json:"speedPolicy,omitempty"`
-	LightningSettings   map[string]interface{} `json:"lightningSettings,omitempty"`
-	OnChainSettings     map[string]interface{} `json:"onChainSettings,omitempty"`
+	Name                 string                 `json:"name"`
+	Website              string                 `json:"website,omitempty"`
+	DefaultCurrency      string                 `json:"defaultCurrency"`
+	InvoiceExpiration    int32                  `json:"invoiceExpiration,omitempty"`
+	MonitoringExpiration int32                  `json:"monitoringExpiration,omitempty"`
+	PaymentTolerance     float64                `json:"paymentTolerance,omitempty"`
+	SpeedPolicy          int                    `json:"speedPolicy,omitempty"`
+	LightningSettings    map[string]interface{} `json:"lightningSettings,omitempty"`
+	OnChainSettings      map[string]interface{} `json:"onChainSettings,omitempty"`
 }
 
 // UpdateStoreRequest represents a request to update a store
 type UpdateStoreRequest struct {
-	Name                string                 `json:"name,omitempty"`
-	Website             string                 `json:"website,omitempty"`
-	DefaultCurrency     string                 `json:"defaultCurrency,omitempty"`
-	InvoiceExpiration   int32                  `json:"invoiceExpiration,omitempty"`
-	MonitoringExpiration int32                 `json:"monitoringExpiration,omitempty"`
-	PaymentTolerance    float64                `json:"paymentTolerance,omitempty"`
-	SpeedPolicy         int                    `json:"speedPolicy,omitempty"`
-	LightningSettings   map[string]interface{} `json:"lightningSettings,omitempty"`
-	OnChainSettings     map[string]interface{} `json:"onChainSettings,omitempty"`
+	Name                 string                 `json:"name,omitempty"`
+	Website              string                 `json:"website,omitempty"`
+	DefaultCurrency      string                 `json:"defaultCurrency,omitempty"`
+	InvoiceExpiration    int32                  `json:"invoiceExpiration,omitempty"`
+	MonitoringExpiration int32                  `json:"monitoringExpiration,omitempty"`
+	PaymentTolerance     float64                `json:"paymentTolerance,omitempty"`
+	SpeedPolicy          int                    `json:"speedPolicy,omitempty"`
+	LightningSettings    map[string]interface{} `json:"lightningSettings,omitempty"`
+	OnChainSettings      map[string]interface{} `json:"onChainSettings,omitempty"`
 }
 
 // Invoice represents a BTCPay Server invoice
@@ -266,21 +266,21 @@ type Payment struct {
 
 // CreateInvoiceRequest represents a request to create an invoice
 type CreateInvoiceRequest struct {
-	Amount               float64                `json:"amount"`
-	Currency             string                 `json:"currency"`
-	OrderID              string                 `json:"orderId,omitempty"`
-	NotificationURL      string                 `json:"notificationURL,omitempty"`
-	RedirectURL          string                 `json:"redirectURL,omitempty"`
-	NotificationEmail    string                 `json:"notificationEmail,omitempty"`
-	ItemDesc             string                 `json:"itemDesc,omitempty"`
-	ItemCode             string                 `json:"itemCode,omitempty"`
-	Physical             bool                   `json:"physical,omitempty"`
-	TaxIncluded          bool                   `json:"taxIncluded,omitempty"`
-	BuyerEmail           string                 `json:"buyerEmail,omitempty"`
-	ExtendedNotifications bool                  `json:"extendedNotifications,omitempty"`
-	FullNotifications    bool                   `json:"fullNotifications,omitempty"`
-	Metadata             map[string]interface{} `json:"metadata,omitempty"`
-	CheckoutQueryString  string                 `json:"checkoutQueryString,omitempty"`
+	Amount                float64                `json:"amount"`
+	Currency              string                 `json:"currency"`
+	OrderID               string                 `json:"orderId,omitempty"`
+	NotificationURL       string                 `json:"notificationURL,omitempty"`
+	RedirectURL           string                 `json:"redirectURL,omitempty"`
+	NotificationEmail     string                 `json:"notificationEmail,omitempty"`
+	ItemDesc              string                 `json:"itemDesc,omitempty"`
+	ItemCode              string                 `json:"itemCode,omitempty"`
+	Physical              bool                   `json:"physical,omitempty"`
+	TaxIncluded           bool                   `json:"taxIncluded,omitempty"`
+	BuyerEmail            string                 `json:"buyerEmail,omitempty"`
+	ExtendedNotifications bool                   `json:"extendedNotifications,omitempty"`
+	FullNotifications     bool                   `json:"fullNotifications,omitempty"`
+	Metadata              map[string]interface{} `json:"metadata,omitempty"`
+	CheckoutQueryString   string                 `json:"checkoutQueryString,omitempty"`
 }
 
 // GetStore retrieves a store by ID

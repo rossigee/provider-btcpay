@@ -202,14 +202,14 @@ func TestObserveComprehensive(t *testing.T) {
 					return errors.New("store not found")
 				},
 			}
-			
+
 			e := external{
 				client: tc.mock(),
 				kube:   kube,
 			}
-			
+
 			got, err := e.Observe(context.Background(), tc.args.mg)
-			
+
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Observe(...): -want error, +got error:\n%s", diff)
 			}
@@ -301,18 +301,18 @@ func TestCreateComprehensive(t *testing.T) {
 						if req.BuyerEmail != "buyer@example.com" {
 							t.Errorf("Expected BuyerEmail 'buyer@example.com', got %v", req.BuyerEmail)
 						}
-						
+
 						return &clients.Invoice{
-							ID:                "new-invoice-789",
-							StoreID:           storeID,
-							Amount:            "150.75",
-							Currency:          req.Currency,
-							OrderID:           req.OrderID,
-							NotificationURL:   req.NotificationURL,
-							RedirectURL:       req.RedirectURL,
-							Status:            "New",
-							CheckoutLink:      "https://btcpay.example.com/checkout/new-invoice-789",
-							CreatedTime:       &time.Time{},
+							ID:              "new-invoice-789",
+							StoreID:         storeID,
+							Amount:          "150.75",
+							Currency:        req.Currency,
+							OrderID:         req.OrderID,
+							NotificationURL: req.NotificationURL,
+							RedirectURL:     req.RedirectURL,
+							Status:          "New",
+							CheckoutLink:    "https://btcpay.example.com/checkout/new-invoice-789",
+							CreatedTime:     &time.Time{},
 						}, nil
 					},
 				}
@@ -353,7 +353,7 @@ func TestCreateComprehensive(t *testing.T) {
 						if req.ItemDesc != "" {
 							t.Errorf("Expected ItemDesc to be empty, got %v", req.ItemDesc)
 						}
-						
+
 						return &clients.Invoice{
 							ID:           "minimal-invoice-456",
 							StoreID:      storeID,
@@ -406,14 +406,14 @@ func TestCreateComprehensive(t *testing.T) {
 					return errors.New("store not found")
 				},
 			}
-			
+
 			e := external{
 				client: tc.mock(),
 				kube:   kube,
 			}
-			
+
 			got, err := e.Create(context.Background(), tc.args.mg)
-			
+
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Create(...): -want error, +got error:\n%s", diff)
 			}
@@ -471,9 +471,9 @@ func TestUpdateComprehensive(t *testing.T) {
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
 			e := external{client: tc.mock()}
-			
+
 			got, err := e.Update(context.Background(), tc.args.mg)
-			
+
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Update(...): -want error, +got error:\n%s", diff)
 			}
@@ -592,14 +592,14 @@ func TestDeleteComprehensive(t *testing.T) {
 					return errors.New("store not found")
 				},
 			}
-			
+
 			e := external{
 				client: tc.mock(),
 				kube:   kube,
 			}
-			
+
 			err := e.Delete(context.Background(), tc.args.mg)
-			
+
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Delete(...): -want error, +got error:\n%s", diff)
 			}

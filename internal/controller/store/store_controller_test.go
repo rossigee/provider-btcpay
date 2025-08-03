@@ -32,7 +32,6 @@ import (
 	"github.com/crossplane-contrib/provider-btcpay/internal/clients"
 )
 
-
 func TestObserveComprehensive(t *testing.T) {
 	type args struct {
 		mg resource.Managed
@@ -146,7 +145,7 @@ func TestObserveComprehensive(t *testing.T) {
 						return &clients.Store{
 							ID:              "store123",
 							Name:            "Test Store", // Different from spec
-							DefaultCurrency: "USD",       // Different from spec
+							DefaultCurrency: "USD",        // Different from spec
 							Website:         "https://test.com",
 							SpeedPolicy:     6, // Medium
 						}, nil
@@ -183,9 +182,9 @@ func TestObserveComprehensive(t *testing.T) {
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
 			e := external{client: tc.mock()}
-			
+
 			got, err := e.Observe(context.Background(), tc.args.mg)
-			
+
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Observe(...): -want error, +got error:\n%s", diff)
 			}
@@ -245,7 +244,7 @@ func TestCreateComprehensive(t *testing.T) {
 						if req.SpeedPolicy != 1 { // High = 1
 							t.Errorf("Expected SpeedPolicy 1 (High), got %v", req.SpeedPolicy)
 						}
-						
+
 						return &clients.Store{
 							ID:              "new-store-123",
 							Name:            req.Name,
@@ -285,7 +284,7 @@ func TestCreateComprehensive(t *testing.T) {
 						if req.SpeedPolicy != 0 {
 							t.Errorf("Expected SpeedPolicy to be 0, got %v", req.SpeedPolicy)
 						}
-						
+
 						return &clients.Store{
 							ID:              "minimal-store-456",
 							Name:            req.Name,
@@ -325,9 +324,9 @@ func TestCreateComprehensive(t *testing.T) {
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
 			e := external{client: tc.mock()}
-			
+
 			got, err := e.Create(context.Background(), tc.args.mg)
-			
+
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Create(...): -want error, +got error:\n%s", diff)
 			}
@@ -395,7 +394,7 @@ func TestUpdateComprehensive(t *testing.T) {
 						if req.SpeedPolicy != 144 { // Low = 144
 							t.Errorf("Expected SpeedPolicy 144 (Low), got %v", req.SpeedPolicy)
 						}
-						
+
 						return &clients.Store{
 							ID:              storeID,
 							Name:            req.Name,
@@ -442,9 +441,9 @@ func TestUpdateComprehensive(t *testing.T) {
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
 			e := external{client: tc.mock()}
-			
+
 			got, err := e.Update(context.Background(), tc.args.mg)
-			
+
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Update(...): -want error, +got error:\n%s", diff)
 			}
@@ -524,9 +523,9 @@ func TestDeleteComprehensive(t *testing.T) {
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
 			e := external{client: tc.mock()}
-			
+
 			err := e.Delete(context.Background(), tc.args.mg)
-			
+
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Delete(...): -want error, +got error:\n%s", diff)
 			}

@@ -36,8 +36,8 @@ func TestClient_CreateStore(t *testing.T) {
 	}
 
 	cases := map[string]struct {
-		args args
-		want want
+		args    args
+		want    want
 		handler func(w http.ResponseWriter, r *http.Request)
 	}{
 		"Success": {
@@ -50,13 +50,13 @@ func TestClient_CreateStore(t *testing.T) {
 			},
 			want: want{
 				store: &Store{
-					ID:              "store123",
-					Name:            "Test Store",
-					Website:         "https://example.com",
-					DefaultCurrency: "USD",
+					ID:                "store123",
+					Name:              "Test Store",
+					Website:           "https://example.com",
+					DefaultCurrency:   "USD",
 					InvoiceExpiration: 900,
-					PaymentTolerance: 0,
-					SpeedPolicy:     1, // Medium
+					PaymentTolerance:  0,
+					SpeedPolicy:       1, // Medium
 				},
 				err: false,
 			},
@@ -74,13 +74,13 @@ func TestClient_CreateStore(t *testing.T) {
 				}
 
 				resp := Store{
-					ID:              "store123",
-					Name:            req.Name,
-					Website:         req.Website,
-					DefaultCurrency: req.DefaultCurrency,
+					ID:                "store123",
+					Name:              req.Name,
+					Website:           req.Website,
+					DefaultCurrency:   req.DefaultCurrency,
 					InvoiceExpiration: 900,
-					PaymentTolerance: 0,
-					SpeedPolicy:     1,
+					PaymentTolerance:  0,
+					SpeedPolicy:       1,
 				}
 
 				w.Header().Set("Content-Type", "application/json")
@@ -155,8 +155,8 @@ func TestClient_GetStore(t *testing.T) {
 	}
 
 	cases := map[string]struct {
-		args args
-		want want
+		args    args
+		want    want
 		handler func(w http.ResponseWriter, r *http.Request)
 	}{
 		"Success": {
@@ -165,13 +165,13 @@ func TestClient_GetStore(t *testing.T) {
 			},
 			want: want{
 				store: &Store{
-					ID:              "store123",
-					Name:            "Test Store",
-					Website:         "https://example.com",
-					DefaultCurrency: "USD",
+					ID:                "store123",
+					Name:              "Test Store",
+					Website:           "https://example.com",
+					DefaultCurrency:   "USD",
 					InvoiceExpiration: 900,
-					PaymentTolerance: 0,
-					SpeedPolicy:     1,
+					PaymentTolerance:  0,
+					SpeedPolicy:       1,
 				},
 				err: false,
 			},
@@ -184,13 +184,13 @@ func TestClient_GetStore(t *testing.T) {
 				}
 
 				resp := Store{
-					ID:              "store123",
-					Name:            "Test Store",
-					Website:         "https://example.com",
-					DefaultCurrency: "USD",
+					ID:                "store123",
+					Name:              "Test Store",
+					Website:           "https://example.com",
+					DefaultCurrency:   "USD",
 					InvoiceExpiration: 900,
-					PaymentTolerance: 0,
-					SpeedPolicy:     1,
+					PaymentTolerance:  0,
+					SpeedPolicy:       1,
 				}
 
 				w.Header().Set("Content-Type", "application/json")
@@ -247,28 +247,28 @@ func TestClient_UpdateStore(t *testing.T) {
 	}
 
 	cases := map[string]struct {
-		args args
-		want want
+		args    args
+		want    want
 		handler func(w http.ResponseWriter, r *http.Request)
 	}{
 		"Success": {
 			args: args{
 				storeID: "store123",
 				req: UpdateStoreRequest{
-					Name:            "Updated Store",
-					Website:         "https://updated.com",
+					Name:              "Updated Store",
+					Website:           "https://updated.com",
 					InvoiceExpiration: 1800,
-					SpeedPolicy:     2,
+					SpeedPolicy:       2,
 				},
 			},
 			want: want{
 				store: &Store{
-					ID:              "store123",
-					Name:            "Updated Store",
-					Website:         "https://updated.com",
-					DefaultCurrency: "USD",
+					ID:                "store123",
+					Name:              "Updated Store",
+					Website:           "https://updated.com",
+					DefaultCurrency:   "USD",
 					InvoiceExpiration: 1800,
-					SpeedPolicy:     2,
+					SpeedPolicy:       2,
 				},
 				err: false,
 			},
@@ -286,12 +286,12 @@ func TestClient_UpdateStore(t *testing.T) {
 				}
 
 				resp := Store{
-					ID:              "store123",
-					Name:            req.Name,
-					Website:         req.Website,
-					DefaultCurrency: "USD",
+					ID:                "store123",
+					Name:              req.Name,
+					Website:           req.Website,
+					DefaultCurrency:   "USD",
 					InvoiceExpiration: req.InvoiceExpiration,
-					SpeedPolicy:     req.SpeedPolicy,
+					SpeedPolicy:       req.SpeedPolicy,
 				}
 
 				w.Header().Set("Content-Type", "application/json")
@@ -349,8 +349,8 @@ func TestClient_DeleteStore(t *testing.T) {
 	}
 
 	cases := map[string]struct {
-		args args
-		want want
+		args    args
+		want    want
 		handler func(w http.ResponseWriter, r *http.Request)
 	}{
 		"Success": {

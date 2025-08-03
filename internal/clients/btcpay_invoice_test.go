@@ -37,19 +37,19 @@ func TestClient_CreateInvoice(t *testing.T) {
 	}
 
 	cases := map[string]struct {
-		args args
-		want want
+		args    args
+		want    want
 		handler func(w http.ResponseWriter, r *http.Request)
 	}{
 		"Success": {
 			args: args{
 				storeID: "store123",
 				req: CreateInvoiceRequest{
-					Amount:   100.50,
-					Currency: "USD",
-					OrderID:  "order-123",
-					ItemDesc: "Test Product",
-					BuyerEmail: "test@example.com",
+					Amount:          100.50,
+					Currency:        "USD",
+					OrderID:         "order-123",
+					ItemDesc:        "Test Product",
+					BuyerEmail:      "test@example.com",
 					NotificationURL: "https://example.com/webhook",
 					Metadata: map[string]interface{}{
 						"customer_id": "cust123",
@@ -59,12 +59,12 @@ func TestClient_CreateInvoice(t *testing.T) {
 			},
 			want: want{
 				invoice: &Invoice{
-					ID:       "inv123",
-					StoreID:  "store123",
-					Amount:   "100.50",
-					Currency: "USD",
-					Status:   "New",
-					OrderID:  "order-123",
+					ID:           "inv123",
+					StoreID:      "store123",
+					Amount:       "100.50",
+					Currency:     "USD",
+					Status:       "New",
+					OrderID:      "order-123",
 					CheckoutLink: "https://btcpay.example.com/i/inv123",
 					Metadata: map[string]interface{}{
 						"customer_id": "cust123",
@@ -87,14 +87,14 @@ func TestClient_CreateInvoice(t *testing.T) {
 				}
 
 				resp := Invoice{
-					ID:       "inv123",
-					StoreID:  "store123",
-					Amount:   fmt.Sprintf("%.2f", req.Amount),
-					Currency: req.Currency,
-					Status:   "New",
-					OrderID:  req.OrderID,
+					ID:           "inv123",
+					StoreID:      "store123",
+					Amount:       fmt.Sprintf("%.2f", req.Amount),
+					Currency:     req.Currency,
+					Status:       "New",
+					OrderID:      req.OrderID,
 					CheckoutLink: "https://btcpay.example.com/i/inv123",
-					Metadata: req.Metadata,
+					Metadata:     req.Metadata,
 				}
 
 				w.Header().Set("Content-Type", "application/json")
@@ -111,11 +111,11 @@ func TestClient_CreateInvoice(t *testing.T) {
 			},
 			want: want{
 				invoice: &Invoice{
-					ID:       "inv124",
-					StoreID:  "store123",
-					Amount:   "10.00",
-					Currency: "BTC",
-					Status:   "New",
+					ID:           "inv124",
+					StoreID:      "store123",
+					Amount:       "10.00",
+					Currency:     "BTC",
+					Status:       "New",
 					CheckoutLink: "https://btcpay.example.com/i/inv124",
 				},
 				err: false,
@@ -125,11 +125,11 @@ func TestClient_CreateInvoice(t *testing.T) {
 				json.NewDecoder(r.Body).Decode(&req)
 
 				resp := Invoice{
-					ID:       "inv124",
-					StoreID:  "store123",
-					Amount:   fmt.Sprintf("%.2f", req.Amount),
-					Currency: req.Currency,
-					Status:   "New",
+					ID:           "inv124",
+					StoreID:      "store123",
+					Amount:       fmt.Sprintf("%.2f", req.Amount),
+					Currency:     req.Currency,
+					Status:       "New",
 					CheckoutLink: "https://btcpay.example.com/i/inv124",
 				}
 
@@ -192,7 +192,7 @@ func TestClient_CreateInvoice(t *testing.T) {
 				t.Errorf("CreateInvoice() error = %v, wantErr %v", err, tc.want.err)
 				return
 			}
-			
+
 			if diff := cmp.Diff(tc.want.invoice, got); diff != "" {
 				t.Errorf("CreateInvoice() mismatch (-want +got):\n%s", diff)
 			}
@@ -211,8 +211,8 @@ func TestClient_GetInvoice(t *testing.T) {
 	}
 
 	cases := map[string]struct {
-		args args
-		want want
+		args    args
+		want    want
 		handler func(w http.ResponseWriter, r *http.Request)
 	}{
 		"Success": {
@@ -222,12 +222,12 @@ func TestClient_GetInvoice(t *testing.T) {
 			},
 			want: want{
 				invoice: &Invoice{
-					ID:       "inv123",
-					StoreID:  "store123",
-					Amount:   "100.50",
-					Currency: "USD",
-					Status:   "Paid",
-					OrderID:  "order-123",
+					ID:           "inv123",
+					StoreID:      "store123",
+					Amount:       "100.50",
+					Currency:     "USD",
+					Status:       "Paid",
+					OrderID:      "order-123",
 					CheckoutLink: "https://btcpay.example.com/i/inv123",
 				},
 				err: false,
@@ -241,12 +241,12 @@ func TestClient_GetInvoice(t *testing.T) {
 				}
 
 				resp := Invoice{
-					ID:       "inv123",
-					StoreID:  "store123",
-					Amount:   "100.50",
-					Currency: "USD",
-					Status:   "Paid",
-					OrderID:  "order-123",
+					ID:           "inv123",
+					StoreID:      "store123",
+					Amount:       "100.50",
+					Currency:     "USD",
+					Status:       "Paid",
+					OrderID:      "order-123",
 					CheckoutLink: "https://btcpay.example.com/i/inv123",
 				}
 
@@ -277,22 +277,22 @@ func TestClient_GetInvoice(t *testing.T) {
 			},
 			want: want{
 				invoice: &Invoice{
-					ID:       "inv125",
-					StoreID:  "store123",
-					Amount:   "50.00",
-					Currency: "USD",
-					Status:   "Expired",
+					ID:               "inv125",
+					StoreID:          "store123",
+					Amount:           "50.00",
+					Currency:         "USD",
+					Status:           "Expired",
 					AdditionalStatus: "paidPartial",
 				},
 				err: false,
 			},
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				resp := Invoice{
-					ID:       "inv125",
-					StoreID:  "store123",
-					Amount:   "50.00",
-					Currency: "USD",
-					Status:   "Expired",
+					ID:               "inv125",
+					StoreID:          "store123",
+					Amount:           "50.00",
+					Currency:         "USD",
+					Status:           "Expired",
 					AdditionalStatus: "paidPartial",
 				}
 
@@ -334,8 +334,8 @@ func TestClient_ArchiveInvoice(t *testing.T) {
 	}
 
 	cases := map[string]struct {
-		args args
-		want want
+		args    args
+		want    want
 		handler func(w http.ResponseWriter, r *http.Request)
 	}{
 		"Success": {

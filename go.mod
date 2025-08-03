@@ -1,8 +1,8 @@
 module github.com/crossplane-contrib/provider-btcpay
 
-go 1.23.0
+go 1.24.5
 
-toolchain go1.24.2
+toolchain go1.24.5
 
 require (
 	github.com/crossplane/crossplane-runtime v1.15.0

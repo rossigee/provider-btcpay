@@ -181,9 +181,9 @@ func TestClient_doRequest_ErrorScenarios(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			client := tt.setupClient()
-			
+
 			resp, err := client.doRequest(tt.method, tt.path, tt.body)
-			
+
 			if tt.wantErr {
 				if err == nil {
 					t.Errorf("doRequest() expected error but got none")
@@ -217,7 +217,7 @@ func TestClient_doRequest_Success(t *testing.T) {
 		if r.Header.Get("Accept") != "application/json" {
 			t.Errorf("Expected Accept header 'application/json', got %v", r.Header.Get("Accept"))
 		}
-		
+
 		// Verify request body for POST
 		if r.Method == "POST" {
 			body, err := io.ReadAll(r.Body)
@@ -232,7 +232,7 @@ func TestClient_doRequest_Success(t *testing.T) {
 				t.Errorf("Expected request body to contain test:value, got %v", data)
 			}
 		}
-		
+
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"success": true}`))
 	}))
@@ -266,21 +266,21 @@ func TestClient_doRequest_Success(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			resp, err := client.doRequest(tt.method, tt.path, tt.body)
-			
+
 			if err != nil {
 				t.Errorf("doRequest() unexpected error = %v", err)
 				return
 			}
-			
+
 			if resp == nil {
 				t.Error("doRequest() returned nil response")
 				return
 			}
-			
+
 			if resp.StatusCode != http.StatusOK {
 				t.Errorf("doRequest() status code = %v, want %v", resp.StatusCode, http.StatusOK)
 			}
-			
+
 			// Clean up
 			resp.Body.Close()
 		})
@@ -406,7 +406,7 @@ func TestParseResponse_EdgeCases(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			resp := tt.setupResp()
 			err := parseResponse(resp, tt.target)
-			
+
 			if tt.wantErr {
 				if err == nil {
 					t.Errorf("parseResponse() expected error but got none")
@@ -420,7 +420,7 @@ func TestParseResponse_EdgeCases(t *testing.T) {
 					t.Errorf("parseResponse() unexpected error = %v", err)
 					return
 				}
-				
+
 				// For successful cases with target, verify the data was parsed
 				if tt.target != nil && resp.StatusCode == http.StatusOK {
 					targetMap, ok := tt.target.(*map[string]interface{})
@@ -452,8 +452,8 @@ func TestParseResponse_TypeSpecific(t *testing.T) {
 		validate func(t *testing.T, target interface{})
 	}{
 		{
-			name: "Parse into Store struct",
-			json: `{"id": "store123", "name": "Test Store", "defaultCurrency": "USD"}`,
+			name:   "Parse into Store struct",
+			json:   `{"id": "store123", "name": "Test Store", "defaultCurrency": "USD"}`,
 			target: &Store{},
 			validate: func(t *testing.T, target interface{}) {
 				store := target.(*Store)
@@ -469,8 +469,8 @@ func TestParseResponse_TypeSpecific(t *testing.T) {
 			},
 		},
 		{
-			name: "Parse into Invoice struct",
-			json: `{"id": "inv123", "storeId": "store123", "amount": "100.50", "currency": "USD"}`,
+			name:   "Parse into Invoice struct",
+			json:   `{"id": "inv123", "storeId": "store123", "amount": "100.50", "currency": "USD"}`,
 			target: &Invoice{},
 			validate: func(t *testing.T, target interface{}) {
 				invoice := target.(*Invoice)
@@ -490,13 +490,13 @@ func TestParseResponse_TypeSpecific(t *testing.T) {
 				StatusCode: http.StatusOK,
 				Body:       io.NopCloser(strings.NewReader(tt.json)),
 			}
-			
+
 			err := parseResponse(resp, tt.target)
 			if err != nil {
 				t.Errorf("parseResponse() unexpected error = %v", err)
 				return
 			}
-			
+
 			tt.validate(t, tt.target)
 		})
 	}

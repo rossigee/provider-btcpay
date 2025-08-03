@@ -28,9 +28,9 @@ type MockBTCPayClient struct {
 	UpdateStoreFunc func(storeID string, req clients.UpdateStoreRequest) (*clients.Store, error)
 	DeleteStoreFunc func(storeID string) error
 
-	GetInvoiceFunc    func(storeID, invoiceID string) (*clients.Invoice, error)
-	ListInvoicesFunc  func(storeID string) ([]clients.Invoice, error)
-	CreateInvoiceFunc func(storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error)
+	GetInvoiceFunc     func(storeID, invoiceID string) (*clients.Invoice, error)
+	ListInvoicesFunc   func(storeID string) ([]clients.Invoice, error)
+	CreateInvoiceFunc  func(storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error)
 	ArchiveInvoiceFunc func(storeID, invoiceID string) error
 }
 

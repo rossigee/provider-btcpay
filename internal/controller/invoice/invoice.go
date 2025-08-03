@@ -34,25 +34,25 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 
 	"github.com/crossplane-contrib/provider-btcpay/apis/invoice/v1alpha1"
-	apisv1beta1 "github.com/crossplane-contrib/provider-btcpay/apis/v1beta1"
 	storev1alpha1 "github.com/crossplane-contrib/provider-btcpay/apis/store/v1alpha1"
+	apisv1beta1 "github.com/crossplane-contrib/provider-btcpay/apis/v1beta1"
 	"github.com/crossplane-contrib/provider-btcpay/internal/clients"
 	"github.com/crossplane-contrib/provider-btcpay/internal/features"
 )
 
 const (
-	errNotInvoice        = "managed resource is not an Invoice custom resource"
-	errTrackPCUsage      = "cannot track ProviderConfig usage"
-	errGetPC             = "cannot get ProviderConfig"
-	errGetCreds          = "cannot get credentials"
-	errNewClient         = "cannot create new BTCPay client"
-	errCreateInvoice     = "cannot create invoice"
-	errDeleteInvoice     = "cannot delete invoice"
-	errGetInvoice        = "cannot get invoice"
-	errInvoiceNotFound   = "invoice not found"
-	errGetStore          = "cannot get referenced store"
-	errStoreNotFound     = "referenced store not found"
-	errStoreNotReady     = "referenced store is not ready"
+	errNotInvoice      = "managed resource is not an Invoice custom resource"
+	errTrackPCUsage    = "cannot track ProviderConfig usage"
+	errGetPC           = "cannot get ProviderConfig"
+	errGetCreds        = "cannot get credentials"
+	errNewClient       = "cannot create new BTCPay client"
+	errCreateInvoice   = "cannot create invoice"
+	errDeleteInvoice   = "cannot delete invoice"
+	errGetInvoice      = "cannot get invoice"
+	errInvoiceNotFound = "invoice not found"
+	errGetStore        = "cannot get referenced store"
+	errStoreNotFound   = "referenced store not found"
+	errStoreNotReady   = "referenced store is not ready"
 )
 
 // Setup adds a controller that reconciles Invoice managed resources.
@@ -266,7 +266,7 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
 func (c *external) getStoreID(ctx context.Context, cr *v1alpha1.Invoice) (string, error) {
 	store := &storev1alpha1.Store{}
 	key := client.ObjectKey{Name: cr.Spec.ForProvider.StoreRef.Name}
-	
+
 	if err := c.kube.Get(ctx, key, store); err != nil {
 		return "", errors.Wrap(err, errGetStore)
 	}
@@ -282,7 +282,7 @@ func (c *external) getStoreID(ctx context.Context, cr *v1alpha1.Invoice) (string
 func (c *external) updateStatus(cr *v1alpha1.Invoice, invoice *clients.Invoice) {
 	cr.Status.AtProvider.ID = invoice.ID
 	cr.Status.AtProvider.StoreID = invoice.StoreID
-	
+
 	// Convert amount from string to float64
 	if amount, err := strconv.ParseFloat(invoice.Amount, 64); err == nil {
 		cr.Status.AtProvider.Amount = amount
