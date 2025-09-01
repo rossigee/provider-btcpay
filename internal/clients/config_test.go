@@ -29,7 +29,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 
-	"github.com/crossplane-contrib/provider-btcpay/apis/v1beta1"
+	"github.com/rossigee/provider-btcpay/apis/v1beta1"
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 )
@@ -91,7 +91,7 @@ func (m *mockManagedResource) SetManagementPolicies(p xpv1.ManagementPolicies) {
 
 func (m *mockManagedResource) DeepCopyObject() runtime.Object {
 	return &mockManagedResource{
-		ObjectMeta: *m.ObjectMeta.DeepCopy(),
+		ObjectMeta: *m.DeepCopy(),
 		spec:       m.spec,
 	}
 }
@@ -127,8 +127,8 @@ func TestGetConfig(t *testing.T) {
 				ctx: context.Background(),
 				kube: fake.NewClientBuilder().WithScheme(func() *runtime.Scheme {
 					scheme := runtime.NewScheme()
-					v1beta1.AddToScheme(scheme)
-					corev1.AddToScheme(scheme)
+					_ = v1beta1.AddToScheme(scheme)
+					_ = corev1.AddToScheme(scheme)
 					return scheme
 				}()).WithObjects(
 					&v1beta1.ProviderConfig{
@@ -188,8 +188,8 @@ func TestGetConfig(t *testing.T) {
 				ctx: context.Background(),
 				kube: fake.NewClientBuilder().WithScheme(func() *runtime.Scheme {
 					scheme := runtime.NewScheme()
-					v1beta1.AddToScheme(scheme)
-					corev1.AddToScheme(scheme)
+					_ = v1beta1.AddToScheme(scheme)
+					_ = corev1.AddToScheme(scheme)
 					return scheme
 				}()).WithObjects(
 					&v1beta1.ProviderConfig{
@@ -285,8 +285,8 @@ func TestGetConfig(t *testing.T) {
 				ctx: context.Background(),
 				kube: fake.NewClientBuilder().WithScheme(func() *runtime.Scheme {
 					scheme := runtime.NewScheme()
-					v1beta1.AddToScheme(scheme)
-					corev1.AddToScheme(scheme)
+					_ = v1beta1.AddToScheme(scheme)
+					_ = corev1.AddToScheme(scheme)
 					return scheme
 				}()).WithObjects(
 					&v1beta1.ProviderConfig{
@@ -333,8 +333,8 @@ func TestGetConfig(t *testing.T) {
 				ctx: context.Background(),
 				kube: fake.NewClientBuilder().WithScheme(func() *runtime.Scheme {
 					scheme := runtime.NewScheme()
-					v1beta1.AddToScheme(scheme)
-					corev1.AddToScheme(scheme)
+					_ = v1beta1.AddToScheme(scheme)
+					_ = corev1.AddToScheme(scheme)
 					return scheme
 				}()).WithObjects(
 					&v1beta1.ProviderConfig{
@@ -390,8 +390,8 @@ func TestGetConfig(t *testing.T) {
 				ctx: context.Background(),
 				kube: fake.NewClientBuilder().WithScheme(func() *runtime.Scheme {
 					scheme := runtime.NewScheme()
-					v1beta1.AddToScheme(scheme)
-					corev1.AddToScheme(scheme)
+					_ = v1beta1.AddToScheme(scheme)
+					_ = corev1.AddToScheme(scheme)
 					return scheme
 				}()).WithObjects(
 					&v1beta1.ProviderConfig{
@@ -465,8 +465,8 @@ func TestGetConfigErrorMessages(t *testing.T) {
 	// TODO: Fix ProviderConfigUsage metadata.name issue with fake client
 	ctx := context.Background()
 	scheme := runtime.NewScheme()
-	v1beta1.AddToScheme(scheme)
-	corev1.AddToScheme(scheme)
+	_ = v1beta1.AddToScheme(scheme)
+	_ = corev1.AddToScheme(scheme)
 
 	// Test specific error messages
 	tests := []struct {
@@ -588,8 +588,8 @@ func TestGetConfig_AdditionalEdgeCases(t *testing.T) {
 	// TODO: Fix ProviderConfigUsage metadata.name issue with fake client
 	ctx := context.Background()
 	scheme := runtime.NewScheme()
-	v1beta1.AddToScheme(scheme)
-	corev1.AddToScheme(scheme)
+	_ = v1beta1.AddToScheme(scheme)
+	_ = corev1.AddToScheme(scheme)
 
 	tests := []struct {
 		name    string

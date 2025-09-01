@@ -28,8 +28,8 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 	"github.com/crossplane/crossplane-runtime/pkg/test"
 
-	"github.com/crossplane-contrib/provider-btcpay/apis/store/v1alpha1"
-	"github.com/crossplane-contrib/provider-btcpay/internal/clients"
+	"github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
+	"github.com/rossigee/provider-btcpay/internal/clients"
 )
 
 func TestObserveComprehensive(t *testing.T) {
@@ -524,7 +524,7 @@ func TestDeleteComprehensive(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			e := external{client: tc.mock()}
 
-			err := e.Delete(context.Background(), tc.args.mg)
+			_, err := e.Delete(context.Background(), tc.args.mg)
 
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Delete(...): -want error, +got error:\n%s", diff)

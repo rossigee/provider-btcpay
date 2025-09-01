@@ -32,10 +32,10 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 
-	"github.com/crossplane-contrib/provider-btcpay/apis/store/v1alpha1"
-	apisv1beta1 "github.com/crossplane-contrib/provider-btcpay/apis/v1beta1"
-	"github.com/crossplane-contrib/provider-btcpay/internal/clients"
-	"github.com/crossplane-contrib/provider-btcpay/internal/features"
+	"github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
+	apisv1beta1 "github.com/rossigee/provider-btcpay/apis/v1beta1"
+	"github.com/rossigee/provider-btcpay/internal/clients"
+	"github.com/rossigee/provider-btcpay/internal/features"
 )
 
 const (
@@ -164,6 +164,11 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	return managed.ExternalObservation{
 		ResourceExists:   true,
 		ResourceUpToDate: upToDate,
+		ConnectionDetails: managed.ConnectionDetails{
+			"storeId":       []byte(store.ID),
+			"storeName":     []byte(store.Name),
+			"defaultCurrency": []byte(store.DefaultCurrency),
+		},
 	}, nil
 }
 
@@ -200,7 +205,13 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 
 	cr.Status.AtProvider.ID = store.ID
 
-	return managed.ExternalCreation{}, nil
+	return managed.ExternalCreation{
+		ConnectionDetails: managed.ConnectionDetails{
+			"storeId":       []byte(store.ID),
+			"storeName":     []byte(store.Name),
+			"defaultCurrency": []byte(store.DefaultCurrency),
+		},
+	}, nil
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
@@ -239,20 +250,25 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 	return managed.ExternalUpdate{}, nil
 }
 
-func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
+func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.ExternalDelete, error) {
 	cr := mg.(*v1alpha1.Store)
 
 	if cr.Status.AtProvider.ID == "" {
-		return nil // Nothing to delete
+		return managed.ExternalDelete{}, nil // Nothing to delete
 	}
 
 	cr.Status.SetConditions(xpv1.Deleting())
 
 	err := c.client.DeleteStore(cr.Status.AtProvider.ID)
 	if err != nil && !clients.IsNotFound(err) {
-		return errors.Wrap(err, errDeleteStore)
+		return managed.ExternalDelete{}, errors.Wrap(err, errDeleteStore)
 	}
 
+	return managed.ExternalDelete{}, nil
+}
+
+func (c *external) Disconnect(ctx context.Context) error {
+	// Nothing to disconnect for BTCPay API client
 	return nil
 }
 

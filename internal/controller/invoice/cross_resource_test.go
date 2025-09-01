@@ -30,9 +30,9 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 	"github.com/crossplane/crossplane-runtime/pkg/test"
 
-	"github.com/crossplane-contrib/provider-btcpay/apis/invoice/v1alpha1"
-	storev1alpha1 "github.com/crossplane-contrib/provider-btcpay/apis/store/v1alpha1"
-	"github.com/crossplane-contrib/provider-btcpay/internal/clients"
+	"github.com/rossigee/provider-btcpay/apis/invoice/v1alpha1"
+	storev1alpha1 "github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
+	"github.com/rossigee/provider-btcpay/internal/clients"
 )
 
 func TestCrossResourceDependencies(t *testing.T) {
@@ -82,7 +82,7 @@ func TestCrossResourceDependencies(t *testing.T) {
 					MockGet: func(ctx context.Context, key client.ObjectKey, obj client.Object) error {
 						if store, ok := obj.(*storev1alpha1.Store); ok {
 							// Store exists but ID is empty (not ready)
-							store.ObjectMeta.Name = "pending-store"
+							store.Name = "pending-store"
 							store.Status.AtProvider.ID = "" // Not ready yet
 							return nil
 						}
@@ -142,7 +142,7 @@ func TestCrossResourceDependencies(t *testing.T) {
 					MockGet: func(ctx context.Context, key client.ObjectKey, obj client.Object) error {
 						if store, ok := obj.(*storev1alpha1.Store); ok {
 							// Store is ready
-							store.ObjectMeta.Name = "ready-store"
+							store.Name = "ready-store"
 							store.Status.AtProvider.ID = "store456"
 							store.Status.AtProvider.Name = "Ready Store"
 							store.Status.AtProvider.DefaultCurrency = "EUR"
@@ -237,8 +237,8 @@ func TestCrossResourceDependencies(t *testing.T) {
 							t.Errorf("Expected store name 'namespaced-store', got %v", key.Name)
 						}
 						if store, ok := obj.(*storev1alpha1.Store); ok {
-							store.ObjectMeta.Name = "namespaced-store"
-							store.ObjectMeta.Namespace = "test-namespace"
+							store.Name = "namespaced-store"
+							store.Namespace = "test-namespace"
 							store.Status.AtProvider.ID = "store789"
 							return nil
 						}
@@ -336,7 +336,7 @@ func TestCrossResourceCreateFlow(t *testing.T) {
 				return &test.MockClient{
 					MockGet: func(ctx context.Context, key client.ObjectKey, obj client.Object) error {
 						if store, ok := obj.(*storev1alpha1.Store); ok {
-							store.ObjectMeta.Name = "existing-store"
+							store.Name = "existing-store"
 							store.Status.AtProvider.ID = "store999"
 							store.Status.AtProvider.Name = "Existing Store"
 							store.Status.AtProvider.DefaultCurrency = "USD"
@@ -372,7 +372,7 @@ func TestCrossResourceCreateFlow(t *testing.T) {
 				return &test.MockClient{
 					MockGet: func(ctx context.Context, key client.ObjectKey, obj client.Object) error {
 						if store, ok := obj.(*storev1alpha1.Store); ok {
-							store.ObjectMeta.Name = "unready-store"
+							store.Name = "unready-store"
 							store.Status.AtProvider.ID = "" // Not ready
 							return nil
 						}
@@ -411,7 +411,7 @@ func TestCrossResourceCreateFlow(t *testing.T) {
 				return &test.MockClient{
 					MockGet: func(ctx context.Context, key client.ObjectKey, obj client.Object) error {
 						if store, ok := obj.(*storev1alpha1.Store); ok {
-							store.ObjectMeta.Name = "btc-only-store"
+							store.Name = "btc-only-store"
 							store.Status.AtProvider.ID = "btc-store-123"
 							store.Status.AtProvider.Name = "BTC Only Store"
 							store.Status.AtProvider.DefaultCurrency = "BTC"
@@ -498,7 +498,7 @@ func TestCrossResourceDeleteFlow(t *testing.T) {
 				return &test.MockClient{
 					MockGet: func(ctx context.Context, key client.ObjectKey, obj client.Object) error {
 						if store, ok := obj.(*storev1alpha1.Store); ok {
-							store.ObjectMeta.Name = "valid-store"
+							store.Name = "valid-store"
 							store.Status.AtProvider.ID = "valid-store-456"
 							return nil
 						}
@@ -570,7 +570,7 @@ func TestCrossResourceDeleteFlow(t *testing.T) {
 				return &test.MockClient{
 					MockGet: func(ctx context.Context, key client.ObjectKey, obj client.Object) error {
 						if store, ok := obj.(*storev1alpha1.Store); ok {
-							store.ObjectMeta.Name = "unready-delete-store"
+							store.Name = "unready-delete-store"
 							store.Status.AtProvider.ID = "" // Store not ready
 							return nil
 						}
@@ -588,7 +588,7 @@ func TestCrossResourceDeleteFlow(t *testing.T) {
 				kube:   tc.kube(),
 			}
 
-			err := e.Delete(context.Background(), tc.args.mg)
+			_, err := e.Delete(context.Background(), tc.args.mg)
 
 			if diff := cmp.Diff(tc.want.err, err, test.EquateErrors()); diff != "" {
 				t.Errorf("Delete(...): -want error, +got error:\n%s", diff)
@@ -702,7 +702,7 @@ func TestStoreLifecycleImpactOnInvoices(t *testing.T) {
 				kubeClient = &test.MockClient{
 					MockGet: func(ctx context.Context, key client.ObjectKey, obj client.Object) error {
 						if store, ok := obj.(*storev1alpha1.Store); ok {
-							store.ObjectMeta.Name = "lifecycle-store"
+							store.Name = "lifecycle-store"
 							store.Status.AtProvider.ID = "" // Not ready yet
 							return nil
 						}
@@ -713,7 +713,7 @@ func TestStoreLifecycleImpactOnInvoices(t *testing.T) {
 				kubeClient = &test.MockClient{
 					MockGet: func(ctx context.Context, key client.ObjectKey, obj client.Object) error {
 						if store, ok := obj.(*storev1alpha1.Store); ok {
-							store.ObjectMeta.Name = "lifecycle-store"
+							store.Name = "lifecycle-store"
 							store.Status.AtProvider.ID = "lifecycle-store-456"
 							return nil
 						}
@@ -741,7 +741,7 @@ func TestStoreLifecycleImpactOnInvoices(t *testing.T) {
 			case "create":
 				_, err = e.Create(context.Background(), invoice)
 			case "delete":
-				err = e.Delete(context.Background(), invoice)
+				_, err = e.Delete(context.Background(), invoice)
 			}
 
 			// Check results

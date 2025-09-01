@@ -31,7 +31,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/crossplane-contrib/provider-btcpay/apis/v1beta1"
+	"github.com/rossigee/provider-btcpay/apis/v1beta1"
 )
 
 const (
@@ -159,7 +159,12 @@ func (c *Client) doRequest(method, path string, body interface{}) (*http.Respons
 
 // parseResponse reads and unmarshals the response body
 func parseResponse(resp *http.Response, target interface{}) error {
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			// Log error but don't fail the function
+			_ = err
+		}
+	}()
 
 	if resp.StatusCode >= 400 {
 		body, _ := io.ReadAll(resp.Body)

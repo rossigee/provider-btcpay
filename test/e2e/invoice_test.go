@@ -31,8 +31,8 @@ import (
 
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 
-	"github.com/crossplane-contrib/provider-btcpay/apis/invoice/v1alpha1"
-	storev1alpha1 "github.com/crossplane-contrib/provider-btcpay/apis/store/v1alpha1"
+	"github.com/rossigee/provider-btcpay/apis/invoice/v1alpha1"
+	storev1alpha1 "github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
 )
 
 // TestInvoiceLifecycle tests the full lifecycle of a BTCPay Invoice resource.

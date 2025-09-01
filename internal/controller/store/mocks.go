@@ -17,7 +17,7 @@ limitations under the License.
 package store
 
 import (
-	"github.com/crossplane-contrib/provider-btcpay/internal/clients"
+	"github.com/rossigee/provider-btcpay/internal/clients"
 )
 
 // MockBTCPayClient is a mock implementation of the BTCPayClient interface for testing

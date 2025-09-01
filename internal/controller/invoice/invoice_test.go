@@ -28,9 +28,9 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/test"
 
-	"github.com/crossplane-contrib/provider-btcpay/apis/invoice/v1alpha1"
-	storev1alpha1 "github.com/crossplane-contrib/provider-btcpay/apis/store/v1alpha1"
-	"github.com/crossplane-contrib/provider-btcpay/internal/clients"
+	"github.com/rossigee/provider-btcpay/apis/invoice/v1alpha1"
+	storev1alpha1 "github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
+	"github.com/rossigee/provider-btcpay/internal/clients"
 )
 
 // Mock BTCPay client for testing
@@ -530,10 +530,3 @@ func stringPtr(s string) *string {
 	return &s
 }
 
-func float64Ptr(f float64) *float64 {
-	return &f
-}
-
-func boolPtr(b bool) *bool {
-	return &b
-}

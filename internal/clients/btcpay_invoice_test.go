@@ -98,7 +98,7 @@ func TestClient_CreateInvoice(t *testing.T) {
 				}
 
 				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(resp)
+				_ = json.NewEncoder(w).Encode(resp)
 			},
 		},
 		"MinimalInvoice": {
@@ -122,7 +122,7 @@ func TestClient_CreateInvoice(t *testing.T) {
 			},
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				var req CreateInvoiceRequest
-				json.NewDecoder(r.Body).Decode(&req)
+				_ = json.NewDecoder(r.Body).Decode(&req)
 
 				resp := Invoice{
 					ID:           "inv124",
@@ -134,7 +134,7 @@ func TestClient_CreateInvoice(t *testing.T) {
 				}
 
 				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(resp)
+				_ = json.NewEncoder(w).Encode(resp)
 			},
 		},
 		"InvalidStore": {
@@ -151,7 +151,7 @@ func TestClient_CreateInvoice(t *testing.T) {
 			},
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusNotFound)
-				json.NewEncoder(w).Encode(map[string]string{
+				_ = json.NewEncoder(w).Encode(map[string]string{
 					"error": "The specified store was not found",
 				})
 			},
@@ -170,7 +170,7 @@ func TestClient_CreateInvoice(t *testing.T) {
 			},
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusBadRequest)
-				json.NewEncoder(w).Encode(map[string]string{
+				_ = json.NewEncoder(w).Encode(map[string]string{
 					"error": "Amount must be positive",
 				})
 			},
@@ -251,7 +251,7 @@ func TestClient_GetInvoice(t *testing.T) {
 				}
 
 				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(resp)
+				_ = json.NewEncoder(w).Encode(resp)
 			},
 		},
 		"NotFound": {
@@ -265,7 +265,7 @@ func TestClient_GetInvoice(t *testing.T) {
 			},
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusNotFound)
-				json.NewEncoder(w).Encode(map[string]string{
+				_ = json.NewEncoder(w).Encode(map[string]string{
 					"error": "The specified invoice was not found",
 				})
 			},
@@ -297,7 +297,7 @@ func TestClient_GetInvoice(t *testing.T) {
 				}
 
 				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(resp)
+				_ = json.NewEncoder(w).Encode(resp)
 			},
 		},
 	}
@@ -366,7 +366,7 @@ func TestClient_ArchiveInvoice(t *testing.T) {
 			},
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusNotFound)
-				json.NewEncoder(w).Encode(map[string]string{
+				_ = json.NewEncoder(w).Encode(map[string]string{
 					"error": "The specified invoice was not found",
 				})
 			},
@@ -381,7 +381,7 @@ func TestClient_ArchiveInvoice(t *testing.T) {
 			},
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusForbidden)
-				json.NewEncoder(w).Encode(map[string]string{
+				_ = json.NewEncoder(w).Encode(map[string]string{
 					"error": "Cannot archive a paid invoice",
 				})
 			},
@@ -458,7 +458,7 @@ func TestClient_ListStores(t *testing.T) {
 				}
 
 				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(resp)
+				_ = json.NewEncoder(w).Encode(resp)
 			},
 		},
 		"EmptyList": {
@@ -469,7 +469,7 @@ func TestClient_ListStores(t *testing.T) {
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				resp := []Store{}
 				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(resp)
+				_ = json.NewEncoder(w).Encode(resp)
 			},
 		},
 		"ServerError": {
@@ -479,7 +479,7 @@ func TestClient_ListStores(t *testing.T) {
 			},
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusInternalServerError)
-				json.NewEncoder(w).Encode(map[string]string{
+				_ = json.NewEncoder(w).Encode(map[string]string{
 					"error": "internal server error",
 				})
 			},
@@ -571,7 +571,7 @@ func TestClient_ListInvoices(t *testing.T) {
 				}
 
 				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(resp)
+				_ = json.NewEncoder(w).Encode(resp)
 			},
 		},
 		"EmptyList": {
@@ -585,7 +585,7 @@ func TestClient_ListInvoices(t *testing.T) {
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				resp := []Invoice{}
 				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(resp)
+				_ = json.NewEncoder(w).Encode(resp)
 			},
 		},
 		"StoreNotFound": {
@@ -598,7 +598,7 @@ func TestClient_ListInvoices(t *testing.T) {
 			},
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusNotFound)
-				json.NewEncoder(w).Encode(map[string]string{
+				_ = json.NewEncoder(w).Encode(map[string]string{
 					"error": "The specified store was not found",
 				})
 			},
@@ -640,7 +640,7 @@ func TestClient_InvoiceAPIErrorScenarios(t *testing.T) {
 			method: "GetInvoice",
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusInternalServerError)
-				w.Write([]byte(`{"error": "Database connection failed"}`))
+				_, _ = w.Write([]byte(`{"error": "Database connection failed"}`))
 			},
 			testFunc: func(client *Client) error {
 				_, err := client.GetInvoice("test-store", "test-invoice")
@@ -653,7 +653,7 @@ func TestClient_InvoiceAPIErrorScenarios(t *testing.T) {
 			method: "CreateInvoice",
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusBadRequest)
-				w.Write([]byte(`{"error": "Invalid amount: must be positive"}`))
+				_, _ = w.Write([]byte(`{"error": "Invalid amount: must be positive"}`))
 			},
 			testFunc: func(client *Client) error {
 				_, err := client.CreateInvoice("test-store", CreateInvoiceRequest{

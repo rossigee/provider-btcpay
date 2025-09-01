@@ -21,9 +21,9 @@ import (
 
 	"github.com/crossplane/crossplane-runtime/pkg/controller"
 
-	"github.com/crossplane-contrib/provider-btcpay/internal/controller/config"
-	"github.com/crossplane-contrib/provider-btcpay/internal/controller/invoice"
-	"github.com/crossplane-contrib/provider-btcpay/internal/controller/store"
+	"github.com/rossigee/provider-btcpay/internal/controller/config"
+	"github.com/rossigee/provider-btcpay/internal/controller/invoice"
+	"github.com/rossigee/provider-btcpay/internal/controller/store"
 )
 
 // Setup creates all BTCPay controllers with the supplied logger and adds them to

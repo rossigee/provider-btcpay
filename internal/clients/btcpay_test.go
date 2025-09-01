@@ -78,6 +78,7 @@ func TestNewClient(t *testing.T) {
 
 	if client == nil {
 		t.Error("NewClient() returned nil")
+		return
 	}
 
 	if client.config.BaseURL != cfg.BaseURL {
@@ -234,7 +235,7 @@ func TestClient_doRequest_Success(t *testing.T) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"success": true}`))
+		_, _ = w.Write([]byte(`{"success": true}`))
 	}))
 	defer server.Close()
 
@@ -282,7 +283,7 @@ func TestClient_doRequest_Success(t *testing.T) {
 			}
 
 			// Clean up
-			resp.Body.Close()
+			_ = resp.Body.Close()
 		})
 	}
 }

@@ -20,9 +20,9 @@ package apis
 import (
 	"k8s.io/apimachinery/pkg/runtime"
 
-	invoicev1alpha1 "github.com/crossplane-contrib/provider-btcpay/apis/invoice/v1alpha1"
-	storev1alpha1 "github.com/crossplane-contrib/provider-btcpay/apis/store/v1alpha1"
-	v1beta1 "github.com/crossplane-contrib/provider-btcpay/apis/v1beta1"
+	invoicev1alpha1 "github.com/rossigee/provider-btcpay/apis/invoice/v1alpha1"
+	storev1alpha1 "github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
+	v1beta1 "github.com/rossigee/provider-btcpay/apis/v1beta1"
 )
 
 func init() {

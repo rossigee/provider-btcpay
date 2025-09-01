@@ -26,8 +26,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
 
-	"github.com/crossplane-contrib/provider-btcpay/apis/store/v1alpha1"
-	"github.com/crossplane-contrib/provider-btcpay/internal/clients"
+	"github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
+	"github.com/rossigee/provider-btcpay/internal/clients"
 )
 
 // Mock BTCPay client for testing
@@ -225,6 +225,7 @@ func TestObserve(t *testing.T) {
 				// This won't work directly with the current design
 				// We'd need to refactor the client interface
 				// For now, let's test what we can
+				t.Log("Mock client provided but not used due to interface limitations")
 			}
 
 			// Since we can't easily mock the client, let's just test the
@@ -247,8 +248,7 @@ func TestCreate(t *testing.T) {
 		cr *v1alpha1.Store
 	}
 	type want struct {
-		o   managed.ExternalCreation
-		err error
+		o managed.ExternalCreation
 	}
 
 	cases := map[string]struct {
@@ -445,6 +445,3 @@ func float64Ptr(f float64) *float64 {
 	return &f
 }
 
-func boolPtr(b bool) *bool {
-	return &b
-}

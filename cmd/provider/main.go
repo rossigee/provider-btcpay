@@ -31,9 +31,9 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/pkg/ratelimiter"
 
-	"github.com/crossplane-contrib/provider-btcpay/apis"
-	"github.com/crossplane-contrib/provider-btcpay/internal/controller"
-	"github.com/crossplane-contrib/provider-btcpay/internal/features"
+	"github.com/rossigee/provider-btcpay/apis"
+	"github.com/rossigee/provider-btcpay/internal/controller"
+	"github.com/rossigee/provider-btcpay/internal/features"
 )
 
 func main() {

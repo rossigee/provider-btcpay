@@ -33,11 +33,11 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 
-	"github.com/crossplane-contrib/provider-btcpay/apis/invoice/v1alpha1"
-	storev1alpha1 "github.com/crossplane-contrib/provider-btcpay/apis/store/v1alpha1"
-	apisv1beta1 "github.com/crossplane-contrib/provider-btcpay/apis/v1beta1"
-	"github.com/crossplane-contrib/provider-btcpay/internal/clients"
-	"github.com/crossplane-contrib/provider-btcpay/internal/features"
+	"github.com/rossigee/provider-btcpay/apis/invoice/v1alpha1"
+	storev1alpha1 "github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
+	apisv1beta1 "github.com/rossigee/provider-btcpay/apis/v1beta1"
+	"github.com/rossigee/provider-btcpay/internal/clients"
+	"github.com/rossigee/provider-btcpay/internal/features"
 )
 
 const (
@@ -238,11 +238,11 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 	return managed.ExternalUpdate{}, nil
 }
 
-func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
+func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.ExternalDelete, error) {
 	cr := mg.(*v1alpha1.Invoice)
 
 	if cr.Status.AtProvider.ID == "" {
-		return nil // Nothing to delete
+		return managed.ExternalDelete{}, nil // Nothing to delete
 	}
 
 	cr.Status.SetConditions(xpv1.Deleting())
@@ -250,15 +250,20 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
 	// Get the store ID from the referenced store
 	storeID, err := c.getStoreID(ctx, cr)
 	if err != nil {
-		return err
+		return managed.ExternalDelete{}, err
 	}
 
 	// Archive the invoice (BTCPay doesn't allow hard deletion)
 	err = c.client.ArchiveInvoice(storeID, cr.Status.AtProvider.ID)
 	if err != nil && !clients.IsNotFound(err) {
-		return errors.Wrap(err, errDeleteInvoice)
+		return managed.ExternalDelete{}, errors.Wrap(err, errDeleteInvoice)
 	}
 
+	return managed.ExternalDelete{}, nil
+}
+
+func (c *external) Disconnect(ctx context.Context) error {
+	// Nothing to disconnect for BTCPay API client
 	return nil
 }
 

@@ -84,7 +84,7 @@ func TestClient_CreateStore(t *testing.T) {
 				}
 
 				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(resp)
+				_ = json.NewEncoder(w).Encode(resp)
 			},
 		},
 		"ServerError": {
@@ -100,7 +100,7 @@ func TestClient_CreateStore(t *testing.T) {
 			},
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusInternalServerError)
-				json.NewEncoder(w).Encode(map[string]string{
+				_ = json.NewEncoder(w).Encode(map[string]string{
 					"error": "internal server error",
 				})
 			},
@@ -118,7 +118,7 @@ func TestClient_CreateStore(t *testing.T) {
 			},
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
-				w.Write([]byte("invalid json"))
+				_, _ = w.Write([]byte("invalid json"))
 			},
 		},
 	}
@@ -194,7 +194,7 @@ func TestClient_GetStore(t *testing.T) {
 				}
 
 				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(resp)
+				_ = json.NewEncoder(w).Encode(resp)
 			},
 		},
 		"NotFound": {
@@ -207,7 +207,7 @@ func TestClient_GetStore(t *testing.T) {
 			},
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusNotFound)
-				json.NewEncoder(w).Encode(map[string]string{
+				_ = json.NewEncoder(w).Encode(map[string]string{
 					"error": "The specified store was not found",
 				})
 			},
@@ -295,7 +295,7 @@ func TestClient_UpdateStore(t *testing.T) {
 				}
 
 				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(resp)
+				_ = json.NewEncoder(w).Encode(resp)
 			},
 		},
 		"NotFound": {
@@ -311,7 +311,7 @@ func TestClient_UpdateStore(t *testing.T) {
 			},
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusNotFound)
-				json.NewEncoder(w).Encode(map[string]string{
+				_ = json.NewEncoder(w).Encode(map[string]string{
 					"error": "The specified store was not found",
 				})
 			},
@@ -379,7 +379,7 @@ func TestClient_DeleteStore(t *testing.T) {
 			},
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusNotFound)
-				json.NewEncoder(w).Encode(map[string]string{
+				_ = json.NewEncoder(w).Encode(map[string]string{
 					"error": "The specified store was not found",
 				})
 			},
@@ -495,7 +495,7 @@ func TestClient_StoreAPIErrorScenarios(t *testing.T) {
 			method: "GetStore",
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusInternalServerError)
-				w.Write([]byte(`{"error": "Internal server error"}`))
+				_, _ = w.Write([]byte(`{"error": "Internal server error"}`))
 			},
 			testFunc: func(client *Client) error {
 				_, err := client.GetStore("test-store")
@@ -508,7 +508,7 @@ func TestClient_StoreAPIErrorScenarios(t *testing.T) {
 			method: "GetStore",
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusNotFound)
-				w.Write([]byte(`Store not found`))
+				_, _ = w.Write([]byte(`Store not found`))
 			},
 			testFunc: func(client *Client) error {
 				_, err := client.GetStore("nonexistent-store")
@@ -521,7 +521,7 @@ func TestClient_StoreAPIErrorScenarios(t *testing.T) {
 			method: "CreateStore",
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusBadRequest)
-				w.Write([]byte(`{"error": "Invalid store name"}`))
+				_, _ = w.Write([]byte(`{"error": "Invalid store name"}`))
 			},
 			testFunc: func(client *Client) error {
 				_, err := client.CreateStore(CreateStoreRequest{
@@ -537,7 +537,7 @@ func TestClient_StoreAPIErrorScenarios(t *testing.T) {
 			method: "UpdateStore",
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusNotFound)
-				w.Write([]byte(`Store not found`))
+				_, _ = w.Write([]byte(`Store not found`))
 			},
 			testFunc: func(client *Client) error {
 				_, err := client.UpdateStore("nonexistent-store", UpdateStoreRequest{
@@ -552,7 +552,7 @@ func TestClient_StoreAPIErrorScenarios(t *testing.T) {
 			method: "DeleteStore",
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusInternalServerError)
-				w.Write([]byte(`{"error": "Cannot delete store with pending invoices"}`))
+				_, _ = w.Write([]byte(`{"error": "Cannot delete store with pending invoices"}`))
 			},
 			testFunc: func(client *Client) error {
 				return client.DeleteStore("store-with-invoices")
@@ -591,18 +591,3 @@ func stringPtr(s string) *string {
 	return &s
 }
 
-func intPtr(i int) *int {
-	return &i
-}
-
-func int32Ptr(i int32) *int32 {
-	return &i
-}
-
-func float64Ptr(f float64) *float64 {
-	return &f
-}
-
-func boolPtr(b bool) *bool {
-	return &b
-}
