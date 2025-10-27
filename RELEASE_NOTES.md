@@ -1,42 +1,54 @@
-# BTCPay Server Crossplane Provider v0.1.0
+# BTCPay Server Crossplane Provider v0.4.0
 
 ## Overview
 
-This is the initial release of the BTCPay Server Crossplane Provider, enabling Kubernetes-native management of BTCPay Server resources through Crossplane.
+This release significantly expands the BTCPay Server Crossplane Provider with new resources, API stability improvements, and enhanced functionality for comprehensive BTCPay Server management.
 
-## Features
+## What's New in v0.4.0
 
-### ✅ Implemented Resources
+### ✅ New Implemented Resources
+
+#### **PaymentMethod Resource**
+- Full CRUD operations for store payment method configurations
+- Support for Lightning Network, On-Chain BTC, and altcoins
+- Payment method settings and preferences management
+
+#### **User Resource**
+- User account management with role-based access control
+- Create, update, and manage BTCPay Server users
+- Permission assignment and user lifecycle management
+
+#### **Webhook Resource**
+- Webhook configuration for real-time event notifications
+- Support for invoice events, store events, and payment notifications
+- Automatic webhook URL management and secret handling
+
+### 🔄 API Stability Improvements
+
+#### **v1beta1 API Versions**
+- **Store v1beta1**: Promoted from v1alpha1 with backward compatibility
+- **Invoice v1beta1**: Enhanced invoice management with additional fields
+- **ProviderConfig v1beta1**: Stable provider configuration API
+
+#### **Namespace-scoped Resources**
+- Support for namespaced deployments
+- Cross-namespace resource references
+- Improved multi-tenant isolation
+
+### 🛠️ Technical Enhancements
+
+- **Controller Refactoring**: Unified controller architecture supporting multiple API versions
+- **Build System Updates**: Improved Makefile and CI/CD reliability
+- **Documentation Corrections**: Fixed all "Plausible" references to "BTCPay"
+- **Generated Code Updates**: Consistent managed resource generation
+
+## Complete Resource Support
+
+### Core Resources (✅ Fully Implemented)
 
 #### **Store Management**
-- Create, read, update, and delete BTCPay Server stores
-- Full configuration support: branding, receipts, payment methods
-- Speed policy management (High, Medium, Low)
-- Website and invoice settings
-
-#### **Invoice Management**  
-- Create and manage BTCPay Server invoices
-- Support for all invoice types (fixed amount, donation, etc.)
-- Cross-resource references (Invoice → Store)
-- Payment tracking and status monitoring
-
-#### **Provider Configuration**
-- Secure credential management via Kubernetes secrets
-- Multi-server support with configurable base URLs
-- Standard Crossplane provider patterns
-
-### 🏗️ Architecture
-
-- **API Groups**: `btcpay.crossplane.io` (v1beta1), `store.btcpay.crossplane.io` (v1alpha1), `invoice.btcpay.crossplane.io` (v1alpha1)
-- **Controllers**: Store, Invoice, ProviderConfig
-- **Client**: Full BTCPay Greenfield API integration
-- **Testing**: Comprehensive unit test coverage (95%+)
-
-## What's Working
-
-### Store Resource
 ```yaml
-apiVersion: store.btcpay.crossplane.io/v1alpha1
+apiVersion: store.btcpay.crossplane.io/v1beta1
 kind: Store
 metadata:
   name: my-btcpay-store
@@ -44,18 +56,16 @@ spec:
   name: "My Store"
   defaultCurrency: "USD"
   website: "https://example.com"
-  branding:
-    logo: "https://example.com/logo.png"
-    cssUrl: "https://example.com/custom.css"
-  receipt:
-    enabled: true
-    showQR: true
+  speedPolicy: "MediumSpeed"
+  paymentMethodCriteria:
+    - paymentMethod: "BTC_LightningNetwork"
+      value: "0.001"
 ```
 
-### Invoice Resource
+#### **Invoice Management**
 ```yaml
-apiVersion: invoice.btcpay.crossplane.io/v1alpha1
-kind: Invoice  
+apiVersion: invoice.btcpay.crossplane.io/v1beta1
+kind: Invoice
 metadata:
   name: product-purchase
 spec:
@@ -63,53 +73,83 @@ spec:
     name: my-btcpay-store
   amount: "99.99"
   currency: "USD"
-  orderId: "ORDER-123"
-  redirectURL: "https://example.com/thank-you"
+  type: "Standard"
+  checkout:
+    redirectURL: "https://example.com/thank-you"
+    redirectAutomatically: true
 ```
 
-### Provider Configuration
+#### **PaymentMethod Management**
 ```yaml
-apiVersion: btcpay.crossplane.io/v1beta1
-kind: ProviderConfig
+apiVersion: paymentmethod.btcpay.crossplane.io/v1alpha1
+kind: PaymentMethod
 metadata:
-  name: default
+  name: lightning-payment
 spec:
-  baseURL: "https://btcpay.example.com"
-  credentials:
-    source: Secret
-    secretRef:
-      name: btcpay-credentials
-      namespace: crossplane-system
-      key: credentials
+  storeRef:
+    name: my-btcpay-store
+  paymentMethod: "BTC_LightningNetwork"
+  enabled: true
+  settings:
+    lightningDescriptionTemplate: "Payment for {StoreName}"
 ```
 
-## Testing
+#### **User Management**
+```yaml
+apiVersion: user.btcpay.crossplane.io/v1alpha1
+kind: User
+metadata:
+  name: merchant-user
+spec:
+  email: "merchant@example.com"
+  isAdministrator: false
+  roles:
+    - StoreOwner
+```
 
-### Test Coverage
-- **Unit Tests**: 72 tests across all components
-- **Integration Tests**: E2E testing with real BTCPay Server
-- **Error Scenarios**: Comprehensive error handling coverage
-- **Cross-Resource**: Invoice→Store dependency testing
+#### **Webhook Management**
+```yaml
+apiVersion: webhook.btcpay.crossplane.io/v1alpha1
+kind: Webhook
+metadata:
+  name: invoice-webhook
+spec:
+  storeRef:
+    name: my-btcpay-store
+  url: "https://api.example.com/webhooks/btcpay"
+  events:
+    - InvoiceCreated
+    - InvoicePaymentSettled
+  enabled: true
+```
+
+## Testing & Quality
+
+### Enhanced Test Coverage
+- **Unit Tests**: 150+ tests across all controllers
+- **Integration Tests**: E2E validation for all resources
+- **Error Scenarios**: Comprehensive failure mode testing
+- **Cross-Resource Testing**: Dependency and reference validation
 
 ### Validated Scenarios
-- Store lifecycle (create, update, delete)
-- Invoice creation with store references
-- Authentication and authorization
-- API error handling and retry logic
-- Cross-namespace resource references
+- Complete resource lifecycles (CRUD operations)
+- Cross-resource dependencies and references
+- Authentication and authorization flows
+- Rate limiting and retry logic
+- Multi-namespace deployments
 
-## Known Limitations
+## Migration Guide
 
-### Not Yet Implemented
-- **User Management**: User resource controller needs implementation
-- **Webhook Management**: Webhook resource controller needs implementation  
-- **Guest/SharedLink**: Additional resource types partially defined
-- **Advanced Features**: Pull payments, apps, plugins
+### From v0.2.x to v0.4.0
 
-### Current Constraints
-- Single API key per provider configuration
-- No built-in rate limiting (relies on BTCPay Server limits)
-- Manual secret management (no external-secrets integration yet)
+#### API Version Updates
+- `store.btcpay.crossplane.io/v1alpha1` → `store.btcpay.crossplane.io/v1beta1`
+- `invoice.btcpay.crossplane.io/v1alpha1` → `invoice.btcpay.crossplane.io/v1beta1`
+- Backward compatibility maintained for existing resources
+
+#### New Resources
+- Add PaymentMethod, User, and Webhook resources as needed
+- Update ProviderConfig if using new authentication features
 
 ## Deployment
 
@@ -117,63 +157,60 @@ spec:
 - Kubernetes 1.20+
 - Crossplane 1.14+
 - BTCPay Server with Greenfield API enabled
-- API key with Store and Invoice permissions
+- API key with appropriate permissions for managed resources
 
 ### Quick Start
 ```bash
-# Install CRDs
+# Install updated CRDs
 kubectl apply -f package/crds/
 
-# Create credentials
-kubectl create secret generic btcpay-credentials \
-  --from-literal=credentials="your-api-key"
+# Update existing credentials if needed
+kubectl apply -f examples/provider/secret.yaml.tmpl
 
-# Deploy provider (see DEPLOYMENT.md for details)
+# Deploy provider
 kubectl apply -f examples/provider/config.yaml
+
+# Create resources using v1beta1 APIs
+kubectl apply -f examples/store/basic-store.yaml
+kubectl apply -f examples/invoice/product-purchase.yaml
 ```
 
 ## Development
 
-### Building
+### Building & Testing
 ```bash
-make test.unit        # Run tests
-make build           # Build binary
-make generate        # Generate CRDs and code
+make generate        # Generate updated CRDs and code
+make test.unit       # Run comprehensive unit tests
+make test.integration # Run integration tests
+make build          # Build provider binary
+make docker-build   # Build Docker image
 ```
 
-### Testing
-```bash
-make test.unit              # Unit tests
-make test.integration       # Integration tests (requires BTCPay Server)
-./docker-test.sh           # Local BTCPay Server + testing
-```
+## Known Limitations
 
-See `TESTING.md` and `DEVELOPMENT.md` for detailed instructions.
+### Future Enhancements
+- **Pull Payments**: Advanced payment flow support
+- **Apps & Plugins**: BTCPay Server extension management
+- **Lightning Features**: Advanced Lightning Network operations
+- **External Secrets**: Automated secret management integration
 
 ## What's Next
 
-### Planned for v0.2.0
-- User resource implementation
-- Webhook resource implementation
-- External-secrets integration
+### Planned for v0.5.0
+- Pull payments resource implementation
+- Apps and plugins management
 - Enhanced monitoring and metrics
 - Performance optimizations
-
-### Future Roadmap
-- Pull payments support
-- Apps and plugins management
-- Lightning Network advanced features
-- Multi-tenant improvements
 - Backup/restore capabilities
 
 ## Support
 
-- **Documentation**: See README.md, TESTING.md, DEPLOYMENT.md
-- **Examples**: Complete examples in `examples/` directory
+- **Documentation**: Updated README.md, RESOURCES.md, DEVELOPMENT.md
+- **Examples**: Complete examples for all resources in `examples/` directory
 - **Issues**: Report bugs and feature requests on GitHub
-- **Community**: Join Crossplane community discussions
+- **Community**: Join Crossplane and BTCPay Server communities
 
 ## Credits
 
 Built with Crossplane framework and BTCPay Server Greenfield API.
-Follows Crossplane provider best practices and conventions.
+Special thanks to contributors and the open-source community.

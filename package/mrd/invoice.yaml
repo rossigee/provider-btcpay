@@ -1,0 +1,134 @@
+# Managed Resource Definition for BTCPay Invoice (v2)
+apiVersion: pkg.crossplane.io/v1beta1
+kind: ManagedResourceDefinition
+metadata:
+  name: invoices.invoice.btcpay.m.crossplane.io
+  labels:
+    provider: provider-btcpay
+    crossplane.io/version: v1beta1
+spec:
+  # Group information for namespaced Invoice resources
+  group: invoice.btcpay.m.crossplane.io
+  versions:
+  - name: v1beta1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              forProvider:
+                type: object
+                required:
+                - storeRef
+                - amount
+                - currency
+                properties:
+                  storeRef:
+                    type: object
+                    required:
+                    - name
+                    properties:
+                      name:
+                        type: string
+                        description: "Name of the Store resource"
+                    description: "Reference to the Store resource"
+                  amount:
+                    type: number
+                    minimum: 0
+                    description: "Invoice amount in the specified currency"
+                  currency:
+                    type: string
+                    description: "Currency for the invoice amount"
+                  orderId:
+                    type: string
+                    description: "External order identifier"
+                  buyerName:
+                    type: string
+                    description: "Name of the buyer"
+                  buyerEmail:
+                    type: string
+                    format: email
+                    description: "Email of the buyer"
+                  itemDesc:
+                    type: string
+                    description: "Description of the item being paid for"
+                  notificationURL:
+                    type: string
+                    format: uri
+                    description: "URL to send webhook notifications"
+                  redirectURL:
+                    type: string
+                    format: uri
+                    description: "URL to redirect after payment completion"
+              managementPolicies:
+                type: array
+                items:
+                  type: string
+                  enum: ["Create", "Update", "Delete", "Observe"]
+                default: ["Create", "Update", "Delete"]
+          status:
+            type: object
+            properties:
+              atProvider:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: "Unique identifier of the invoice in BTCPay Server"
+                  storeId:
+                    type: string
+                    description: "ID of the store this invoice belongs to"
+                  status:
+                    type: string
+                    description: "Current status of the invoice"
+                  checkoutLink:
+                    type: string
+                    description: "URL for the checkout page"
+                  amount:
+                    type: number
+                    description: "Invoice amount"
+                  currency:
+                    type: string
+                    description: "Invoice currency"
+
+  # Scope indicates this is a namespaced resource
+  scope: Namespaced
+
+  # Names configuration
+  names:
+    kind: Invoice
+    listKind: InvoiceList
+    plural: invoices
+    singular: invoice
+    categories:
+    - crossplane
+    - managed
+    - btcpay
+
+  # Activation policy - can be set to DefaultActivation or ManualActivation
+  activationPolicy: DefaultActivation
+
+  # Printer columns for kubectl output
+  additionalPrinterColumns:
+  - name: INVOICE-ID
+    type: string
+    jsonPath: .status.atProvider.id
+  - name: AMOUNT
+    type: string
+    jsonPath: .spec.forProvider.amount
+  - name: CURRENCY
+    type: string
+    jsonPath: .spec.forProvider.currency
+  - name: STATUS
+    type: string
+    jsonPath: .status.atProvider.status
+  - name: READY
+    type: string
+    jsonPath: .status.conditions[?(@.type=='Ready')].status
+  - name: AGE
+    type: date
+    jsonPath: .metadata.creationTimestamp

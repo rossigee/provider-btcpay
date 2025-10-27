@@ -7,64 +7,73 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0] - 2025-07-07
+## [v0.4.0] - 2025-10-27
 
 ### Added
-- Initial release of provider-plausible
-- Site resource management with full CRUD operations
-- Goal resource support for event and page goals
-- Multi-tenant support via team assignments
-- Domain migration capabilities
-- Comprehensive unit tests
-- GitHub Actions CI/CD pipeline
+- **PaymentMethod Resource**: Full CRUD operations for store payment methods
+- **User Resource**: User management with role-based access control
+- **Webhook Resource**: Webhook configuration for event notifications
+- **v1beta1 API Versions**: New stable API versions for Invoice and Store resources
+- **Namespace-scoped Resources**: Support for namespaced deployments with cross-namespace references
+
+### Changed
+- **API Stability**: Promoted Invoice and Store to v1beta1 with backward compatibility
+- **Controller Architecture**: Refactored controllers to support multiple API versions
+- **Build System**: Updated Makefile and CI workflows for improved reliability
+
+### Fixed
+- **Documentation**: Corrected references from "Plausible" to "BTCPay" throughout codebase
+- **Generated Code**: Regenerated managed resource files for consistency
+
+### Technical Improvements
+- Enhanced error handling across all controllers
+- Improved test coverage for new resources
+- Updated dependencies and build tooling
+
+## [v0.2.1] - 2025-08-15
+
+### Added
+- Enhanced Invoice resource with additional metadata fields
+- Improved error handling for BTCPay API rate limits
+- Additional unit tests for edge cases
+
+### Fixed
+- Store creation race conditions
+- Invoice status synchronization issues
+
+## [v0.2.0] - 2025-08-01
+
+### Added
+- **Invoice Resource**: Full invoice lifecycle management
+- **Cross-Resource References**: Invoice to Store referencing
+- **Payment Tracking**: Real-time invoice status updates
+- Expanded test suite with integration tests
+
+### Changed
+- ProviderConfig API to v1beta1 for stability
+- Enhanced BTCPay client with additional endpoints
+
+## [v0.1.0] - 2025-07-07
+
+### Added
+- Initial release of BTCPay Server Crossplane Provider
+- **Store Resource**: Full CRUD operations for BTCPay stores
+- **Provider Configuration**: Secure API key management via Kubernetes secrets
+- Comprehensive unit tests and CI/CD pipeline
 - Complete documentation and examples
 
 ### Features
-- **Site Management**: Create, read, update, and delete Plausible Analytics sites
-- **Goal Tracking**: Manage conversion goals (event-based and page-based)
-- **Domain Migration**: Support for updating site domains while preserving analytics data
-- **Team Support**: Multi-tenant deployment with team-based site organization
-- **Cross-references**: Reference sites from goals using Kubernetes selectors
-- **Status Reporting**: Rich status information with conditions and observations
+- **Store Management**: Create, configure, and manage BTCPay Server stores
+- **Multi-tenant Support**: Team-based store organization
+- **Status Reporting**: Rich conditions and observations
+- **Security**: Kubernetes-native secret management
 
 ### API Resources
-- `Site` (v1alpha1): Manage Plausible Analytics sites
-- `Goal` (v1alpha1): Manage conversion tracking goals
-- `ProviderConfig` (v1beta1): Configure provider authentication and settings
+- `Store` (v1alpha1): Manage BTCPay Server stores
+- `ProviderConfig` (v1beta1): Configure provider authentication
 
 ### Technical Details
 - Built on Crossplane provider framework
-- Uses Plausible Sites API for programmatic site management
-- Support for custom Plausible instances via baseURL configuration
-- Comprehensive error handling with 404 detection
-- Observability through OpenTelemetry (inherited from Crossplane)
-
-### Documentation
-- Complete README with installation and usage examples
-- API reference documentation
-- Troubleshooting guide
-- Contributing guidelines
-- Development setup instructions
-
-### Testing
-- Unit tests for all client operations
-- Controller behavior tests
-- Mock implementations for testing
-- CI pipeline with automated testing
-
-### Build & Deployment
-- Docker containerization
-- Crossplane package (xpkg) format
-- Multi-registry support (Harbor, Docker Hub)
-- Automated releases via GitHub Actions
-
-## [0.1.4] - 2025-07-07
-
-### Added
-- Basic provider structure and implementation
-- Initial Site resource support
-- Plausible API client implementation
-
-### Notes
-- This version was used for initial development and testing
-- Contains working implementation but lacks comprehensive testing and documentation
+- Full BTCPay Greenfield API integration
+- Comprehensive error handling and observability
+- Docker containerization and Crossplane package support

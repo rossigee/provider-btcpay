@@ -1,0 +1,20 @@
+apiVersion: webhook.btcpay.crossplane.io/v1alpha1
+kind: Webhook
+metadata:
+  name: invoice-webhook
+spec:
+  forProvider:
+    storeRef:
+      name: my-bitcoin-store
+    url: "https://myapp.example.com/webhooks/btcpay/invoices"
+    enabled: true
+    automaticRedelivery: true
+    secret: "webhook_secret_key_123"
+    authorizedEvents:
+      - "InvoiceCreated"
+      - "InvoiceReceivedPayment"
+      - "InvoicePaymentSettled"
+      - "InvoiceExpired"
+    paymentMethod: "BTC"
+  providerConfigRef:
+    name: default

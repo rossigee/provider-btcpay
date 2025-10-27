@@ -24,9 +24,9 @@ import (
 	"github.com/pkg/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
-	"github.com/crossplane/crossplane-runtime/pkg/resource"
-	"github.com/crossplane/crossplane-runtime/pkg/test"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/reconciler/managed"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 
 	"github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
 	"github.com/rossigee/provider-btcpay/internal/clients"
@@ -93,6 +93,11 @@ func TestObserveComprehensive(t *testing.T) {
 				o: managed.ExternalObservation{
 					ResourceExists:   true,
 					ResourceUpToDate: true,
+					ConnectionDetails: managed.ConnectionDetails{
+						"defaultCurrency": []byte("USD"),
+						"storeId":         []byte("store123"),
+						"storeName":       []byte("Test Store"),
+					},
 				},
 			},
 			mock: func() *MockBTCPayClient {
@@ -137,6 +142,11 @@ func TestObserveComprehensive(t *testing.T) {
 				o: managed.ExternalObservation{
 					ResourceExists:   true,
 					ResourceUpToDate: false,
+					ConnectionDetails: managed.ConnectionDetails{
+						"defaultCurrency": []byte("USD"),
+						"storeId":         []byte("store123"),
+						"storeName":       []byte("Test Store"),
+					},
 				},
 			},
 			mock: func() *MockBTCPayClient {
@@ -226,7 +236,13 @@ func TestCreateComprehensive(t *testing.T) {
 				},
 			},
 			want: want{
-				c: managed.ExternalCreation{},
+				c: managed.ExternalCreation{
+					ConnectionDetails: managed.ConnectionDetails{
+						"defaultCurrency": []byte("USD"),
+						"storeId":         []byte("new-store-123"),
+						"storeName":       []byte("New Test Store"),
+					},
+				},
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
@@ -272,7 +288,13 @@ func TestCreateComprehensive(t *testing.T) {
 				},
 			},
 			want: want{
-				c: managed.ExternalCreation{},
+				c: managed.ExternalCreation{
+					ConnectionDetails: managed.ConnectionDetails{
+						"defaultCurrency": []byte("BTC"),
+						"storeId":         []byte("minimal-store-456"),
+						"storeName":       []byte("Minimal Store"),
+					},
+				},
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{

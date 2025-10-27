@@ -1,0 +1,74 @@
+apiVersion: paymentmethod.btcpay.crossplane.io/v1alpha1
+kind: PaymentMethod
+metadata:
+  name: btc-onchain-payment
+spec:
+  forProvider:
+    # Reference to the Store resource
+    storeRef:
+      name: sample-btcpay-store
+
+    # Bitcoin on-chain payment method
+    cryptoCode: "BTC"
+    paymentType: "onchain"
+    enabled: true
+
+    # On-chain specific configuration
+    onChain:
+      derivationScheme: "xpub6CUGRUonZSQ4TWtTMmzXdrXDtypWKiKrhko4egpiMZbpiaQL2jkwSB1icqYh2cfDfVxdx4df189oLKnC5fSwqPfgyP3hooxujYzAu3fDVmz"
+      label: "Main Bitcoin Wallet"
+
+  providerConfigRef:
+    name: default
+
+  # Optional: Add specific deletion policy
+  deletionPolicy: Delete
+---
+apiVersion: paymentmethod.btcpay.crossplane.io/v1alpha1
+kind: PaymentMethod
+metadata:
+  name: btc-lightning-payment
+spec:
+  forProvider:
+    # Reference to the Store resource
+    storeRef:
+      name: sample-btcpay-store
+
+    # Bitcoin Lightning Network payment method
+    cryptoCode: "BTC"
+    paymentType: "lightning"
+    enabled: true
+
+    # Lightning specific configuration
+    lightning:
+      connectionString: "type=lnd-rest;server=https://mylnd:8080/;macaroonfilepath=/home/user/.lnd/data/chain/bitcoin/mainnet/admin.macaroon;certfilepath=/home/user/.lnd/tls.cert"
+
+  providerConfigRef:
+    name: default
+
+  deletionPolicy: Delete
+---
+apiVersion: paymentmethod.btcpay.crossplane.io/v1alpha1
+kind: PaymentMethod
+metadata:
+  name: ltc-onchain-payment
+spec:
+  forProvider:
+    # Reference to the Store resource
+    storeRef:
+      name: sample-btcpay-store
+
+    # Litecoin on-chain payment method
+    cryptoCode: "LTC"
+    paymentType: "onchain"
+    enabled: true
+
+    # On-chain specific configuration
+    onChain:
+      derivationScheme: "xpub6CqzrR8VzE7k67tVZ5xQbBhM4tTQFcGStL9Cq3yU9TXhpJx2gZZrmLq3J9JQKmAUSDKjPBkq7zAp3oFvRG3Qk8LRkGaZ4NRF9BkGQNpqtxZ"
+      label: "Litecoin Wallet"
+
+  providerConfigRef:
+    name: default
+
+  deletionPolicy: Delete

@@ -29,9 +29,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 
+	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	"github.com/rossigee/provider-btcpay/apis/v1beta1"
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
-	"github.com/crossplane/crossplane-runtime/pkg/resource"
 )
 
 type mockManagedResource struct {
@@ -47,20 +47,12 @@ func (m *mockManagedResource) GetProviderConfigReference() *xpv1.Reference {
 	return m.spec.ProviderConfigReference
 }
 
-func (m *mockManagedResource) GetPublishConnectionDetailsTo() *xpv1.PublishConnectionDetailsTo {
-	return m.spec.PublishConnectionDetailsTo
-}
-
 func (m *mockManagedResource) GetWriteConnectionSecretToReference() *xpv1.SecretReference {
 	return m.spec.WriteConnectionSecretToReference
 }
 
 func (m *mockManagedResource) SetProviderConfigReference(r *xpv1.Reference) {
 	m.spec.ProviderConfigReference = r
-}
-
-func (m *mockManagedResource) SetPublishConnectionDetailsTo(p *xpv1.PublishConnectionDetailsTo) {
-	m.spec.PublishConnectionDetailsTo = p
 }
 
 func (m *mockManagedResource) SetWriteConnectionSecretToReference(r *xpv1.SecretReference) {
@@ -101,8 +93,6 @@ func (m *mockManagedResource) GetObjectKind() schema.ObjectKind {
 }
 
 func TestGetConfig(t *testing.T) {
-	t.Skip("Skipping GetConfig tests due to ProviderConfigUsage tracking issues in test environment")
-	// TODO: Fix ProviderConfigUsage metadata.name issue with fake client
 	type args struct {
 		ctx  context.Context
 		kube client.Client
@@ -461,8 +451,6 @@ func TestGetConfig(t *testing.T) {
 }
 
 func TestGetConfigErrorMessages(t *testing.T) {
-	t.Skip("Skipping GetConfig error tests due to ProviderConfigUsage tracking issues in test environment")
-	// TODO: Fix ProviderConfigUsage metadata.name issue with fake client
 	ctx := context.Background()
 	scheme := runtime.NewScheme()
 	_ = v1beta1.AddToScheme(scheme)
@@ -584,8 +572,6 @@ func TestGetConfigErrorMessages(t *testing.T) {
 }
 
 func TestGetConfig_AdditionalEdgeCases(t *testing.T) {
-	t.Skip("Skipping GetConfig additional tests due to ProviderConfigUsage tracking issues in test environment")
-	// TODO: Fix ProviderConfigUsage metadata.name issue with fake client
 	ctx := context.Background()
 	scheme := runtime.NewScheme()
 	_ = v1beta1.AddToScheme(scheme)

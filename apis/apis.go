@@ -21,8 +21,13 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 
 	invoicev1alpha1 "github.com/rossigee/provider-btcpay/apis/invoice/v1alpha1"
+	invoicev1beta1 "github.com/rossigee/provider-btcpay/apis/invoice/v1beta1"
+	paymentmethodv1alpha1 "github.com/rossigee/provider-btcpay/apis/paymentmethod/v1alpha1"
 	storev1alpha1 "github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
+	storev1beta1 "github.com/rossigee/provider-btcpay/apis/store/v1beta1"
+	userv1alpha1 "github.com/rossigee/provider-btcpay/apis/user/v1alpha1"
 	v1beta1 "github.com/rossigee/provider-btcpay/apis/v1beta1"
+	webhookv1alpha1 "github.com/rossigee/provider-btcpay/apis/webhook/v1alpha1"
 )
 
 func init() {
@@ -30,7 +35,12 @@ func init() {
 	AddToSchemes = append(AddToSchemes,
 		v1beta1.AddToScheme,
 		storev1alpha1.AddToScheme,
+		storev1beta1.AddToScheme,
 		invoicev1alpha1.AddToScheme,
+		invoicev1beta1.AddToScheme,
+		userv1alpha1.AddToScheme,
+		webhookv1alpha1.AddToScheme,
+		paymentmethodv1alpha1.AddToScheme,
 	)
 }
 

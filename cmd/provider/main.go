@@ -19,21 +19,24 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"gopkg.in/alecthomas/kingpin.v2"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/cache"
+	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	xpcontroller "github.com/crossplane/crossplane-runtime/pkg/controller"
-	"github.com/crossplane/crossplane-runtime/pkg/feature"
-	"github.com/crossplane/crossplane-runtime/pkg/logging"
-	"github.com/crossplane/crossplane-runtime/pkg/ratelimiter"
+	xpcontroller "github.com/crossplane/crossplane-runtime/v2/pkg/controller"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/feature"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
 
 	"github.com/rossigee/provider-btcpay/apis"
 	"github.com/rossigee/provider-btcpay/internal/controller"
 	"github.com/rossigee/provider-btcpay/internal/features"
+	"github.com/rossigee/provider-btcpay/internal/version"
 )
 
 func main() {
@@ -59,7 +62,24 @@ func main() {
 		ctrl.SetLogger(zl)
 	}
 
-	log.Debug("Starting", "sync-period", syncPeriod.String())
+	// Log startup information with build and configuration details
+	log.Info("Provider starting up",
+		"provider", "provider-btcpay",
+		"version", version.Version,
+		"go-version", runtime.Version(),
+		"platform", runtime.GOOS+"/"+runtime.GOARCH,
+		"sync-period", syncPeriod.String(),
+		"poll-interval", pollInterval.String(),
+		"max-reconcile-rate", *maxReconcileRate,
+		"leader-election", *leaderElection,
+		"leader-election-namespace", *leaderElectionNS,
+		"management-policies", *enableManagementPolicies,
+		"debug-mode", *debug)
+
+	log.Debug("Detailed startup configuration",
+		"sync-period", syncPeriod.String(),
+		"poll-interval", pollInterval.String(),
+		"max-reconcile-rate", *maxReconcileRate)
 
 	cfg, err := ctrl.GetConfig()
 	if err != nil {
@@ -101,6 +121,9 @@ func main() {
 	if err := controller.Setup(mgr, o); err != nil {
 		kingpin.FatalIfError(err, "Cannot setup BTCPay controllers")
 	}
+
+	kingpin.FatalIfError(mgr.AddHealthzCheck("healthz", healthz.Ping), "Cannot add health check")
+	kingpin.FatalIfError(mgr.AddReadyzCheck("readyz", healthz.Ping), "Cannot add ready check")
 
 	kingpin.FatalIfError(mgr.Start(ctrl.SetupSignalHandler()), "Cannot start controller manager")
 }

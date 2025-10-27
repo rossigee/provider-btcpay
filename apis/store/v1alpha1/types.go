@@ -19,7 +19,7 @@ package v1alpha1
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
 )
 
 // StoreParameters are the configurable fields of a Store.
@@ -198,6 +198,26 @@ type Store struct {
 
 	Spec   StoreSpec   `json:"spec"`
 	Status StoreStatus `json:"status,omitempty"`
+}
+
+// GetCondition returns the condition for the given condition type.
+func (s *Store) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
+	return s.Status.GetCondition(ct)
+}
+
+// GetManagementPolicies returns the management policies for this resource.
+func (s *Store) GetManagementPolicies() xpv1.ManagementPolicies {
+	return s.Spec.ManagementPolicies
+}
+
+// SetManagementPolicies sets the management policies for this resource.
+func (s *Store) SetManagementPolicies(m xpv1.ManagementPolicies) {
+	s.Spec.ManagementPolicies = m
+}
+
+// SetConditions sets the conditions for this resource.
+func (s *Store) SetConditions(c ...xpv1.Condition) {
+	s.Status.SetConditions(c...)
 }
 
 // +kubebuilder:object:root=true

@@ -1,0 +1,100 @@
+# Complete v2 namespace setup example
+# This shows how to set up a multi-tenant BTCPay provider environment
+
+---
+# Create dedicated namespace for production environment
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: btcpay-production
+  labels:
+    app.kubernetes.io/name: btcpay
+    app.kubernetes.io/component: production
+    crossplane.io/managed-by: provider-btcpay
+
+---
+# Create namespace for staging environment
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: btcpay-staging
+  labels:
+    app.kubernetes.io/name: btcpay
+    app.kubernetes.io/component: staging
+    crossplane.io/managed-by: provider-btcpay
+
+---
+# ProviderConfig for production (shared across namespaces)
+apiVersion: btcpay.crossplane.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: btcpay-config
+spec:
+  credentials:
+    source: Secret
+    secretRef:
+      namespace: crossplane-system
+      name: btcpay-credentials
+      key: credentials
+  # BTCPay Server configuration
+  serverURL: "https://btcpay.example.com"
+  storeId: "default"  # Default store for provider operations
+
+---
+# RBAC for production namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: btcpay-production
+  name: btcpay-manager
+rules:
+- apiGroups: ["store.btcpay.m.crossplane.io"]
+  resources: ["stores"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: ["invoice.btcpay.m.crossplane.io"]
+  resources: ["invoices"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "watch"]
+
+---
+# RBAC for staging namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: btcpay-staging
+  name: btcpay-manager
+rules:
+- apiGroups: ["store.btcpay.m.crossplane.io"]
+  resources: ["stores"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: ["invoice.btcpay.m.crossplane.io"]
+  resources: ["invoices"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "watch"]
+
+---
+# Network policy for namespace isolation
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: btcpay-isolation
+  namespace: btcpay-production
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: crossplane-system
+  egress:
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443  # HTTPS to BTCPay server

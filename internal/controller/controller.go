@@ -19,11 +19,14 @@ package controller
 import (
 	ctrl "sigs.k8s.io/controller-runtime"
 
-	"github.com/crossplane/crossplane-runtime/pkg/controller"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 
 	"github.com/rossigee/provider-btcpay/internal/controller/config"
 	"github.com/rossigee/provider-btcpay/internal/controller/invoice"
+	"github.com/rossigee/provider-btcpay/internal/controller/paymentmethod"
 	"github.com/rossigee/provider-btcpay/internal/controller/store"
+	"github.com/rossigee/provider-btcpay/internal/controller/user"
+	"github.com/rossigee/provider-btcpay/internal/controller/webhook"
 )
 
 // Setup creates all BTCPay controllers with the supplied logger and adds them to
@@ -31,8 +34,13 @@ import (
 func Setup(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
 		config.Setup,
+		// v1alpha1 controllers (cluster-scoped)
 		store.Setup,
 		invoice.Setup,
+		user.Setup,
+		webhook.Setup,
+		paymentmethod.Setup,
+		// TODO: Re-add v1beta1 controllers after fixing v2 compatibility
 	} {
 		if err := setup(mgr, o); err != nil {
 			return err

@@ -1,0 +1,16 @@
+apiVersion: user.btcpay.crossplane.io/v1alpha1
+kind: User
+metadata:
+  name: btcpay-store-user
+spec:
+  forProvider:
+    email: "storeowner@example.com"
+    password: "MyStorePassword456!"
+    isAdministrator: false
+    name: "Store Owner"
+    roles:
+      - "StoreOwner"
+    disabled: false
+    requireEmailConfirmation: true
+  providerConfigRef:
+    name: default

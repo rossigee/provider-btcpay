@@ -1,0 +1,21 @@
+apiVersion: webhook.btcpay.crossplane.io/v1alpha1
+kind: Webhook
+metadata:
+  name: comprehensive-webhook
+spec:
+  forProvider:
+    storeRef:
+      name: my-bitcoin-store
+    url: "https://myapp.example.com/webhooks/btcpay/all"
+    enabled: true
+    automaticRedelivery: false
+    secret: "comprehensive_webhook_secret"
+    authorizedEvents:
+      - "InvoiceCreated"
+      - "InvoiceReceivedPayment"
+      - "InvoicePaymentSettled"
+      - "InvoiceExpired"
+      - "InvoiceInvalid"
+      - "InvoiceProcessing"
+  providerConfigRef:
+    name: default

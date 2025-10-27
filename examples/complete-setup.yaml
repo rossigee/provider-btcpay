@@ -1,156 +1,160 @@
-# Complete BTCPay Provider Setup Example
-# This demonstrates a full BTCPay Server configuration using Crossplane
+# Complete BTCPay Server Provider Example
+# This demonstrates all available resources working together
 
 ---
-# Provider Configuration
-apiVersion: btcpay.crossplane.io/v1beta1
+# 1. ProviderConfig - Authentication configuration
+apiVersion: pkg.crossplane.io/v1
 kind: ProviderConfig
 metadata:
-  name: golder-btcpay
+  name: default
 spec:
-  baseURL: "https://btcpay.golder.tech"
   credentials:
     source: Secret
     secretRef:
-      name: btcpay-credentials
       namespace: crossplane-system
+      name: btcpay-creds
       key: credentials
-
 ---
-# Production Bitcoin Store
+# 2. Store - The central resource for BTCPay Server
 apiVersion: store.btcpay.crossplane.io/v1alpha1
 kind: Store
 metadata:
-  name: golder-production-store
-  labels:
-    environment: production
-    team: golder
+  name: sample-btcpay-store
 spec:
   forProvider:
-    name: "Golder Production Store"
+    storeName: "Sample E-commerce Store"
     defaultCurrency: "USD"
-    website: "https://golder.tech"
-    invoiceExpiration: 900
-    paymentTolerance: 0.0
-    networkFeeMode: "Never"
-    speedPolicy: "Medium"
-    lightningAmountInSatoshi: true
-    lightningPrivateRouteHints: true
-    onChainWithLnInvoiceFallback: true
-    redirectAutomatically: true
+    invoiceExpiration: 900  # 15 minutes
+    speedPolicy: "MediumSpeed"
+    paymentTolerance: 2.0
     showRecommendedFee: true
-    recommendedFeeBlockTarget: 6
-    defaultLang: "en"
-    monitoringExpiration: 900
-    checkoutType: "V2"
-    receipt:
-      enabled: true
-      showQR: true
-      showPayments: true
+    derivationScheme: "xpub6CUGRUonZSQ4TWtTMmzXdrXDtypWKiKrhko4egpiMZbpiaQL2jkwSB1icqYh2cfDfVxdx4df189oLKnC5fSwqPfgyP3hooxujYzAu3fDVmz"
     branding:
-      logoUrl: "https://golder.tech/logo.png"
-      htmlTitle: "Golder - Secure Bitcoin Payments"
-  providerConfigRef:
-    name: golder-btcpay
-
----
-# Development Store for Testing
-apiVersion: store.btcpay.crossplane.io/v1alpha1
-kind: Store
-metadata:
-  name: golder-dev-store
-  labels:
-    environment: development
-    team: golder
-spec:
-  forProvider:
-    name: "Golder Development Store"
-    defaultCurrency: "BTC"
-    website: "https://dev.golder.tech"
-    invoiceExpiration: 3600  # Longer expiration for testing
-    paymentTolerance: 0.1    # Higher tolerance for testing
-    networkFeeMode: "Always"
-    speedPolicy: "Low"       # Cheaper fees for testing
-    lightningAmountInSatoshi: true
-    redirectAutomatically: false
-    showRecommendedFee: false
-    defaultLang: "en"
-    checkoutType: "V1"       # Use older checkout for compatibility testing
-    receipt:
-      enabled: false         # Disable receipts in dev
-      showQR: false
-      showPayments: false
-  providerConfigRef:
-    name: golder-btcpay
-
----
-# Sample Product Purchase Invoice
-apiVersion: invoice.btcpay.crossplane.io/v1alpha1
-kind: Invoice
-metadata:
-  name: infrastructure-consultation
-  labels:
-    service: consultation
-    client: enterprise
-spec:
-  forProvider:
-    storeRef:
-      name: golder-production-store
-    amount: 2500.00
-    currency: "USD"
-    orderId: "INF-CONSULT-2024-001"
-    itemDesc: "Infrastructure Consultation Services"
-    itemCode: "CONSULT-INF-01"
-    notificationURL: "https://api.golder.tech/webhooks/btcpay"
-    redirectURL: "https://golder.tech/services/success"
-    notificationEmail: "billing@golder.tech"
-    buyerName: "Enterprise Client"
-    buyerEmail: "procurement@enterprise.com"
-    buyerCountry: "US"
-    buyerCity: "San Francisco"
-    buyerState: "CA"
-    buyerZip: "94102"
-    extendedNotifications: true
-    fullNotifications: true
-    metadata:
-      serviceType: "consultation"
-      duration: "8-hours"
-      expertise: "infrastructure"
-      projectId: "PROJ-2024-ENT-001"
-      salesRepId: "REP-001"
+      logoUrl: "https://example.com/logo.png"
+      cssUrl: "https://example.com/custom.css"
+      brandColor: "#ff6600"
+    checkout:
+      speedPolicy: "MediumSpeed"
+      paymentTolerance: 2.0
+      defaultLanguage: "en-US"
+      htmlTitle: "Complete your payment"
+      soundUrl: "https://example.com/payment-success.mp3"
+      redirectAutomatically: true
+      showStoreHeader: true
+      celebratePayment: true
     receipt:
       enabled: true
       showQR: true
       showPayments: true
   providerConfigRef:
-    name: golder-btcpay
-
+    name: default
+  deletionPolicy: Delete
 ---
-# Lightning Micropayment Example
-apiVersion: invoice.btcpay.crossplane.io/v1alpha1
-kind: Invoice
+# 3. User - Store administrator
+apiVersion: user.btcpay.crossplane.io/v1alpha1
+kind: User
 metadata:
-  name: api-usage-payment
-  labels:
-    service: api
-    payment-type: micropayment
+  name: store-admin
+spec:
+  forProvider:
+    email: "admin@example.com"
+    password: "SecurePassword123!"
+    name: "Store Administrator"
+    isAdministrator: false
+    roles:
+      - "ServerAdmin"
+      - "StoreOwner"
+    disabled: false
+    requireEmailConfirmation: false
+  providerConfigRef:
+    name: default
+  deletionPolicy: Delete
+---
+# 4. Payment Methods - Bitcoin support
+apiVersion: paymentmethod.btcpay.crossplane.io/v1alpha1
+kind: PaymentMethod
+metadata:
+  name: btc-onchain-payment
 spec:
   forProvider:
     storeRef:
-      name: golder-production-store
-    amount: 0.05
-    currency: "USD"
-    orderId: "API-USAGE-2024-07-001"
-    itemDesc: "API Usage - 1000 requests"
-    itemCode: "API-REQ-1K"
-    notificationURL: "https://api.golder.tech/webhooks/usage-payment"
-    redirectURL: "https://portal.golder.tech/billing/success"
-    buyerEmail: "developer@startup.com"
-    extendedNotifications: true
-    metadata:
-      apiKey: "ak_prod_123456"
-      requestCount: "1000"
-      billingPeriod: "2024-07"
-      autoTopup: "true"
+      name: sample-btcpay-store
+    cryptoCode: "BTC"
+    paymentType: "onchain"
+    enabled: true
+    onChain:
+      derivationScheme: "xpub6CUGRUonZSQ4TWtTMmzXdrXDtypWKiKrhko4egpiMZbpiaQL2jkwSB1icqYh2cfDfVxdx4df189oLKnC5fSwqPfgyP3hooxujYzAu3fDVmz"
+      label: "Main Bitcoin Wallet"
   providerConfigRef:
-    name: golder-btcpay
+    name: default
+  deletionPolicy: Delete
+---
+apiVersion: paymentmethod.btcpay.crossplane.io/v1alpha1
+kind: PaymentMethod
+metadata:
+  name: btc-lightning-payment
+spec:
+  forProvider:
+    storeRef:
+      name: sample-btcpay-store
+    cryptoCode: "BTC"
+    paymentType: "lightning"
+    enabled: true
+    lightning:
+      connectionString: "type=lnd-rest;server=https://mylnd:8080/;macaroonfilepath=/home/user/.lnd/data/chain/bitcoin/mainnet/admin.macaroon;certfilepath=/home/user/.lnd/tls.cert"
+  providerConfigRef:
+    name: default
+  deletionPolicy: Delete
+---
+# 5. Webhook - Payment notifications
+apiVersion: webhook.btcpay.crossplane.io/v1alpha1
+kind: Webhook
+metadata:
+  name: payment-webhook
+spec:
+  forProvider:
+    storeRef:
+      name: sample-btcpay-store
+    url: "https://myapp.example.com/webhooks/btcpay"
+    enabled: true
+    automaticRedelivery: true
+    secret: "webhook-secret-key"
+    authorizedEvents:
+      - "InvoiceCreated"
+      - "InvoicePaymentSettled"
+      - "InvoiceExpired"
+      - "InvoiceInvalid"
+  providerConfigRef:
+    name: default
+  deletionPolicy: Delete
+---
+# 6. Invoice - Example payment request
+apiVersion: invoice.btcpay.crossplane.io/v1alpha1
+kind: Invoice
+metadata:
+  name: sample-invoice
+spec:
+  forProvider:
+    storeRef:
+      name: sample-btcpay-store
+    amount: 99.99
+    currency: "USD"
+    orderID: "ORDER-12345"
+    itemDesc: "Premium Service Subscription"
+    itemCode: "PREMIUM-001"
+    buyerEmail: "customer@example.com"
+    notificationURL: "https://myapp.example.com/notifications/btcpay"
+    redirectURL: "https://myapp.example.com/payment/success"
+    notificationEmail: "orders@example.com"
+    physical: false
+    taxIncluded: true
+    extendedNotifications: true
+    fullNotifications: false
+    metadata:
+      customerID: "CUST-789"
+      planType: "premium"
+      subscriptionPeriod: "monthly"
+    checkoutQueryString: "theme=dark&lang=en"
+  providerConfigRef:
+    name: default
+  deletionPolicy: Delete

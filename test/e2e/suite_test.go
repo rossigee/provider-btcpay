@@ -31,7 +31,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
 
 	apisv1beta1 "github.com/rossigee/provider-btcpay/apis/v1beta1"
 	invoicev1alpha1 "github.com/rossigee/provider-btcpay/apis/invoice/v1alpha1"

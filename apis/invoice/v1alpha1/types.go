@@ -19,7 +19,7 @@ package v1alpha1
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
 )
 
 // InvoiceParameters are the configurable fields of an Invoice.
@@ -280,6 +280,26 @@ type Invoice struct {
 
 	Spec   InvoiceSpec   `json:"spec"`
 	Status InvoiceStatus `json:"status,omitempty"`
+}
+
+// GetCondition returns the condition for the given condition type.
+func (i *Invoice) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
+	return i.Status.GetCondition(ct)
+}
+
+// GetManagementPolicies returns the management policies for this resource.
+func (i *Invoice) GetManagementPolicies() xpv1.ManagementPolicies {
+	return i.Spec.ManagementPolicies
+}
+
+// SetManagementPolicies sets the management policies for this resource.
+func (i *Invoice) SetManagementPolicies(m xpv1.ManagementPolicies) {
+	i.Spec.ManagementPolicies = m
+}
+
+// SetConditions sets the conditions for this resource.
+func (i *Invoice) SetConditions(c ...xpv1.Condition) {
+	i.Status.SetConditions(c...)
 }
 
 // +kubebuilder:object:root=true

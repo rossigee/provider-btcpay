@@ -590,4 +590,3 @@ func TestClient_StoreAPIErrorScenarios(t *testing.T) {
 func stringPtr(s string) *string {
 	return &s
 }
-

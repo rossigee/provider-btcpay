@@ -1,0 +1,16 @@
+apiVersion: user.btcpay.crossplane.io/v1alpha1
+kind: User
+metadata:
+  name: btcpay-admin-user
+spec:
+  forProvider:
+    email: "admin@example.com"
+    password: "SecurePassword123!"
+    isAdministrator: true
+    name: "Store Administrator"
+    roles:
+      - "ServerAdmin"
+    disabled: false
+    requireEmailConfirmation: false
+  providerConfigRef:
+    name: default

@@ -1,0 +1,74 @@
+# Example v2 namespaced Invoice resource
+# This demonstrates cross-resource references within the same namespace
+apiVersion: invoice.btcpay.m.crossplane.io/v1beta1
+kind: Invoice
+metadata:
+  name: customer-order-001
+  namespace: btcpay-production  # Same namespace as the Store
+  labels:
+    app.kubernetes.io/name: btcpay-invoice
+    app.kubernetes.io/instance: customer-order-001
+    app.kubernetes.io/version: v1beta1
+    order.id: "ORDER-2024-001"
+spec:
+  forProvider:
+    # Cross-resource reference to Store in same namespace
+    storeRef:
+      name: production-store  # References Store in same namespace
+
+    # Invoice details
+    amount: 99.99
+    currency: "USD"
+    orderId: "ORDER-2024-001"
+
+    # Customer information
+    buyerName: "John Doe"
+    buyerEmail: "john.doe@example.com"
+    buyerCountry: "US"
+    buyerState: "CA"
+    buyerCity: "San Francisco"
+    buyerAddress1: "123 Main St"
+    buyerZip: "94105"
+
+    # Item details
+    itemDesc: "Premium Software License"
+    itemCode: "SOFT-LIC-001"
+    physical: false
+    taxIncluded: true
+
+    # Notification settings
+    notificationURL: "https://shop.example.com/webhooks/btcpay"
+    redirectURL: "https://shop.example.com/payment/success"
+    notificationEmail: "payments@example.com"
+
+    # Enhanced notifications
+    extendedNotifications: true
+    fullNotifications: true
+
+    # Custom metadata
+    metadata:
+      customer_id: "CUST-12345"
+      order_source: "website"
+      discount_code: "WELCOME10"
+
+    # Receipt configuration for this specific invoice
+    receipt:
+      enabled: true
+      showQR: true
+      showPayments: true
+
+  # Provider configuration reference
+  providerConfigRef:
+    name: btcpay-config
+
+  # Connection secret for storing invoice details
+  writeConnectionSecretsToNamespace: btcpay-production
+  writeConnectionSecretToRef:
+    name: customer-order-001-connection
+    namespace: btcpay-production
+
+  # Management policies for v2
+  managementPolicies: ["Create", "Update", "Delete"]
+
+  # Deletion policy
+  deletionPolicy: Delete

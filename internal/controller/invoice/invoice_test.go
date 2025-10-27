@@ -25,8 +25,8 @@ import (
 	"github.com/pkg/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
-	"github.com/crossplane/crossplane-runtime/pkg/test"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/reconciler/managed"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/test"
 
 	"github.com/rossigee/provider-btcpay/apis/invoice/v1alpha1"
 	storev1alpha1 "github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
@@ -529,4 +529,3 @@ func TestDelete(t *testing.T) {
 func stringPtr(s string) *string {
 	return &s
 }
-

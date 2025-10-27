@@ -1,0 +1,112 @@
+# Managed Resource Definition for BTCPay Store (v2)
+apiVersion: pkg.crossplane.io/v1beta1
+kind: ManagedResourceDefinition
+metadata:
+  name: stores.store.btcpay.m.crossplane.io
+  labels:
+    provider: provider-btcpay
+    crossplane.io/version: v1beta1
+spec:
+  # Group information for namespaced Store resources
+  group: store.btcpay.m.crossplane.io
+  versions:
+  - name: v1beta1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              forProvider:
+                type: object
+                required:
+                - name
+                - defaultCurrency
+                properties:
+                  name:
+                    type: string
+                    description: "Display name of the store in BTCPay Server"
+                  defaultCurrency:
+                    type: string
+                    description: "Default currency for the store"
+                    enum: ["USD", "EUR", "BTC", "GBP", "JPY", "CAD", "AUD"]
+                  website:
+                    type: string
+                    description: "Website URL associated with the store"
+                  invoiceExpiration:
+                    type: integer
+                    minimum: 60
+                    maximum: 86400
+                    description: "Default invoice expiration time in seconds"
+                  paymentTolerance:
+                    type: number
+                    minimum: 0
+                    maximum: 100
+                    description: "Payment tolerance percentage for underpayments"
+              managementPolicies:
+                type: array
+                items:
+                  type: string
+                  enum: ["Create", "Update", "Delete", "Observe"]
+                default: ["Create", "Update", "Delete"]
+          status:
+            type: object
+            properties:
+              atProvider:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: "Unique identifier of the store in BTCPay Server"
+                  name:
+                    type: string
+                    description: "Current name of the store"
+                  defaultCurrency:
+                    type: string
+                    description: "Current default currency"
+                  paymentMethods:
+                    type: array
+                    items:
+                      type: string
+                    description: "Enabled payment methods for the store"
+
+  # Scope indicates this is a namespaced resource
+  scope: Namespaced
+
+  # Names configuration
+  names:
+    kind: Store
+    listKind: StoreList
+    plural: stores
+    singular: store
+    categories:
+    - crossplane
+    - managed
+    - btcpay
+
+  # Activation policy - can be set to DefaultActivation or ManualActivation
+  activationPolicy: DefaultActivation
+
+  # Printer columns for kubectl output
+  additionalPrinterColumns:
+  - name: STORE-NAME
+    type: string
+    jsonPath: .spec.forProvider.name
+  - name: STORE-ID
+    type: string
+    jsonPath: .status.atProvider.id
+  - name: CURRENCY
+    type: string
+    jsonPath: .spec.forProvider.defaultCurrency
+  - name: READY
+    type: string
+    jsonPath: .status.conditions[?(@.type=='Ready')].status
+  - name: SYNCED
+    type: string
+    jsonPath: .status.conditions[?(@.type=='Synced')].status
+  - name: AGE
+    type: date
+    jsonPath: .metadata.creationTimestamp

@@ -1,0 +1,52 @@
+# Example v2 namespaced Store resource
+# This demonstrates the new v2 API with namespace isolation
+apiVersion: store.btcpay.m.crossplane.io/v1beta1
+kind: Store
+metadata:
+  name: production-store
+  namespace: btcpay-production  # Namespace isolation
+  labels:
+    app.kubernetes.io/name: btcpay-store
+    app.kubernetes.io/instance: production
+    app.kubernetes.io/version: v1beta1
+spec:
+  forProvider:
+    name: "Production Bitcoin Store"
+    defaultCurrency: "USD"
+    website: "https://shop.example.com"
+    invoiceExpiration: 900  # 15 minutes
+    paymentTolerance: 0.0
+    networkFeeMode: "MultiplePaymentsOnly"
+    speedPolicy: "Medium"
+
+    # Receipt configuration
+    receipt:
+      enabled: true
+      showQR: true
+      showPayments: true
+
+    # Store branding
+    branding:
+      logoUrl: "https://shop.example.com/logo.png"
+      htmlTitle: "Production Bitcoin Store"
+      css: |
+        body {
+          background-color: #f8f9fa;
+          font-family: 'Arial', sans-serif;
+        }
+
+  # Provider configuration reference
+  providerConfigRef:
+    name: btcpay-config
+
+  # Connection secret for storing store credentials
+  writeConnectionSecretsToNamespace: btcpay-production
+  writeConnectionSecretToRef:
+    name: production-store-connection
+    namespace: btcpay-production
+
+  # Management policies for v2
+  managementPolicies: ["Create", "Update", "Delete"]
+
+  # Deletion policy
+  deletionPolicy: Delete
