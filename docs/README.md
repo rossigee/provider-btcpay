@@ -1,6 +1,6 @@
-# Plausible Provider Documentation
+# BTCPay Server Provider Documentation
 
-Welcome to the documentation for the Crossplane Plausible provider. This provider enables you to manage Plausible Analytics resources through Kubernetes using Crossplane.
+Welcome to the documentation for the Crossplane BTCPay Server provider. This provider enables you to manage BTCPay Server resources through Kubernetes using Crossplane.
 
 ## Documentation Structure
 
@@ -10,14 +10,14 @@ Welcome to the documentation for the Crossplane Plausible provider. This provide
 
 ## Quick Links
 
-- [Plausible Analytics](https://plausible.io/)
-- [Plausible API Documentation](https://plausible.io/docs/sites-api)
+- [BTCPay Server](https://btcpayserver.org/)
+- [BTCPay Greenfield API Documentation](https://docs.btcpayserver.org/API/Greenfield/v1/)
 - [Crossplane](https://crossplane.io/)
-- [Provider Source Code](https://github.com/crossplane-contrib/provider-plausible)
+- [Provider Source Code](https://github.com/rossigee/provider-btcpay)
 
 ## Getting Help
 
-- **Issues**: [GitHub Issues](https://github.com/crossplane-contrib/provider-plausible/issues)
+- **Issues**: [GitHub Issues](https://github.com/rossigee/provider-btcpay/issues)
 - **Discussions**: [Crossplane Slack](https://slack.crossplane.io/)
 - **Documentation**: [Crossplane Docs](https://docs.crossplane.io/)
 

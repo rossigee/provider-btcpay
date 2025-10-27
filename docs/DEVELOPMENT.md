@@ -1,6 +1,6 @@
 # Development Guide
 
-This guide covers development setup, building, testing, and contributing to the Plausible provider.
+This guide covers development setup, building, testing, and contributing to the BTCPay Server provider.
 
 ## Table of Contents
 - [Development Environment](#development-environment)
@@ -25,8 +25,8 @@ This guide covers development setup, building, testing, and contributing to the 
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/crossplane-contrib/provider-plausible
-   cd provider-plausible
+   git clone https://github.com/rossigee/provider-btcpay
+   cd provider-btcpay
    ```
 
 2. **Install dependencies**
@@ -177,8 +177,9 @@ kubectl describe site.site.plausible.crossplane.io example-site
 ### E2E Tests
 
 ```bash
-# Run e2e tests (requires real Plausible API access)
-export PLAUSIBLE_API_KEY="your-test-key"
+# Run e2e tests (requires real BTCPay Server API access)
+export BTCPAY_API_KEY="your-test-key"
+export BTCPAY_BASE_URL="https://your-btcpay-server.com"
 go test -tags=e2e ./test/e2e/...
 ```
 
@@ -331,7 +332,7 @@ kubectl edit deployment/provider-plausible-*
 3. **API Client Issues**
    ```bash
    # Test API connectivity
-   curl -H "Authorization: Bearer YOUR_KEY" https://plausible.io/api/v1/sites
+   curl -H "Authorization: Bearer YOUR_KEY" https://your-btcpay-server.com/api/v1/stores
    ```
 
 ### Debugging Tools
@@ -347,7 +348,7 @@ kubectl describe site.site.plausible.crossplane.io my-site
 kubectl get events --field-selector involvedObject.name=my-site
 
 # Enable verbose API logging
-export PLAUSIBLE_DEBUG=true
+export BTCPAY_DEBUG=true
 make run
 ```
 
