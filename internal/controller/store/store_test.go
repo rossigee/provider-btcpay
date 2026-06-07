@@ -436,22 +436,28 @@ func TestConvertSpeedPolicy(t *testing.T) {
 			policy: "Low",
 			want:   144,
 		},
-		{
-			name:   "Invalid",
-			policy: "Invalid",
-			want:   6, // Default to Medium
-		},
-		{
-			name:   "Empty",
-			policy: "",
-			want:   6, // Default to Medium
-		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := convertSpeedPolicy(tt.policy); got != tt.want {
+			got, err := convertSpeedPolicy(tt.policy)
+			if err != nil {
+				t.Errorf("convertSpeedPolicy() error = %v, want nil", err)
+				return
+			}
+			if got != tt.want {
 				t.Errorf("convertSpeedPolicy() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+
+	// Test invalid values now produce errors
+	invalidTests := []string{"Invalid", "", "random"}
+	for _, policy := range invalidTests {
+		t.Run("Invalid-"+policy, func(t *testing.T) {
+			_, err := convertSpeedPolicy(policy)
+			if err == nil {
+				t.Errorf("convertSpeedPolicy(%q) should error for invalid value", policy)
 			}
 		})
 	}

@@ -26,6 +26,8 @@ import (
 type StoreParameters struct {
 	// Name is the display name of the store in BTCPay Server.
 	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	// +kubebuilder:validation:MaxLength=255
 	Name string `json:"name"`
 
 	// DefaultCurrency is the default currency for the store.
@@ -35,6 +37,8 @@ type StoreParameters struct {
 
 	// Website is the website URL associated with the store.
 	// +optional
+	// +kubebuilder:validation:Pattern="^https://"
+	// +kubebuilder:validation:MaxLength=2048
 	Website *string `json:"website,omitempty"`
 
 	// InvoiceExpiration is the default invoice expiration time in seconds.

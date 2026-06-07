@@ -195,7 +195,11 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 		req.PaymentTolerance = *cr.Spec.ForProvider.PaymentTolerance
 	}
 	if cr.Spec.ForProvider.SpeedPolicy != nil {
-		req.SpeedPolicy = convertSpeedPolicy(*cr.Spec.ForProvider.SpeedPolicy)
+		speedPolicy, err := convertSpeedPolicy(*cr.Spec.ForProvider.SpeedPolicy)
+		if err != nil {
+			return managed.ExternalCreation{}, errors.Wrap(err, "invalid speedPolicy value")
+		}
+		req.SpeedPolicy = speedPolicy
 	}
 
 	store, err := c.client.CreateStore(ctx, req)
@@ -239,7 +243,11 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 		req.PaymentTolerance = *cr.Spec.ForProvider.PaymentTolerance
 	}
 	if cr.Spec.ForProvider.SpeedPolicy != nil {
-		req.SpeedPolicy = convertSpeedPolicy(*cr.Spec.ForProvider.SpeedPolicy)
+		speedPolicy, err := convertSpeedPolicy(*cr.Spec.ForProvider.SpeedPolicy)
+		if err != nil {
+			return managed.ExternalUpdate{}, errors.Wrap(err, "invalid speedPolicy value")
+		}
+		req.SpeedPolicy = speedPolicy
 	}
 
 	_, err := c.client.UpdateStore(ctx, cr.Status.AtProvider.ID, req)
@@ -292,33 +300,39 @@ func (c *external) isUpToDate(cr *v1alpha1.Store, store *clients.Store) bool {
 	if cr.Spec.ForProvider.PaymentTolerance != nil && *cr.Spec.ForProvider.PaymentTolerance != store.PaymentTolerance {
 		return false
 	}
-	if cr.Spec.ForProvider.SpeedPolicy != nil && convertSpeedPolicy(*cr.Spec.ForProvider.SpeedPolicy) != store.SpeedPolicy {
-		return false
+	if cr.Spec.ForProvider.SpeedPolicy != nil {
+		speedPolicy, err := convertSpeedPolicy(*cr.Spec.ForProvider.SpeedPolicy)
+		if err != nil || speedPolicy != store.SpeedPolicy {
+			return false
+		}
 	}
 	return true
 }
 
 // convertSpeedPolicy converts string speed policy to integer
-func convertSpeedPolicy(policy string) int {
+func convertSpeedPolicy(policy string) (int, error) {
 	switch policy {
 	case "High":
-		return 1
+		return 1, nil
 	case "Medium":
-		return 6
+		return 6, nil
 	case "Low":
-		return 144
+		return 144, nil
 	default:
-		return 6 // Default to Medium
+		return 0, errors.New("invalid speedPolicy: must be High, Medium, or Low")
 	}
 }
 
 // convertDerivationSchemes converts the derivation schemes map
+// Only includes string values; non-string values are silently skipped
 func convertDerivationSchemes(schemes map[string]interface{}) map[string]string {
 	result := make(map[string]string)
 	for k, v := range schemes {
 		if str, ok := v.(string); ok {
 			result[k] = str
 		}
+		// Non-string values are silently dropped - this is expected behavior
+		// for BTCPay API responses that may contain complex objects
 	}
 	return result
 }

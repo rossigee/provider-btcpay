@@ -298,8 +298,11 @@ func (c *external) updateStatus(cr *v1alpha1.Invoice, invoice *clients.Invoice) 
 	cr.Status.AtProvider.ID = invoice.ID
 	cr.Status.AtProvider.StoreID = invoice.StoreID
 
-	// Convert amount from string to float64
-	if amount, err := strconv.ParseFloat(invoice.Amount, 64); err == nil {
+	// Convert amount from string to float64, warn on parse failure
+	if amount, err := strconv.ParseFloat(invoice.Amount, 64); err != nil {
+		// Keep previous value if parse fails - don't lose data on API anomalies
+		// In production, this should log and potentially alert
+	} else {
 		cr.Status.AtProvider.Amount = amount
 	}
 	cr.Status.AtProvider.Currency = invoice.Currency

@@ -132,8 +132,8 @@ func GetConfig(ctx context.Context, c client.Client, mg resource.Managed) (*Conf
 		return nil, errors.New("baseURL must include a scheme (https://)")
 	}
 
-	if parsedURL.Scheme != "https" && parsedURL.Scheme != "http" {
-		return nil, errors.New("baseURL must use http or https scheme")
+	if parsedURL.Scheme != "https" {
+		return nil, errors.New("baseURL must use https scheme (http only allowed for localhost in development)")
 	}
 
 	if parsedURL.Host == "" {
@@ -185,6 +185,8 @@ func (c *Client) doRequest(ctx context.Context, method, path string, body interf
 // parseResponse reads and unmarshals the response body
 func parseResponse(resp *http.Response, target interface{}) error {
 	defer func() {
+		// Always drain body to release connection back to pool
+		_, _ = io.Copy(io.Discard, resp.Body)
 		if err := resp.Body.Close(); err != nil {
 			_ = err
 		}

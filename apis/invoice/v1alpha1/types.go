@@ -43,22 +43,27 @@ type InvoiceParameters struct {
 
 	// NotificationURL is the URL to send webhook notifications.
 	// +optional
+	// +kubebuilder:validation:Pattern="^https://"
 	NotificationURL *string `json:"notificationURL,omitempty"`
 
 	// RedirectURL is the URL to redirect after payment completion.
 	// +optional
+	// +kubebuilder:validation:Pattern="^https://"
 	RedirectURL *string `json:"redirectURL,omitempty"`
 
 	// NotificationEmail is the email to send notifications.
 	// +optional
+	// +kubebuilder:validation:Format=email
 	NotificationEmail *string `json:"notificationEmail,omitempty"`
 
 	// ItemDesc is a description of the item being paid for.
 	// +optional
+	// +kubebuilder:validation:MaxLength=255
 	ItemDesc *string `json:"itemDesc,omitempty"`
 
 	// ItemCode is an item code or SKU.
 	// +optional
+	// +kubebuilder:validation:MaxLength=255
 	ItemCode *string `json:"itemCode,omitempty"`
 
 	// Physical indicates if this is for a physical product.
