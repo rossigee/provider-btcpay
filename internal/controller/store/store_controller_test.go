@@ -93,6 +93,11 @@ func TestObserveComprehensive(t *testing.T) {
 				o: managed.ExternalObservation{
 					ResourceExists:   true,
 					ResourceUpToDate: true,
+					ConnectionDetails: managed.ConnectionDetails{
+						"storeId":         []byte("store123"),
+						"storeName":       []byte("Test Store"),
+						"defaultCurrency": []byte("USD"),
+					},
 				},
 			},
 			mock: func() *MockBTCPayClient {
@@ -137,6 +142,11 @@ func TestObserveComprehensive(t *testing.T) {
 				o: managed.ExternalObservation{
 					ResourceExists:   true,
 					ResourceUpToDate: false,
+					ConnectionDetails: managed.ConnectionDetails{
+						"storeId":         []byte("store123"),
+						"storeName":       []byte("Test Store"),
+						"defaultCurrency": []byte("USD"),
+					},
 				},
 			},
 			mock: func() *MockBTCPayClient {
@@ -226,7 +236,13 @@ func TestCreateComprehensive(t *testing.T) {
 				},
 			},
 			want: want{
-				c: managed.ExternalCreation{},
+				c: managed.ExternalCreation{
+					ConnectionDetails: managed.ConnectionDetails{
+						"storeId":         []byte("new-store-123"),
+						"storeName":       []byte("New Test Store"),
+						"defaultCurrency": []byte("USD"),
+					},
+				},
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
@@ -272,7 +288,13 @@ func TestCreateComprehensive(t *testing.T) {
 				},
 			},
 			want: want{
-				c: managed.ExternalCreation{},
+				c: managed.ExternalCreation{
+					ConnectionDetails: managed.ConnectionDetails{
+						"storeId":         []byte("minimal-store-456"),
+						"storeName":       []byte("Minimal Store"),
+						"defaultCurrency": []byte("BTC"),
+					},
+				},
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{

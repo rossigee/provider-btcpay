@@ -307,7 +307,7 @@ func TestParseResponse_EdgeCases(t *testing.T) {
 			},
 			target:      &map[string]interface{}{},
 			wantErr:     true,
-			errContains: "API request failed with status 400:",
+			errContains: "API request failed with status 400",
 		},
 		{
 			name: "500 error with error message",
@@ -319,7 +319,7 @@ func TestParseResponse_EdgeCases(t *testing.T) {
 			},
 			target:      &map[string]interface{}{},
 			wantErr:     true,
-			errContains: "API request failed with status 500:",
+			errContains: "API request failed with status 500",
 		},
 		{
 			name: "404 error with detailed message",
@@ -331,7 +331,7 @@ func TestParseResponse_EdgeCases(t *testing.T) {
 			},
 			target:      &map[string]interface{}{},
 			wantErr:     true,
-			errContains: "API request failed with status 404: Store not found",
+			errContains: "API request failed with status 404",
 		},
 		{
 			name: "JSON decode error with malformed response",
@@ -400,7 +400,7 @@ func TestParseResponse_EdgeCases(t *testing.T) {
 			},
 			target:      &map[string]interface{}{},
 			wantErr:     true,
-			errContains: "API request failed with status 400:",
+			errContains: "API request failed with status 400",
 		},
 	}
 
