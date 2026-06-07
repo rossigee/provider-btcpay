@@ -132,8 +132,12 @@ func GetConfig(ctx context.Context, c client.Client, mg resource.Managed) (*Conf
 		return nil, errors.New("baseURL must include a scheme (https://)")
 	}
 
-	if parsedURL.Scheme != "https" {
-		return nil, errors.New("baseURL must use https scheme (http only allowed for localhost in development)")
+	// Allow http for localhost and cluster-local development
+	host := strings.Split(parsedURL.Host, ":")[0] // Remove port if present
+	isLocalhost := host == "localhost" || host == "127.0.0.1"
+	isClusterLocal := strings.HasSuffix(host, ".svc.cluster.local")
+	if parsedURL.Scheme != "https" && !isLocalhost && !isClusterLocal {
+		return nil, errors.New("baseURL must use https scheme (http only allowed for localhost or cluster-local development)")
 	}
 
 	if parsedURL.Host == "" {
