@@ -3,7 +3,7 @@ kind: ProviderConfig
 metadata:
   name: default
 spec:
-  baseURL: "https://btcpay.golder.tech"  # Your BTCPay Server URL
+  baseURL: "https://your-btcpay-server.example.com"  # Your BTCPay Server URL
   credentials:
     source: Secret
     secretRef:

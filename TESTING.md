@@ -25,7 +25,7 @@ Complete end-to-end testing with Kubernetes cluster + BTCPay Server.
 
 ### Setup
 1. **Get BTCPay Server access**:
-   - Use existing instance: `https://btcpay.golder.tech` (from config)
+   - Use existing instance: `https://your-btcpay-server.example.com` (from config)
    - Or run locally with Docker:
      ```bash
      docker run -d -p 14142:14142 btcpayserver/btcpayserver:latest
@@ -60,7 +60,7 @@ import (
 
 func main() {
     apiKey := os.Getenv("BTCPAY_API_KEY")
-    baseURL := os.Getenv("BTCPAY_BASE_URL") // e.g., https://btcpay.golder.tech
+    baseURL := os.Getenv("BTCPAY_BASE_URL") // e.g., https://your-btcpay-server.example.com
     
     if apiKey == "" || baseURL == "" {
         log.Fatal("Set BTCPAY_API_KEY and BTCPAY_BASE_URL environment variables")
@@ -84,7 +84,7 @@ func main() {
 Run with:
 ```bash
 export BTCPAY_API_KEY="your-api-key"
-export BTCPAY_BASE_URL="https://btcpay.golder.tech"
+export BTCPAY_BASE_URL="https://your-btcpay-server.example.com"
 go run test_manual.go
 ```
 
@@ -170,7 +170,7 @@ go run test_manual.go
 
 ```bash
 # Set environment variables
-export BTCPAY_TEST_SERVER="https://btcpay.golder.tech"
+export BTCPAY_TEST_SERVER="https://your-btcpay-server.example.com"
 export BTCPAY_TEST_TIMEOUT="10m"
 
 # Run integration tests

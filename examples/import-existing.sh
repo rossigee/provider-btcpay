@@ -1,57 +1,89 @@
 #!/bin/bash
+# Script to import existing BTCPay Server stores into Crossplane
+#
+# This script demonstrates how to import existing BTCPay stores
+# that were created outside of Crossplane into Crossplane management.
+#
+# Usage:
+#   ./import-existing.sh <btcpay-base-url> <api-key> <store-id-1> [<store-id-2> ...]
+#
+# Example:
+#   ./import-existing.sh https://your-btcpay-server.example.com "ak_prod_abc123def456" "store-uuid-1" "store-uuid-2"
+
 set -e
 
-echo "Importing existing Plausible resources..."
+if [ $# -lt 3 ]; then
+    echo "Usage: $0 <btcpay-base-url> <api-key> <store-id-1> [<store-id-2> ...]"
+    echo ""
+    echo "Example:"
+    echo "  $0 https://your-btcpay-server.example.com 'ak_prod_abc123' 'abc123'"
+    exit 1
+fi
 
-# List of known domains that likely have Plausible tracking
-DOMAINS=(
-    "debs.golder.tech"
-    "dynamicip.golder.org" 
-    "vault.golder.tech"
-    "sso.golder.tech"
-    "vaultwarden.golder.org"
-)
+BTCPAY_BASE_URL="$1"
+API_KEY="$2"
+shift 2
+STORE_IDS=("$@")
 
-echo "Checking provider status..."
-kubectl get providers.pkg.crossplane.io provider-plausible -o wide
+echo "Importing BTCPay stores into Crossplane..."
+echo "BTCPay Server: $BTCPAY_BASE_URL"
+echo "Stores to import: ${STORE_IDS[*]}"
+echo ""
 
-echo "Checking provider configuration..."
-kubectl get providerconfigs.plausible.crossplane.io default -o yaml
+# Verify kubectl is available
+if ! command -v kubectl &> /dev/null; then
+    echo "Error: kubectl not found. Please install kubectl."
+    exit 1
+fi
 
-echo "Creating sites for import..."
-for domain in "${DOMAINS[@]}"; do
-    echo "Creating site for $domain..."
-    
-    # Create the site resource with the external-name annotation for import
-    cat <<EOF | kubectl apply -f -
-apiVersion: site.plausible.crossplane.io/v1alpha1
-kind: Site
+# Create provider config with credentials
+echo "Setting up BTCPay credentials..."
+kubectl create secret generic btcpay-credentials \
+    --from-literal=credentials="$API_KEY" \
+    -n crossplane-system \
+    --dry-run=client -o yaml | kubectl apply -f -
+
+echo "Creating ProviderConfig..."
+cat <<EOF | kubectl apply -f -
+apiVersion: btcpay.crossplane.io/v1beta1
+kind: ProviderConfig
 metadata:
-  name: $(echo "$domain" | tr '.' '-')
+  name: import-config
+spec:
+  baseURL: "$BTCPAY_BASE_URL"
+  credentials:
+    source: Secret
+    secretRef:
+      name: btcpay-credentials
+      namespace: crossplane-system
+      key: credentials
+EOF
+
+echo "Importing stores..."
+for store_id in "${STORE_IDS[@]}"; do
+    store_name=$(echo "$store_id" | tr '/' '-' | tr '_' '-')
+
+    echo "Importing store: $store_id as $store_name"
+
+    cat <<EOF | kubectl apply -f -
+apiVersion: store.btcpay.crossplane.io/v1alpha1
+kind: Store
+metadata:
+  name: $store_name
   annotations:
-    crossplane.io/external-name: "$domain"
+    crossplane.io/external-name: "$store_id"
 spec:
   forProvider:
-    domain: "$domain"
-    timezone: Asia/Bangkok
+    name: "Imported Store - $store_name"
+    defaultCurrency: "USD"
   providerConfigRef:
-    name: default
+    name: import-config
 EOF
 done
 
-echo "Waiting for sites to sync..."
-sleep 10
+echo ""
+echo "Import process completed. Checking store status..."
+kubectl get stores -o wide
 
-echo "Checking site status..."
-kubectl get sites.site.plausible.crossplane.io -o wide
-
-echo "Checking site details..."
-for domain in "${DOMAINS[@]}"; do
-    site_name=$(echo "$domain" | tr '.' '-')
-    echo "=== Site: $domain ==="
-    kubectl get sites.site.plausible.crossplane.io "$site_name" -o yaml | grep -A 10 -B 5 conditions || echo "No conditions found"
-    echo
-done
-
-echo "Import process completed. Check the status above for any errors."
-echo "If sites show as 'Synced: True', they have been successfully imported from Plausible."
+echo ""
+echo "Use 'kubectl describe store <store-name>' to check individual store status."

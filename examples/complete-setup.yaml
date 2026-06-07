@@ -8,7 +8,7 @@ kind: ProviderConfig
 metadata:
   name: golder-btcpay
 spec:
-  baseURL: "https://btcpay.golder.tech"
+  baseURL: "https://your-btcpay-server.example.com"
   credentials:
     source: Secret
     secretRef:
@@ -29,7 +29,7 @@ spec:
   forProvider:
     name: "Golder Production Store"
     defaultCurrency: "USD"
-    website: "https://golder.tech"
+    website: "https://example.com"
     invoiceExpiration: 900
     paymentTolerance: 0.0
     networkFeeMode: "Never"
@@ -48,7 +48,7 @@ spec:
       showQR: true
       showPayments: true
     branding:
-      logoUrl: "https://golder.tech/logo.png"
+      logoUrl: "https://example.com/logo.png"
       htmlTitle: "Golder - Secure Bitcoin Payments"
   providerConfigRef:
     name: golder-btcpay
@@ -66,7 +66,7 @@ spec:
   forProvider:
     name: "Golder Development Store"
     defaultCurrency: "BTC"
-    website: "https://dev.golder.tech"
+    website: "https://dev.example.com"
     invoiceExpiration: 3600  # Longer expiration for testing
     paymentTolerance: 0.1    # Higher tolerance for testing
     networkFeeMode: "Always"
@@ -101,9 +101,9 @@ spec:
     orderId: "INF-CONSULT-2024-001"
     itemDesc: "Infrastructure Consultation Services"
     itemCode: "CONSULT-INF-01"
-    notificationURL: "https://api.golder.tech/webhooks/btcpay"
-    redirectURL: "https://golder.tech/services/success"
-    notificationEmail: "billing@golder.tech"
+    notificationURL: "https://api.example.com/webhooks/btcpay"
+    redirectURL: "https://example.com/services/success"
+    notificationEmail: "billing-example@example.com"
     buyerName: "Enterprise Client"
     buyerEmail: "procurement@enterprise.com"
     buyerCountry: "US"
@@ -143,12 +143,12 @@ spec:
     orderId: "API-USAGE-2024-07-001"
     itemDesc: "API Usage - 1000 requests"
     itemCode: "API-REQ-1K"
-    notificationURL: "https://api.golder.tech/webhooks/usage-payment"
-    redirectURL: "https://portal.golder.tech/billing/success"
+    notificationURL: "https://api.example.com/webhooks/usage-payment"
+    redirectURL: "https://portal.example.com/billing/success"
     buyerEmail: "developer@startup.com"
     extendedNotifications: true
     metadata:
-      apiKey: "ak_prod_123456"
+      apiKey: "ak_REPLACE_WITH_YOUR_KEY"
       requestCount: "1000"
       billingPeriod: "2024-07"
       autoTopup: "true"
