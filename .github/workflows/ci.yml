@@ -12,7 +12,7 @@ on:
 env:
   # Common versions
   GO_VERSION: '1.26.4'
-  GOLANGCI_VERSION: '2.12.2'
+  GOLANGCI_VERSION: 'v2.12.2'
   DOCKER_BUILDX_VERSION: 'v0.22.0'
 
   # Registry configuration - PRIMARY: GitHub Container Registry only
