@@ -120,7 +120,7 @@ func TestCrossResourceDependencies(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					GetInvoiceFunc: func(storeID, invoiceID string) (*clients.Invoice, error) {
+					GetInvoiceFunc: func(ctx context.Context, storeID, invoiceID string) (*clients.Invoice, error) {
 						if storeID != "store456" {
 							t.Errorf("Expected storeID 'store456', got %v", storeID)
 						}
@@ -218,7 +218,7 @@ func TestCrossResourceDependencies(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					GetInvoiceFunc: func(storeID, invoiceID string) (*clients.Invoice, error) {
+					GetInvoiceFunc: func(ctx context.Context, storeID, invoiceID string) (*clients.Invoice, error) {
 						return &clients.Invoice{
 							ID:       "invoice789",
 							StoreID:  "store789",
@@ -306,7 +306,7 @@ func TestCrossResourceCreateFlow(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					CreateInvoiceFunc: func(storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
+					CreateInvoiceFunc: func(ctx context.Context, storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
 						if storeID != "store999" {
 							t.Errorf("Expected storeID 'store999', got %v", storeID)
 						}
@@ -401,7 +401,7 @@ func TestCrossResourceCreateFlow(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					CreateInvoiceFunc: func(storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
+					CreateInvoiceFunc: func(ctx context.Context, storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
 						// Simulate BTCPay API validation error for unsupported currency
 						return nil, errors.New("API request failed with status 400: Store does not support USD currency")
 					},
@@ -483,7 +483,7 @@ func TestCrossResourceDeleteFlow(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					ArchiveInvoiceFunc: func(storeID, invoiceID string) error {
+					ArchiveInvoiceFunc: func(ctx context.Context, storeID, invoiceID string) error {
 						if storeID != "valid-store-456" {
 							t.Errorf("Expected storeID 'valid-store-456', got %v", storeID)
 						}
@@ -672,7 +672,7 @@ func TestStoreLifecycleImpactOnInvoices(t *testing.T) {
 
 			// Create mock client
 			mockClient := &MockBTCPayClient{
-				GetInvoiceFunc: func(storeID, invoiceID string) (*clients.Invoice, error) {
+				GetInvoiceFunc: func(ctx context.Context, storeID, invoiceID string) (*clients.Invoice, error) {
 					return &clients.Invoice{
 						ID:       "lifecycle-invoice-123",
 						StoreID:  "lifecycle-store-456",
@@ -681,7 +681,7 @@ func TestStoreLifecycleImpactOnInvoices(t *testing.T) {
 						Status:   "New",
 					}, nil
 				},
-				CreateInvoiceFunc: func(storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
+				CreateInvoiceFunc: func(ctx context.Context, storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
 					return &clients.Invoice{
 						ID:       "new-lifecycle-invoice",
 						StoreID:  storeID,
@@ -690,7 +690,7 @@ func TestStoreLifecycleImpactOnInvoices(t *testing.T) {
 						Status:   "New",
 					}, nil
 				},
-				ArchiveInvoiceFunc: func(storeID, invoiceID string) error {
+				ArchiveInvoiceFunc: func(ctx context.Context, storeID, invoiceID string) error {
 					return nil
 				},
 			}

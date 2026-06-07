@@ -17,6 +17,7 @@ limitations under the License.
 package clients
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -187,7 +188,7 @@ func TestClient_CreateInvoice(t *testing.T) {
 				APIKey:  "test-key",
 			})
 
-			got, err := client.CreateInvoice(tc.args.storeID, tc.args.req)
+			got, err := client.CreateInvoice(context.Background(), tc.args.storeID, tc.args.req)
 			if (err != nil) != tc.want.err {
 				t.Errorf("CreateInvoice() error = %v, wantErr %v", err, tc.want.err)
 				return
@@ -312,7 +313,7 @@ func TestClient_GetInvoice(t *testing.T) {
 				APIKey:  "test-key",
 			})
 
-			got, err := client.GetInvoice(tc.args.storeID, tc.args.invoiceID)
+			got, err := client.GetInvoice(context.Background(), tc.args.storeID, tc.args.invoiceID)
 			if (err != nil) != tc.want.err {
 				t.Errorf("GetInvoice() error = %v, wantErr %v", err, tc.want.err)
 				return
@@ -398,7 +399,7 @@ func TestClient_ArchiveInvoice(t *testing.T) {
 				APIKey:  "test-key",
 			})
 
-			err := client.ArchiveInvoice(tc.args.storeID, tc.args.invoiceID)
+			err := client.ArchiveInvoice(context.Background(), tc.args.storeID, tc.args.invoiceID)
 			if (err != nil) != tc.want.err {
 				t.Errorf("ArchiveInvoice() error = %v, wantErr %v", err, tc.want.err)
 			}
@@ -496,7 +497,7 @@ func TestClient_ListStores(t *testing.T) {
 				APIKey:  "test-key",
 			})
 
-			got, err := client.ListStores()
+			got, err := client.ListStores(context.Background())
 			if (err != nil) != tc.want.err {
 				t.Errorf("ListStores() error = %v, wantErr %v", err, tc.want.err)
 				return
@@ -615,7 +616,7 @@ func TestClient_ListInvoices(t *testing.T) {
 				APIKey:  "test-key",
 			})
 
-			got, err := client.ListInvoices(tc.args.storeID)
+			got, err := client.ListInvoices(context.Background(), tc.args.storeID)
 			if (err != nil) != tc.want.err {
 				t.Errorf("ListInvoices() error = %v, wantErr %v", err, tc.want.err)
 				return
@@ -643,7 +644,7 @@ func TestClient_InvoiceAPIErrorScenarios(t *testing.T) {
 				_, _ = w.Write([]byte(`{"error": "Database connection failed"}`))
 			},
 			testFunc: func(client *Client) error {
-				_, err := client.GetInvoice("test-store", "test-invoice")
+				_, err := client.GetInvoice(context.Background(), "test-store", "test-invoice")
 				return err
 			},
 			wantErr: true,
@@ -656,7 +657,7 @@ func TestClient_InvoiceAPIErrorScenarios(t *testing.T) {
 				_, _ = w.Write([]byte(`{"error": "Invalid amount: must be positive"}`))
 			},
 			testFunc: func(client *Client) error {
-				_, err := client.CreateInvoice("test-store", CreateInvoiceRequest{
+				_, err := client.CreateInvoice(context.Background(), "test-store", CreateInvoiceRequest{
 					Amount:   -100.0,
 					Currency: "USD",
 				})

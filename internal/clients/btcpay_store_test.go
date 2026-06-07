@@ -17,6 +17,7 @@ limitations under the License.
 package clients
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -133,7 +134,7 @@ func TestClient_CreateStore(t *testing.T) {
 				APIKey:  "test-key",
 			})
 
-			got, err := client.CreateStore(tc.args.req)
+			got, err := client.CreateStore(context.Background(), tc.args.req)
 			if (err != nil) != tc.want.err {
 				t.Errorf("CreateStore() error = %v, wantErr %v", err, tc.want.err)
 				return
@@ -224,7 +225,7 @@ func TestClient_GetStore(t *testing.T) {
 				APIKey:  "test-key",
 			})
 
-			got, err := client.GetStore(tc.args.storeID)
+			got, err := client.GetStore(context.Background(), tc.args.storeID)
 			if (err != nil) != tc.want.err {
 				t.Errorf("GetStore() error = %v, wantErr %v", err, tc.want.err)
 				return
@@ -328,7 +329,7 @@ func TestClient_UpdateStore(t *testing.T) {
 				APIKey:  "test-key",
 			})
 
-			got, err := client.UpdateStore(tc.args.storeID, tc.args.req)
+			got, err := client.UpdateStore(context.Background(), tc.args.storeID, tc.args.req)
 			if (err != nil) != tc.want.err {
 				t.Errorf("UpdateStore() error = %v, wantErr %v", err, tc.want.err)
 				return
@@ -396,7 +397,7 @@ func TestClient_DeleteStore(t *testing.T) {
 				APIKey:  "test-key",
 			})
 
-			err := client.DeleteStore(tc.args.storeID)
+			err := client.DeleteStore(context.Background(), tc.args.storeID)
 			if (err != nil) != tc.want.err {
 				t.Errorf("DeleteStore() error = %v, wantErr %v", err, tc.want.err)
 			}
@@ -470,7 +471,7 @@ func TestClient_doRequest(t *testing.T) {
 				client.httpClient.Timeout = 100 * time.Millisecond
 			}
 
-			resp, err := client.doRequest(tc.args.method, tc.args.path, tc.args.body)
+			resp, err := client.doRequest(context.Background(), tc.args.method, tc.args.path, tc.args.body)
 			if (err != nil) != tc.want.err {
 				t.Errorf("doRequest() error = %v, wantErr %v", err, tc.want.err)
 				return
@@ -498,7 +499,7 @@ func TestClient_StoreAPIErrorScenarios(t *testing.T) {
 				_, _ = w.Write([]byte(`{"error": "Internal server error"}`))
 			},
 			testFunc: func(client *Client) error {
-				_, err := client.GetStore("test-store")
+				_, err := client.GetStore(context.Background(), "test-store")
 				return err
 			},
 			wantErr: true,
@@ -511,7 +512,7 @@ func TestClient_StoreAPIErrorScenarios(t *testing.T) {
 				_, _ = w.Write([]byte(`Store not found`))
 			},
 			testFunc: func(client *Client) error {
-				_, err := client.GetStore("nonexistent-store")
+				_, err := client.GetStore(context.Background(), "nonexistent-store")
 				return err
 			},
 			wantErr: true,
@@ -524,7 +525,7 @@ func TestClient_StoreAPIErrorScenarios(t *testing.T) {
 				_, _ = w.Write([]byte(`{"error": "Invalid store name"}`))
 			},
 			testFunc: func(client *Client) error {
-				_, err := client.CreateStore(CreateStoreRequest{
+				_, err := client.CreateStore(context.Background(), CreateStoreRequest{
 					Name:            "",
 					DefaultCurrency: "USD",
 				})
@@ -540,7 +541,7 @@ func TestClient_StoreAPIErrorScenarios(t *testing.T) {
 				_, _ = w.Write([]byte(`Store not found`))
 			},
 			testFunc: func(client *Client) error {
-				_, err := client.UpdateStore("nonexistent-store", UpdateStoreRequest{
+				_, err := client.UpdateStore(context.Background(), "nonexistent-store", UpdateStoreRequest{
 					Name: "Updated Store",
 				})
 				return err
@@ -555,7 +556,7 @@ func TestClient_StoreAPIErrorScenarios(t *testing.T) {
 				_, _ = w.Write([]byte(`{"error": "Cannot delete store with pending invoices"}`))
 			},
 			testFunc: func(client *Client) error {
-				return client.DeleteStore("store-with-invoices")
+				return client.DeleteStore(context.Background(), "store-with-invoices")
 			},
 			wantErr: true,
 		},

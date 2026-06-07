@@ -101,7 +101,7 @@ func TestObserveComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					GetInvoiceFunc: func(storeID, invoiceID string) (*clients.Invoice, error) {
+					GetInvoiceFunc: func(ctx context.Context, storeID, invoiceID string) (*clients.Invoice, error) {
 						if storeID != "store123" {
 							t.Errorf("Expected storeID 'store123', got %v", storeID)
 						}
@@ -150,7 +150,7 @@ func TestObserveComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					GetInvoiceFunc: func(storeID, invoiceID string) (*clients.Invoice, error) {
+					GetInvoiceFunc: func(ctx context.Context, storeID, invoiceID string) (*clients.Invoice, error) {
 						return &clients.Invoice{
 							ID:       "invoice123",
 							StoreID:  "store123",
@@ -182,7 +182,7 @@ func TestObserveComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					GetInvoiceFunc: func(storeID, invoiceID string) (*clients.Invoice, error) {
+					GetInvoiceFunc: func(ctx context.Context, storeID, invoiceID string) (*clients.Invoice, error) {
 						return nil, errors.New("API request failed with status 500: Internal Server Error")
 					},
 				}
@@ -263,7 +263,7 @@ func TestCreateComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					CreateInvoiceFunc: func(storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
+					CreateInvoiceFunc: func(ctx context.Context, storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
 						// Verify request parameters
 						if storeID != "store123" {
 							t.Errorf("Expected storeID 'store123', got %v", storeID)
@@ -339,7 +339,7 @@ func TestCreateComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					CreateInvoiceFunc: func(storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
+					CreateInvoiceFunc: func(ctx context.Context, storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
 						// Verify optional fields are empty
 						if req.OrderID != "" {
 							t.Errorf("Expected OrderID to be empty, got %v", req.OrderID)
@@ -386,7 +386,7 @@ func TestCreateComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					CreateInvoiceFunc: func(storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
+					CreateInvoiceFunc: func(ctx context.Context, storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
 						return nil, errors.New("API request failed with status 400: Invalid invoice amount")
 					},
 				}
@@ -516,7 +516,7 @@ func TestDeleteComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					ArchiveInvoiceFunc: func(storeID, invoiceID string) error {
+					ArchiveInvoiceFunc: func(ctx context.Context, storeID, invoiceID string) error {
 						if storeID != "store123" {
 							t.Errorf("Expected storeID 'store123', got %v", storeID)
 						}
@@ -547,7 +547,7 @@ func TestDeleteComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					ArchiveInvoiceFunc: func(storeID, invoiceID string) error {
+					ArchiveInvoiceFunc: func(ctx context.Context, storeID, invoiceID string) error {
 						return errors.New("API request failed with status 404: Invoice not found")
 					},
 				}
@@ -572,7 +572,7 @@ func TestDeleteComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					ArchiveInvoiceFunc: func(storeID, invoiceID string) error {
+					ArchiveInvoiceFunc: func(ctx context.Context, storeID, invoiceID string) error {
 						return errors.New("API request failed with status 500: Internal Server Error")
 					},
 				}

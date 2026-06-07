@@ -150,7 +150,7 @@ func TestObserveErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					GetInvoiceFunc: func(storeID, invoiceID string) (*clients.Invoice, error) {
+					GetInvoiceFunc: func(ctx context.Context, storeID, invoiceID string) (*clients.Invoice, error) {
 						return nil, errors.New("API request failed with status 410: Invoice has expired")
 					},
 				}
@@ -193,7 +193,7 @@ func TestObserveErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					GetInvoiceFunc: func(storeID, invoiceID string) (*clients.Invoice, error) {
+					GetInvoiceFunc: func(ctx context.Context, storeID, invoiceID string) (*clients.Invoice, error) {
 						return nil, errors.New("context deadline exceeded")
 					},
 				}
@@ -236,7 +236,7 @@ func TestObserveErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					GetInvoiceFunc: func(storeID, invoiceID string) (*clients.Invoice, error) {
+					GetInvoiceFunc: func(ctx context.Context, storeID, invoiceID string) (*clients.Invoice, error) {
 						return nil, errors.New("API request failed with status 403: Access denied to invoice")
 					},
 				}
@@ -311,7 +311,7 @@ func TestCreateErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					CreateInvoiceFunc: func(storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
+					CreateInvoiceFunc: func(ctx context.Context, storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
 						return nil, errors.New("API request failed with status 404: Store not found")
 					},
 				}
@@ -348,7 +348,7 @@ func TestCreateErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					CreateInvoiceFunc: func(storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
+					CreateInvoiceFunc: func(ctx context.Context, storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
 						return nil, errors.New("API request failed with status 400: Invoice amount must be positive")
 					},
 				}
@@ -385,7 +385,7 @@ func TestCreateErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					CreateInvoiceFunc: func(storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
+					CreateInvoiceFunc: func(ctx context.Context, storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
 						return nil, errors.New("API request failed with status 400: Unsupported currency")
 					},
 				}
@@ -422,7 +422,7 @@ func TestCreateErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					CreateInvoiceFunc: func(storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
+					CreateInvoiceFunc: func(ctx context.Context, storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
 						return nil, errors.New("API request failed with status 503: Store is in maintenance mode")
 					},
 				}
@@ -459,7 +459,7 @@ func TestCreateErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					CreateInvoiceFunc: func(storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
+					CreateInvoiceFunc: func(ctx context.Context, storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
 						return nil, errors.New("API request failed with status 429: Rate limit exceeded for invoice creation")
 					},
 				}
@@ -532,7 +532,7 @@ func TestDeleteErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					ArchiveInvoiceFunc: func(storeID, invoiceID string) error {
+					ArchiveInvoiceFunc: func(ctx context.Context, storeID, invoiceID string) error {
 						return errors.New("API request failed with status 409: Cannot archive paid invoice")
 					},
 				}
@@ -568,7 +568,7 @@ func TestDeleteErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					ArchiveInvoiceFunc: func(storeID, invoiceID string) error {
+					ArchiveInvoiceFunc: func(ctx context.Context, storeID, invoiceID string) error {
 						return errors.New("API request failed with status 409: Invoice is currently being processed")
 					},
 				}
@@ -604,7 +604,7 @@ func TestDeleteErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					ArchiveInvoiceFunc: func(storeID, invoiceID string) error {
+					ArchiveInvoiceFunc: func(ctx context.Context, storeID, invoiceID string) error {
 						return errors.New("API request failed with status 403: Insufficient permissions to archive invoice")
 					},
 				}
@@ -640,7 +640,7 @@ func TestDeleteErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					ArchiveInvoiceFunc: func(storeID, invoiceID string) error {
+					ArchiveInvoiceFunc: func(ctx context.Context, storeID, invoiceID string) error {
 						return errors.New("API request failed with status 500: Internal server error during archive")
 					},
 				}

@@ -17,86 +17,88 @@ limitations under the License.
 package invoice
 
 import (
+	"context"
+
 	"github.com/rossigee/provider-btcpay/internal/clients"
 )
 
 // MockBTCPayClient is a mock implementation of the BTCPayClient interface for testing
 type MockBTCPayClient struct {
 	// Store operations (needed for interface compliance)
-	GetStoreFunc    func(storeID string) (*clients.Store, error)
-	ListStoresFunc  func() ([]clients.Store, error)
-	CreateStoreFunc func(req clients.CreateStoreRequest) (*clients.Store, error)
-	UpdateStoreFunc func(storeID string, req clients.UpdateStoreRequest) (*clients.Store, error)
-	DeleteStoreFunc func(storeID string) error
+	GetStoreFunc    func(ctx context.Context, storeID string) (*clients.Store, error)
+	ListStoresFunc  func(ctx context.Context) ([]clients.Store, error)
+	CreateStoreFunc func(ctx context.Context, req clients.CreateStoreRequest) (*clients.Store, error)
+	UpdateStoreFunc func(ctx context.Context, storeID string, req clients.UpdateStoreRequest) (*clients.Store, error)
+	DeleteStoreFunc func(ctx context.Context, storeID string) error
 
 	// Invoice operations
-	GetInvoiceFunc     func(storeID, invoiceID string) (*clients.Invoice, error)
-	ListInvoicesFunc   func(storeID string) ([]clients.Invoice, error)
-	CreateInvoiceFunc  func(storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error)
-	ArchiveInvoiceFunc func(storeID, invoiceID string) error
+	GetInvoiceFunc     func(ctx context.Context, storeID, invoiceID string) (*clients.Invoice, error)
+	ListInvoicesFunc   func(ctx context.Context, storeID string) ([]clients.Invoice, error)
+	CreateInvoiceFunc  func(ctx context.Context, storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error)
+	ArchiveInvoiceFunc func(ctx context.Context, storeID, invoiceID string) error
 }
 
 // Store operations (for interface compliance)
-func (m *MockBTCPayClient) GetStore(storeID string) (*clients.Store, error) {
+func (m *MockBTCPayClient) GetStore(ctx context.Context, storeID string) (*clients.Store, error) {
 	if m.GetStoreFunc != nil {
-		return m.GetStoreFunc(storeID)
+		return m.GetStoreFunc(ctx, storeID)
 	}
 	return nil, nil
 }
 
-func (m *MockBTCPayClient) ListStores() ([]clients.Store, error) {
+func (m *MockBTCPayClient) ListStores(ctx context.Context) ([]clients.Store, error) {
 	if m.ListStoresFunc != nil {
-		return m.ListStoresFunc()
+		return m.ListStoresFunc(ctx)
 	}
 	return nil, nil
 }
 
-func (m *MockBTCPayClient) CreateStore(req clients.CreateStoreRequest) (*clients.Store, error) {
+func (m *MockBTCPayClient) CreateStore(ctx context.Context, req clients.CreateStoreRequest) (*clients.Store, error) {
 	if m.CreateStoreFunc != nil {
-		return m.CreateStoreFunc(req)
+		return m.CreateStoreFunc(ctx, req)
 	}
 	return nil, nil
 }
 
-func (m *MockBTCPayClient) UpdateStore(storeID string, req clients.UpdateStoreRequest) (*clients.Store, error) {
+func (m *MockBTCPayClient) UpdateStore(ctx context.Context, storeID string, req clients.UpdateStoreRequest) (*clients.Store, error) {
 	if m.UpdateStoreFunc != nil {
-		return m.UpdateStoreFunc(storeID, req)
+		return m.UpdateStoreFunc(ctx, storeID, req)
 	}
 	return nil, nil
 }
 
-func (m *MockBTCPayClient) DeleteStore(storeID string) error {
+func (m *MockBTCPayClient) DeleteStore(ctx context.Context, storeID string) error {
 	if m.DeleteStoreFunc != nil {
-		return m.DeleteStoreFunc(storeID)
+		return m.DeleteStoreFunc(ctx, storeID)
 	}
 	return nil
 }
 
 // Invoice operations
-func (m *MockBTCPayClient) GetInvoice(storeID, invoiceID string) (*clients.Invoice, error) {
+func (m *MockBTCPayClient) GetInvoice(ctx context.Context, storeID, invoiceID string) (*clients.Invoice, error) {
 	if m.GetInvoiceFunc != nil {
-		return m.GetInvoiceFunc(storeID, invoiceID)
+		return m.GetInvoiceFunc(ctx, storeID, invoiceID)
 	}
 	return nil, nil
 }
 
-func (m *MockBTCPayClient) ListInvoices(storeID string) ([]clients.Invoice, error) {
+func (m *MockBTCPayClient) ListInvoices(ctx context.Context, storeID string) ([]clients.Invoice, error) {
 	if m.ListInvoicesFunc != nil {
-		return m.ListInvoicesFunc(storeID)
+		return m.ListInvoicesFunc(ctx, storeID)
 	}
 	return nil, nil
 }
 
-func (m *MockBTCPayClient) CreateInvoice(storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
+func (m *MockBTCPayClient) CreateInvoice(ctx context.Context, storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
 	if m.CreateInvoiceFunc != nil {
-		return m.CreateInvoiceFunc(storeID, req)
+		return m.CreateInvoiceFunc(ctx, storeID, req)
 	}
 	return nil, nil
 }
 
-func (m *MockBTCPayClient) ArchiveInvoice(storeID, invoiceID string) error {
+func (m *MockBTCPayClient) ArchiveInvoice(ctx context.Context, storeID, invoiceID string) error {
 	if m.ArchiveInvoiceFunc != nil {
-		return m.ArchiveInvoiceFunc(storeID, invoiceID)
+		return m.ArchiveInvoiceFunc(ctx, storeID, invoiceID)
 	}
 	return nil
 }

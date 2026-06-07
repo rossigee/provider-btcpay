@@ -131,6 +131,10 @@ type StoreReference struct {
 	// Name of the Store resource.
 	// +kubebuilder:validation:Required
 	Name string `json:"name"`
+
+	// Namespace of the Store resource. If not specified, defaults to the Invoice's namespace.
+	// +optional
+	Namespace *string `json:"namespace,omitempty"`
 }
 
 // InvoiceReceiptSettings configures receipt generation for an invoice.

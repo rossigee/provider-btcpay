@@ -127,7 +127,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		}, nil
 	}
 
-	store, err := c.client.GetStore(cr.Status.AtProvider.ID)
+	store, err := c.client.GetStore(ctx, cr.Status.AtProvider.ID)
 	if err != nil {
 		if clients.IsNotFound(err) {
 			return managed.ExternalObservation{
@@ -165,8 +165,8 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		ResourceExists:   true,
 		ResourceUpToDate: upToDate,
 		ConnectionDetails: managed.ConnectionDetails{
-			"storeId":       []byte(store.ID),
-			"storeName":     []byte(store.Name),
+			"storeId":         []byte(store.ID),
+			"storeName":       []byte(store.Name),
 			"defaultCurrency": []byte(store.DefaultCurrency),
 		},
 	}, nil
@@ -198,7 +198,7 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 		req.SpeedPolicy = convertSpeedPolicy(*cr.Spec.ForProvider.SpeedPolicy)
 	}
 
-	store, err := c.client.CreateStore(req)
+	store, err := c.client.CreateStore(ctx, req)
 	if err != nil {
 		return managed.ExternalCreation{}, errors.Wrap(err, errCreateStore)
 	}
@@ -207,8 +207,8 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 
 	return managed.ExternalCreation{
 		ConnectionDetails: managed.ConnectionDetails{
-			"storeId":       []byte(store.ID),
-			"storeName":     []byte(store.Name),
+			"storeId":         []byte(store.ID),
+			"storeName":       []byte(store.Name),
 			"defaultCurrency": []byte(store.DefaultCurrency),
 		},
 	}, nil
@@ -242,7 +242,7 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 		req.SpeedPolicy = convertSpeedPolicy(*cr.Spec.ForProvider.SpeedPolicy)
 	}
 
-	_, err := c.client.UpdateStore(cr.Status.AtProvider.ID, req)
+	_, err := c.client.UpdateStore(ctx, cr.Status.AtProvider.ID, req)
 	if err != nil {
 		return managed.ExternalUpdate{}, errors.Wrap(err, errUpdateStore)
 	}
@@ -259,7 +259,7 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.Ext
 
 	cr.Status.SetConditions(xpv1.Deleting())
 
-	err := c.client.DeleteStore(cr.Status.AtProvider.ID)
+	err := c.client.DeleteStore(ctx, cr.Status.AtProvider.ID)
 	if err != nil && !clients.IsNotFound(err) {
 		return managed.ExternalDelete{}, errors.Wrap(err, errDeleteStore)
 	}

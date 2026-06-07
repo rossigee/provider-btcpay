@@ -17,6 +17,7 @@ limitations under the License.
 package clients
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -183,7 +184,7 @@ func TestClient_doRequest_ErrorScenarios(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			client := tt.setupClient()
 
-			resp, err := client.doRequest(tt.method, tt.path, tt.body)
+			resp, err := client.doRequest(context.Background(), tt.method, tt.path, tt.body)
 
 			if tt.wantErr {
 				if err == nil {
@@ -266,7 +267,7 @@ func TestClient_doRequest_Success(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			resp, err := client.doRequest(tt.method, tt.path, tt.body)
+			resp, err := client.doRequest(context.Background(), tt.method, tt.path, tt.body)
 
 			if err != nil {
 				t.Errorf("doRequest() unexpected error = %v", err)

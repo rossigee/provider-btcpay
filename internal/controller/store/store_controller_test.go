@@ -97,7 +97,7 @@ func TestObserveComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					GetStoreFunc: func(storeID string) (*clients.Store, error) {
+					GetStoreFunc: func(ctx context.Context, storeID string) (*clients.Store, error) {
 						if storeID != "store123" {
 							t.Errorf("Expected storeID 'store123', got %v", storeID)
 						}
@@ -141,7 +141,7 @@ func TestObserveComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					GetStoreFunc: func(storeID string) (*clients.Store, error) {
+					GetStoreFunc: func(ctx context.Context, storeID string) (*clients.Store, error) {
 						return &clients.Store{
 							ID:              "store123",
 							Name:            "Test Store", // Different from spec
@@ -171,7 +171,7 @@ func TestObserveComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					GetStoreFunc: func(storeID string) (*clients.Store, error) {
+					GetStoreFunc: func(ctx context.Context, storeID string) (*clients.Store, error) {
 						return nil, errors.New("API request failed with status 500: Internal Server Error")
 					},
 				}
@@ -230,7 +230,7 @@ func TestCreateComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					CreateStoreFunc: func(req clients.CreateStoreRequest) (*clients.Store, error) {
+					CreateStoreFunc: func(ctx context.Context, req clients.CreateStoreRequest) (*clients.Store, error) {
 						// Verify request parameters
 						if req.Name != "New Test Store" {
 							t.Errorf("Expected Name 'New Test Store', got %v", req.Name)
@@ -276,7 +276,7 @@ func TestCreateComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					CreateStoreFunc: func(req clients.CreateStoreRequest) (*clients.Store, error) {
+					CreateStoreFunc: func(ctx context.Context, req clients.CreateStoreRequest) (*clients.Store, error) {
 						// Verify optional fields are empty
 						if req.Website != "" {
 							t.Errorf("Expected Website to be empty, got %v", req.Website)
@@ -313,7 +313,7 @@ func TestCreateComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					CreateStoreFunc: func(req clients.CreateStoreRequest) (*clients.Store, error) {
+					CreateStoreFunc: func(ctx context.Context, req clients.CreateStoreRequest) (*clients.Store, error) {
 						return nil, errors.New("API request failed with status 400: Invalid store name")
 					},
 				}
@@ -377,7 +377,7 @@ func TestUpdateComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					UpdateStoreFunc: func(storeID string, req clients.UpdateStoreRequest) (*clients.Store, error) {
+					UpdateStoreFunc: func(ctx context.Context, storeID string, req clients.UpdateStoreRequest) (*clients.Store, error) {
 						// Verify parameters
 						if storeID != "store123" {
 							t.Errorf("Expected storeID 'store123', got %v", storeID)
@@ -430,7 +430,7 @@ func TestUpdateComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					UpdateStoreFunc: func(storeID string, req clients.UpdateStoreRequest) (*clients.Store, error) {
+					UpdateStoreFunc: func(ctx context.Context, storeID string, req clients.UpdateStoreRequest) (*clients.Store, error) {
 						return nil, errors.New("API request failed with status 404: Store not found")
 					},
 				}
@@ -485,7 +485,7 @@ func TestDeleteComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					DeleteStoreFunc: func(storeID string) error {
+					DeleteStoreFunc: func(ctx context.Context, storeID string) error {
 						if storeID != "store123" {
 							t.Errorf("Expected storeID 'store123', got %v", storeID)
 						}
@@ -512,7 +512,7 @@ func TestDeleteComprehensive(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					DeleteStoreFunc: func(storeID string) error {
+					DeleteStoreFunc: func(ctx context.Context, storeID string) error {
 						return errors.New("API request failed with status 500: Cannot delete store with pending invoices")
 					},
 				}

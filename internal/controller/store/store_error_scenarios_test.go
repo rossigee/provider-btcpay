@@ -64,7 +64,7 @@ func TestObserveErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					GetStoreFunc: func(storeID string) (*clients.Store, error) {
+					GetStoreFunc: func(ctx context.Context, storeID string) (*clients.Store, error) {
 						return nil, errors.New("context deadline exceeded")
 					},
 				}
@@ -88,7 +88,7 @@ func TestObserveErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					GetStoreFunc: func(storeID string) (*clients.Store, error) {
+					GetStoreFunc: func(ctx context.Context, storeID string) (*clients.Store, error) {
 						return nil, errors.New("API request failed with status 401: Unauthorized")
 					},
 				}
@@ -112,7 +112,7 @@ func TestObserveErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					GetStoreFunc: func(storeID string) (*clients.Store, error) {
+					GetStoreFunc: func(ctx context.Context, storeID string) (*clients.Store, error) {
 						return nil, errors.New("API request failed with status 403: Forbidden - insufficient permissions")
 					},
 				}
@@ -136,7 +136,7 @@ func TestObserveErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					GetStoreFunc: func(storeID string) (*clients.Store, error) {
+					GetStoreFunc: func(ctx context.Context, storeID string) (*clients.Store, error) {
 						return nil, errors.New("API request failed with status 429: Too Many Requests")
 					},
 				}
@@ -195,7 +195,7 @@ func TestCreateErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					CreateStoreFunc: func(req clients.CreateStoreRequest) (*clients.Store, error) {
+					CreateStoreFunc: func(ctx context.Context, req clients.CreateStoreRequest) (*clients.Store, error) {
 						return nil, errors.New("API request failed with status 409: Store name already exists")
 					},
 				}
@@ -220,7 +220,7 @@ func TestCreateErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					CreateStoreFunc: func(req clients.CreateStoreRequest) (*clients.Store, error) {
+					CreateStoreFunc: func(ctx context.Context, req clients.CreateStoreRequest) (*clients.Store, error) {
 						return nil, errors.New("API request failed with status 400: Invalid currency code")
 					},
 				}
@@ -245,7 +245,7 @@ func TestCreateErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					CreateStoreFunc: func(req clients.CreateStoreRequest) (*clients.Store, error) {
+					CreateStoreFunc: func(ctx context.Context, req clients.CreateStoreRequest) (*clients.Store, error) {
 						return nil, errors.New("API request failed with status 503: Service Temporarily Unavailable")
 					},
 				}
@@ -270,7 +270,7 @@ func TestCreateErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					CreateStoreFunc: func(req clients.CreateStoreRequest) (*clients.Store, error) {
+					CreateStoreFunc: func(ctx context.Context, req clients.CreateStoreRequest) (*clients.Store, error) {
 						return nil, errors.New("API request failed with status 402: Payment Required - store limit exceeded")
 					},
 				}
@@ -334,7 +334,7 @@ func TestUpdateErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					UpdateStoreFunc: func(storeID string, req clients.UpdateStoreRequest) (*clients.Store, error) {
+					UpdateStoreFunc: func(ctx context.Context, storeID string, req clients.UpdateStoreRequest) (*clients.Store, error) {
 						return nil, errors.New("API request failed with status 404: Store not found")
 					},
 				}
@@ -364,7 +364,7 @@ func TestUpdateErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					UpdateStoreFunc: func(storeID string, req clients.UpdateStoreRequest) (*clients.Store, error) {
+					UpdateStoreFunc: func(ctx context.Context, storeID string, req clients.UpdateStoreRequest) (*clients.Store, error) {
 						return nil, errors.New("API request failed with status 409: Store name conflicts with existing store")
 					},
 				}
@@ -394,7 +394,7 @@ func TestUpdateErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					UpdateStoreFunc: func(storeID string, req clients.UpdateStoreRequest) (*clients.Store, error) {
+					UpdateStoreFunc: func(ctx context.Context, storeID string, req clients.UpdateStoreRequest) (*clients.Store, error) {
 						return nil, errors.New("API request failed with status 422: Validation failed - store name cannot be empty")
 					},
 				}
@@ -451,7 +451,7 @@ func TestDeleteErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					DeleteStoreFunc: func(storeID string) error {
+					DeleteStoreFunc: func(ctx context.Context, storeID string) error {
 						return errors.New("API request failed with status 409: Cannot delete store with pending invoices")
 					},
 				}
@@ -475,7 +475,7 @@ func TestDeleteErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					DeleteStoreFunc: func(storeID string) error {
+					DeleteStoreFunc: func(ctx context.Context, storeID string) error {
 						return errors.New("API request failed with status 409: Cannot delete store with configured payment methods")
 					},
 				}
@@ -499,7 +499,7 @@ func TestDeleteErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					DeleteStoreFunc: func(storeID string) error {
+					DeleteStoreFunc: func(ctx context.Context, storeID string) error {
 						return errors.New("API request failed with status 403: Insufficient permissions to delete store")
 					},
 				}
@@ -523,7 +523,7 @@ func TestDeleteErrorScenarios(t *testing.T) {
 			},
 			mock: func() *MockBTCPayClient {
 				return &MockBTCPayClient{
-					DeleteStoreFunc: func(storeID string) error {
+					DeleteStoreFunc: func(ctx context.Context, storeID string) error {
 						return errors.New("API request failed with status 412: Precondition Failed - store was modified")
 					},
 				}

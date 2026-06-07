@@ -138,7 +138,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		return managed.ExternalObservation{}, err
 	}
 
-	invoice, err := c.client.GetInvoice(storeID, cr.Status.AtProvider.ID)
+	invoice, err := c.client.GetInvoice(ctx, storeID, cr.Status.AtProvider.ID)
 	if err != nil {
 		if clients.IsNotFound(err) {
 			return managed.ExternalObservation{
@@ -221,7 +221,7 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 		req.CheckoutQueryString = *cr.Spec.ForProvider.CheckoutQueryString
 	}
 
-	invoice, err := c.client.CreateInvoice(storeID, req)
+	invoice, err := c.client.CreateInvoice(ctx, storeID, req)
 	if err != nil {
 		return managed.ExternalCreation{}, errors.Wrap(err, errCreateInvoice)
 	}
@@ -254,7 +254,7 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.Ext
 	}
 
 	// Archive the invoice (BTCPay doesn't allow hard deletion)
-	err = c.client.ArchiveInvoice(storeID, cr.Status.AtProvider.ID)
+	err = c.client.ArchiveInvoice(ctx, storeID, cr.Status.AtProvider.ID)
 	if err != nil && !clients.IsNotFound(err) {
 		return managed.ExternalDelete{}, errors.Wrap(err, errDeleteInvoice)
 	}
@@ -270,7 +270,17 @@ func (c *external) Disconnect(ctx context.Context) error {
 // getStoreID retrieves the store ID from the referenced Store resource
 func (c *external) getStoreID(ctx context.Context, cr *v1alpha1.Invoice) (string, error) {
 	store := &storev1alpha1.Store{}
-	key := client.ObjectKey{Name: cr.Spec.ForProvider.StoreRef.Name}
+
+	// Use the invoice's namespace if store reference doesn't specify one
+	namespace := cr.Namespace
+	if cr.Spec.ForProvider.StoreRef.Namespace != nil {
+		namespace = *cr.Spec.ForProvider.StoreRef.Namespace
+	}
+
+	key := client.ObjectKey{
+		Name:      cr.Spec.ForProvider.StoreRef.Name,
+		Namespace: namespace,
+	}
 
 	if err := c.kube.Get(ctx, key, store); err != nil {
 		return "", errors.Wrap(err, errGetStore)

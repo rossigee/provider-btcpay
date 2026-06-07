@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -59,17 +60,17 @@ type Credentials struct {
 // BTCPayClient defines the interface for BTCPay Server operations
 type BTCPayClient interface {
 	// Store operations
-	GetStore(storeID string) (*Store, error)
-	ListStores() ([]Store, error)
-	CreateStore(req CreateStoreRequest) (*Store, error)
-	UpdateStore(storeID string, req UpdateStoreRequest) (*Store, error)
-	DeleteStore(storeID string) error
+	GetStore(ctx context.Context, storeID string) (*Store, error)
+	ListStores(ctx context.Context) ([]Store, error)
+	CreateStore(ctx context.Context, req CreateStoreRequest) (*Store, error)
+	UpdateStore(ctx context.Context, storeID string, req UpdateStoreRequest) (*Store, error)
+	DeleteStore(ctx context.Context, storeID string) error
 
 	// Invoice operations
-	GetInvoice(storeID, invoiceID string) (*Invoice, error)
-	ListInvoices(storeID string) ([]Invoice, error)
-	CreateInvoice(storeID string, req CreateInvoiceRequest) (*Invoice, error)
-	ArchiveInvoice(storeID, invoiceID string) error
+	GetInvoice(ctx context.Context, storeID, invoiceID string) (*Invoice, error)
+	ListInvoices(ctx context.Context, storeID string) ([]Invoice, error)
+	CreateInvoice(ctx context.Context, storeID string, req CreateInvoiceRequest) (*Invoice, error)
+	ArchiveInvoice(ctx context.Context, storeID, invoiceID string) error
 }
 
 // Client is a BTCPay Server API client
@@ -121,6 +122,24 @@ func GetConfig(ctx context.Context, c client.Client, mg resource.Managed) (*Conf
 		return nil, errors.New("baseURL is required for BTCPay Server provider")
 	}
 
+	// Validate baseURL is a valid URL with https scheme
+	parsedURL, err := url.Parse(baseURL)
+	if err != nil {
+		return nil, errors.Wrap(err, "baseURL is not a valid URL")
+	}
+
+	if parsedURL.Scheme == "" {
+		return nil, errors.New("baseURL must include a scheme (https://)")
+	}
+
+	if parsedURL.Scheme != "https" && parsedURL.Scheme != "http" {
+		return nil, errors.New("baseURL must use http or https scheme")
+	}
+
+	if parsedURL.Host == "" {
+		return nil, errors.New("baseURL must include a valid host")
+	}
+
 	return &Config{
 		BaseURL: baseURL,
 		APIKey:  creds.APIKey,
@@ -128,7 +147,7 @@ func GetConfig(ctx context.Context, c client.Client, mg resource.Managed) (*Conf
 }
 
 // doRequest performs an HTTP request with authentication
-func (c *Client) doRequest(method, path string, body interface{}) (*http.Response, error) {
+func (c *Client) doRequest(ctx context.Context, method, path string, body interface{}) (*http.Response, error) {
 	url := fmt.Sprintf("%s%s%s", c.config.BaseURL, defaultAPIPath, path)
 
 	var bodyReader io.Reader
@@ -143,6 +162,12 @@ func (c *Client) doRequest(method, path string, body interface{}) (*http.Respons
 	req, err := http.NewRequest(method, url, bodyReader)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create request")
+	}
+
+	req = req.WithContext(ctx)
+
+	if c.config.APIKey == "" {
+		return nil, errors.New("API key is required")
 	}
 
 	req.Header.Set("Authorization", "token "+c.config.APIKey)
@@ -161,14 +186,15 @@ func (c *Client) doRequest(method, path string, body interface{}) (*http.Respons
 func parseResponse(resp *http.Response, target interface{}) error {
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
-			// Log error but don't fail the function
 			_ = err
 		}
 	}()
 
 	if resp.StatusCode >= 400 {
-		body, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("API request failed with status %d: %s", resp.StatusCode, string(body))
+		if resp.StatusCode == http.StatusNotFound {
+			return fmt.Errorf("API request failed with status 404")
+		}
+		return fmt.Errorf("API request failed with status %d", resp.StatusCode)
 	}
 
 	if target != nil && resp.StatusCode != http.StatusNoContent {
@@ -289,8 +315,8 @@ type CreateInvoiceRequest struct {
 }
 
 // GetStore retrieves a store by ID
-func (c *Client) GetStore(storeID string) (*Store, error) {
-	resp, err := c.doRequest("GET", fmt.Sprintf("/stores/%s", storeID), nil)
+func (c *Client) GetStore(ctx context.Context, storeID string) (*Store, error) {
+	resp, err := c.doRequest(ctx, "GET", fmt.Sprintf("/stores/%s", storeID), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -304,8 +330,8 @@ func (c *Client) GetStore(storeID string) (*Store, error) {
 }
 
 // ListStores retrieves all stores
-func (c *Client) ListStores() ([]Store, error) {
-	resp, err := c.doRequest("GET", "/stores", nil)
+func (c *Client) ListStores(ctx context.Context) ([]Store, error) {
+	resp, err := c.doRequest(ctx, "GET", "/stores", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -319,8 +345,8 @@ func (c *Client) ListStores() ([]Store, error) {
 }
 
 // CreateStore creates a new store
-func (c *Client) CreateStore(req CreateStoreRequest) (*Store, error) {
-	resp, err := c.doRequest("POST", "/stores", req)
+func (c *Client) CreateStore(ctx context.Context, req CreateStoreRequest) (*Store, error) {
+	resp, err := c.doRequest(ctx, "POST", "/stores", req)
 	if err != nil {
 		return nil, err
 	}
@@ -334,8 +360,8 @@ func (c *Client) CreateStore(req CreateStoreRequest) (*Store, error) {
 }
 
 // UpdateStore updates an existing store
-func (c *Client) UpdateStore(storeID string, req UpdateStoreRequest) (*Store, error) {
-	resp, err := c.doRequest("PUT", fmt.Sprintf("/stores/%s", storeID), req)
+func (c *Client) UpdateStore(ctx context.Context, storeID string, req UpdateStoreRequest) (*Store, error) {
+	resp, err := c.doRequest(ctx, "PUT", fmt.Sprintf("/stores/%s", storeID), req)
 	if err != nil {
 		return nil, err
 	}
@@ -349,8 +375,8 @@ func (c *Client) UpdateStore(storeID string, req UpdateStoreRequest) (*Store, er
 }
 
 // DeleteStore deletes a store
-func (c *Client) DeleteStore(storeID string) error {
-	resp, err := c.doRequest("DELETE", fmt.Sprintf("/stores/%s", storeID), nil)
+func (c *Client) DeleteStore(ctx context.Context, storeID string) error {
+	resp, err := c.doRequest(ctx, "DELETE", fmt.Sprintf("/stores/%s", storeID), nil)
 	if err != nil {
 		return err
 	}
@@ -359,8 +385,8 @@ func (c *Client) DeleteStore(storeID string) error {
 }
 
 // GetInvoice retrieves an invoice by ID
-func (c *Client) GetInvoice(storeID, invoiceID string) (*Invoice, error) {
-	resp, err := c.doRequest("GET", fmt.Sprintf("/stores/%s/invoices/%s", storeID, invoiceID), nil)
+func (c *Client) GetInvoice(ctx context.Context, storeID, invoiceID string) (*Invoice, error) {
+	resp, err := c.doRequest(ctx, "GET", fmt.Sprintf("/stores/%s/invoices/%s", storeID, invoiceID), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -374,8 +400,8 @@ func (c *Client) GetInvoice(storeID, invoiceID string) (*Invoice, error) {
 }
 
 // ListInvoices retrieves all invoices for a store
-func (c *Client) ListInvoices(storeID string) ([]Invoice, error) {
-	resp, err := c.doRequest("GET", fmt.Sprintf("/stores/%s/invoices", storeID), nil)
+func (c *Client) ListInvoices(ctx context.Context, storeID string) ([]Invoice, error) {
+	resp, err := c.doRequest(ctx, "GET", fmt.Sprintf("/stores/%s/invoices", storeID), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -389,8 +415,8 @@ func (c *Client) ListInvoices(storeID string) ([]Invoice, error) {
 }
 
 // CreateInvoice creates a new invoice
-func (c *Client) CreateInvoice(storeID string, req CreateInvoiceRequest) (*Invoice, error) {
-	resp, err := c.doRequest("POST", fmt.Sprintf("/stores/%s/invoices", storeID), req)
+func (c *Client) CreateInvoice(ctx context.Context, storeID string, req CreateInvoiceRequest) (*Invoice, error) {
+	resp, err := c.doRequest(ctx, "POST", fmt.Sprintf("/stores/%s/invoices", storeID), req)
 	if err != nil {
 		return nil, err
 	}
@@ -404,8 +430,8 @@ func (c *Client) CreateInvoice(storeID string, req CreateInvoiceRequest) (*Invoi
 }
 
 // ArchiveInvoice archives an invoice (soft delete)
-func (c *Client) ArchiveInvoice(storeID, invoiceID string) error {
-	resp, err := c.doRequest("DELETE", fmt.Sprintf("/stores/%s/invoices/%s", storeID, invoiceID), nil)
+func (c *Client) ArchiveInvoice(ctx context.Context, storeID, invoiceID string) error {
+	resp, err := c.doRequest(ctx, "DELETE", fmt.Sprintf("/stores/%s/invoices/%s", storeID, invoiceID), nil)
 	if err != nil {
 		return err
 	}
@@ -415,5 +441,8 @@ func (c *Client) ArchiveInvoice(storeID, invoiceID string) error {
 
 // IsNotFound returns true if the error indicates the resource was not found
 func IsNotFound(err error) bool {
-	return err != nil && strings.Contains(err.Error(), "status 404")
+	if err == nil {
+		return false
+	}
+	return strings.Contains(err.Error(), "status 404")
 }

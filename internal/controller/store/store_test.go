@@ -32,26 +32,51 @@ import (
 
 // Mock BTCPay client for testing
 type mockClient struct {
-	MockGetStore    func(storeID string) (*clients.Store, error)
-	MockCreateStore func(req clients.CreateStoreRequest) (*clients.Store, error)
-	MockUpdateStore func(storeID string, req clients.UpdateStoreRequest) (*clients.Store, error)
-	MockDeleteStore func(storeID string) error
+	MockGetStore    func(ctx context.Context, storeID string) (*clients.Store, error)
+	MockCreateStore func(ctx context.Context, req clients.CreateStoreRequest) (*clients.Store, error)
+	MockUpdateStore func(ctx context.Context, storeID string, req clients.UpdateStoreRequest) (*clients.Store, error)
+	MockDeleteStore func(ctx context.Context, storeID string) error
+	MockListStores  func(ctx context.Context) ([]clients.Store, error)
+	MockGetInvoice  func(ctx context.Context, storeID, invoiceID string) (*clients.Invoice, error)
+	MockListInvoices func(ctx context.Context, storeID string) ([]clients.Invoice, error)
+	MockCreateInvoice func(ctx context.Context, storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error)
+	MockArchiveInvoice func(ctx context.Context, storeID, invoiceID string) error
 }
 
-func (m *mockClient) GetStore(storeID string) (*clients.Store, error) {
-	return m.MockGetStore(storeID)
+func (m *mockClient) GetStore(ctx context.Context, storeID string) (*clients.Store, error) {
+	return m.MockGetStore(ctx, storeID)
 }
 
-func (m *mockClient) CreateStore(req clients.CreateStoreRequest) (*clients.Store, error) {
-	return m.MockCreateStore(req)
+func (m *mockClient) CreateStore(ctx context.Context, req clients.CreateStoreRequest) (*clients.Store, error) {
+	return m.MockCreateStore(ctx, req)
 }
 
-func (m *mockClient) UpdateStore(storeID string, req clients.UpdateStoreRequest) (*clients.Store, error) {
-	return m.MockUpdateStore(storeID, req)
+func (m *mockClient) UpdateStore(ctx context.Context, storeID string, req clients.UpdateStoreRequest) (*clients.Store, error) {
+	return m.MockUpdateStore(ctx, storeID, req)
 }
 
-func (m *mockClient) DeleteStore(storeID string) error {
-	return m.MockDeleteStore(storeID)
+func (m *mockClient) DeleteStore(ctx context.Context, storeID string) error {
+	return m.MockDeleteStore(ctx, storeID)
+}
+
+func (m *mockClient) ListStores(ctx context.Context) ([]clients.Store, error) {
+	return m.MockListStores(ctx)
+}
+
+func (m *mockClient) GetInvoice(ctx context.Context, storeID, invoiceID string) (*clients.Invoice, error) {
+	return m.MockGetInvoice(ctx, storeID, invoiceID)
+}
+
+func (m *mockClient) ListInvoices(ctx context.Context, storeID string) ([]clients.Invoice, error) {
+	return m.MockListInvoices(ctx, storeID)
+}
+
+func (m *mockClient) CreateInvoice(ctx context.Context, storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error) {
+	return m.MockCreateInvoice(ctx, storeID, req)
+}
+
+func (m *mockClient) ArchiveInvoice(ctx context.Context, storeID, invoiceID string) error {
+	return m.MockArchiveInvoice(ctx, storeID, invoiceID)
 }
 
 func TestObserve(t *testing.T) {
@@ -89,7 +114,7 @@ func TestObserve(t *testing.T) {
 					},
 				},
 				c: &mockClient{
-					MockGetStore: func(storeID string) (*clients.Store, error) {
+					MockGetStore: func(ctx context.Context, storeID string) (*clients.Store, error) {
 						return nil, errors.New("API error")
 					},
 				},
@@ -108,7 +133,7 @@ func TestObserve(t *testing.T) {
 					},
 				},
 				c: &mockClient{
-					MockGetStore: func(storeID string) (*clients.Store, error) {
+					MockGetStore: func(ctx context.Context, storeID string) (*clients.Store, error) {
 						return nil, fmt.Errorf("status 404: not found")
 					},
 				},
@@ -136,7 +161,7 @@ func TestObserve(t *testing.T) {
 					},
 				},
 				c: &mockClient{
-					MockGetStore: func(storeID string) (*clients.Store, error) {
+					MockGetStore: func(ctx context.Context, storeID string) (*clients.Store, error) {
 						return &clients.Store{
 							ID:              "store123",
 							Name:            "Test Store",
@@ -190,7 +215,7 @@ func TestObserve(t *testing.T) {
 					},
 				},
 				c: &mockClient{
-					MockGetStore: func(storeID string) (*clients.Store, error) {
+					MockGetStore: func(ctx context.Context, storeID string) (*clients.Store, error) {
 						return &clients.Store{
 							ID:              "store123",
 							Name:            "Test Store",
