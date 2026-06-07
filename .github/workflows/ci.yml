@@ -139,7 +139,7 @@ jobs:
   publish-artifacts:
     runs-on: ubuntu-24.04
     needs: [lint, check-diff, unit-tests]
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    if: false && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
     permissions:
       contents: read
       packages: write
