@@ -120,14 +120,23 @@ type external struct {
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
 	cr := mg.(*v1alpha1.Store)
 
-	// If we don't have an ID yet, the resource doesn't exist
-	if cr.Status.AtProvider.ID == "" {
+	var externalName string
+	if cr.Annotations != nil {
+		externalName = cr.Annotations["crossplane.io/external-name"]
+	}
+	
+	storeID := cr.Status.AtProvider.ID
+	if storeID == "" && externalName != "" && externalName != cr.Name {
+		storeID = externalName
+	}
+
+	if storeID == "" {
 		return managed.ExternalObservation{
 			ResourceExists: false,
 		}, nil
 	}
 
-	store, err := c.client.GetStore(ctx, cr.Status.AtProvider.ID)
+	store, err := c.client.GetStore(ctx, storeID)
 	if err != nil {
 		if clients.IsNotFound(err) {
 			return managed.ExternalObservation{
@@ -207,6 +216,10 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 		return managed.ExternalCreation{}, errors.Wrap(err, errCreateStore)
 	}
 
+	if cr.Annotations == nil {
+		cr.Annotations = make(map[string]string)
+	}
+	cr.Annotations["crossplane.io/external-name"] = store.ID
 	cr.Status.AtProvider.ID = store.ID
 
 	return managed.ExternalCreation{
