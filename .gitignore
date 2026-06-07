@@ -63,7 +63,7 @@ examples/**/*-actual.yaml
 .cache/
 
 # Generated cluster configuration
-cluster/
+# cluster/
 
 # Manual testing utilities
 test_manual/
