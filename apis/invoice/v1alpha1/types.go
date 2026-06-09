@@ -262,7 +262,7 @@ type PaymentDetails struct {
 // An InvoiceSpec defines the desired state of an Invoice.
 type InvoiceSpec struct {
 	xpv2.ManagedResourceSpec `json:",inline"`
-	ForProvider             InvoiceParameters `json:"forProvider"`
+	ForProvider              InvoiceParameters `json:"forProvider"`
 }
 
 // An InvoiceStatus represents the observed state of an Invoice.

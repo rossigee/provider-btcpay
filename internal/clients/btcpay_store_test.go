@@ -586,4 +586,3 @@ func TestClient_StoreAPIErrorScenarios(t *testing.T) {
 		})
 	}
 }
-

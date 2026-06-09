@@ -28,9 +28,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 
+	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/rossigee/provider-btcpay/apis"
 	"github.com/rossigee/provider-btcpay/apis/v1beta1"
-	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
 )
 
 func TestGetConfig(t *testing.T) {

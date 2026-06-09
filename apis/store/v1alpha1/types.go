@@ -175,7 +175,7 @@ type StoreObservation struct {
 // A StoreSpec defines the desired state of a Store.
 type StoreSpec struct {
 	xpv2.ManagedResourceSpec `json:",inline"`
-	ForProvider             StoreParameters `json:"forProvider"`
+	ForProvider              StoreParameters `json:"forProvider"`
 }
 
 // A StoreStatus represents the observed state of a Store.

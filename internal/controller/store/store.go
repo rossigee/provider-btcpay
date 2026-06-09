@@ -24,12 +24,12 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/feature"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
+	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
 
 	"github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
 	apisv1beta1 "github.com/rossigee/provider-btcpay/apis/v1beta1"
@@ -127,7 +127,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 	if cr.Annotations != nil {
 		externalName = cr.Annotations["crossplane.io/external-name"]
 	}
-	
+
 	storeID := cr.Status.AtProvider.ID
 	if storeID == "" && externalName != "" && externalName != cr.Name {
 		storeID = externalName
