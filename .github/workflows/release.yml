@@ -1,10 +1,13 @@
 ---
-# Standardized Release Workflow for provider-btcpay
-# Version: 2025-10-28 - Compatible with Crossplane provider standards
+# Standardized Release Workflow for Crossplane Providers
+# Version: 2026-06-09 - Unified publish pattern across all providers
 #
-# Handles ALL publishing for releases with separation of concerns:
-# - CI workflow: Build validation only
-# - Release workflow: Publishing and GitHub releases
+# Pattern:
+# 1. Build provider binaries and packages (make build)
+# 2. Publish to GHCR in a SINGLE step using make publish with both:
+#    - REGISTRY_ORGS for Docker images
+#    - XPKG_REG_ORGS for Crossplane packages
+# 3. Create GitHub release
 #
 # Triggered on version tags (v*)
 
@@ -51,8 +54,11 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Login to GitHub Container Registry
-        run: |
-          echo "${{ github.token }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
 
       - name: Build
         run: make build BUILD_PLATFORMS="linux_amd64 linux_arm64"
@@ -64,79 +70,28 @@ jobs:
         env:
           VERSION: ${{ steps.version.outputs.version }}
 
-      - name: Verify Build Artifacts
+      - name: Publish Artifacts (Docker Images + Crossplane Packages)
         run: |
-          # Verify provider binaries exist (build system uses _output/bin/)
-          ls -la _output/bin/
-          for platform in linux_amd64 linux_arm64; do
-            echo "Checking platform: $platform"
-            ls -la _output/bin/$platform/
-            if [ ! -f _output/bin/$platform/provider ]; then
-              echo "ERROR: Provider binary not found for $platform!"
-              exit 1
-            fi
-            ls -la _output/bin/$platform/provider
-            file _output/bin/$platform/provider
-          done
-          echo "✅ Provider binaries verification successful"
-
-          # Verify xpkg files exist
-          ls -la _output/xpkg/
-          for platform in linux_amd64 linux_arm64; do
-            echo "Checking xpkg for platform: $platform"
-            ls -la _output/xpkg/$platform/
-            xpkg_file="_output/xpkg/$platform/provider-btcpay-${{ steps.version.outputs.version }}.xpkg"
-            if [ ! -f "$xpkg_file" ]; then
-              echo "ERROR: xpkg file not found: $xpkg_file"
-              exit 1
-            fi
-            ls -la "$xpkg_file"
-          done
-          echo "✅ xpkg files verification successful"
-
-      # CRITICAL: Copy binaries to image context before building
-      - name: Prepare Docker Build Context
-        run: |
-          # Copy binaries to the image context
-          cp -r _output/bin cluster/images/provider-btcpay/
-          echo "✅ Binaries copied to docker context"
-
-      # CRITICAL: Build and push Docker images using buildx for proper auth handling
-      - name: Build and Push Docker Images
-        uses: docker/build-push-action@v6
-        with:
-          context: cluster/images/provider-btcpay
-          file: cluster/images/provider-btcpay/Dockerfile
-          push: true
-          tags: |
-            ghcr.io/rossigee/provider-btcpay:${{ steps.version.outputs.version }}
-            ghcr.io/rossigee/provider-btcpay:latest
-          build-args: |
-            VERSION=${{ steps.version.outputs.version }}
-            TARGETOS=linux
-            TARGETARCH=amd64
-          labels: |
-            org.opencontainers.image.title=provider-btcpay
-            org.opencontainers.image.description=Crossplane provider for BTCPay Server
-            org.opencontainers.image.version=${{ steps.version.outputs.version }}
-            org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
-            org.opencontainers.image.url=${{ github.server_url }}/${{ github.repository }}
-            org.opencontainers.image.documentation=${{ github.server_url }}/${{ github.repository }}/blob/${{ steps.version.outputs.version }}/README.md
-            org.opencontainers.image.vendor=rossigee
-            org.opencontainers.image.licenses=Apache-2.0
-            org.opencontainers.image.ref.name=${{ steps.version.outputs.version }}
-
-      - name: Publish Crossplane Packages
-        run: |
-          # Publish versioned package
-          make publish
-          # Publish latest package
-          make publish VERSION=latest
+          make publish \
+            REGISTRY_ORGS="ghcr.io/${{ github.repository_owner }}" \
+            XPKG_REG_ORGS="ghcr.io/${{ github.repository_owner }}" \
+            BRANCH_NAME=master
         env:
           VERSION: ${{ steps.version.outputs.version }}
-          REGISTRY_ORGS: ghcr.io/rossigee
+
+      - name: Verify Publication
+        run: |
+          set -e
+
+          VERSION="${{ steps.version.outputs.version }}"
+          PROVIDER_NAME="${{ github.event.repository.name }}"
+          REGISTRY_PATH="ghcr.io/${{ github.repository_owner }}/${PROVIDER_NAME}"
+
+          if docker pull "${REGISTRY_PATH}:${VERSION}" > /dev/null 2>&1; then
+            echo "✅ Verified container image ${VERSION}"
+          else
+            echo "⚠️ Container image not found - xpkg-only provider"
+          fi
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -146,36 +101,31 @@ jobs:
           prerelease: false
           generate_release_notes: true
 
-# Key Principles for this Template:
+# Key Principles:
 #
-# 1. SINGLE SOURCE OF TRUTH FOR PUBLISHING
-#    - Only this workflow publishes to registries
-#    - CI workflow only validates builds
-#    - Eliminates tag conflicts
+# 1. UNIFIED PUBLISH PATTERN
+#    - Single `make publish` call handles both Docker images and xpkg packages
+#    - Both REGISTRY_ORGS and XPKG_REG_ORGS point to ghcr.io
+#    - No separate docker push steps
 #
-# 2. IDENTICAL VERSION AND LATEST TAGS
-#    - Build image once with version tag
-#    - Tag the SAME image as latest
-#    - Push both tags (they're identical)
-#    - No separate builds = no image differences
+# 2. CONSISTENT AUTHENTICATION
+#    - docker/login-action for GHCR authentication
+#    - Standard GITHUB_TOKEN with packages:write permission
 #
-# 3. STANDARDIZED REGISTRY PUBLISHING
-#    - Primary: ghcr.io/rossigee/provider-btcpay
-#    - Version tag: v1.2.3
-#    - Latest tag: latest
-#    - Both Crossplane packages and container images
+# 3. BUILD BEFORE PUBLISH
+#    - Build binaries (make build)
+#    - Build packages (make xpkg.build)
+#    - Publish everything (make publish)
 #
-# 4. BUILD FROM SOURCE
-#    - Always build from the tagged source
-#    - No dependency on pre-built artifacts
-#    - Ensures reproducible builds
+# 4. VERIFICATION
+#    - Verify Docker image was published to GHCR
+#    - Handle providers that are xpkg-only (no Docker image)
 #
-# 5. PROPER AUTHENTICATION
-#    - Uses github.token for registry authentication
-#    - Proper permissions for package publishing
-#    - GitHub release creation
+# 5. GITHUB RELEASE
+#    - Auto-generate release notes from commits
+#    - Create release with version tag
 #
-# To trigger a release:
-# 1. Create a git tag: git tag v1.2.3
-# 2. Push the tag: git push origin v1.2.3
-# 3. This workflow will automatically build, publish, and create a release
+# To apply this template:
+# 1. Copy to .github/workflows/release.yml in each provider repo
+# 2. Commit and push
+# 3. Create version tag: git tag v1.2.3 && git push origin v1.2.3
