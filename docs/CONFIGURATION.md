@@ -1,43 +1,44 @@
 # Provider Configuration Guide
 
-This guide walks through all configuration options for the Plausible provider.
+This guide walks through all configuration options for the BTCPay Server provider.
 
 ## Table of Contents
 - [Prerequisites](#prerequisites)
 - [API Key Setup](#api-key-setup)
 - [Provider Installation](#provider-installation)
 - [ProviderConfig Setup](#providerconfig-setup)
-- [Self-Hosted Plausible](#self-hosted-plausible)
+- [Self-Hosted BTCPay](#self-hosted-btcpay)
 - [Troubleshooting](#troubleshooting)
 
 ## Prerequisites
 
 1. A Kubernetes cluster with Crossplane installed
-2. A Plausible Analytics account (either cloud or self-hosted)
-3. A Plausible API key with appropriate permissions
+2. A BTCPay Server instance (cloud hosted or self-hosted)
+3. A BTCPay API key with appropriate permissions
 
 ## API Key Setup
 
 ### Obtaining an API Key
 
-1. Log into your Plausible Analytics account
-2. Navigate to Account Settings → API Keys
-3. Click "Create API Key"
+1. Log into your BTCPay Server instance
+2. Navigate to Account Settings → API keys
+3. Click "Create a new API key"
 4. Give your key a descriptive name (e.g., "crossplane-provider")
-5. **Important**: Contact Plausible support to enable Site Provisioning API access for your key
+5. Grant permissions for Stores and Invoices management
+6. Generate and securely store the API key
 
 ### Required Permissions
 
 Your API key needs the following permissions:
-- Sites API: Read, Write, Delete
-- Goals API: Read, Write, Delete
+- Store management: can view and modify stores
+- Invoice management: can view and create invoices
 
 ## Provider Installation
 
 ### Option 1: Using Crossplane CLI
 
 ```bash
-kubectl crossplane install provider crossplane/provider-plausible:latest
+kubectl crossplane install provider ghcr.io/rossigee/provider-btcpay:latest
 ```
 
 ### Option 2: Using Kubernetes Manifest
@@ -46,16 +47,16 @@ kubectl crossplane install provider crossplane/provider-plausible:latest
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
 metadata:
-  name: provider-plausible
+  name: provider-btcpay
 spec:
-  package: crossplane/provider-plausible:latest
+  package: ghcr.io/rossigee/provider-btcpay:latest
   # Optional: specify a specific version
-  # package: crossplane/provider-plausible:v0.1.0
+  # package: ghcr.io/rossigee/provider-btcpay:v0.3.0
 ```
 
 Apply the manifest:
 ```bash
-kubectl apply -f provider-plausible.yaml
+kubectl apply -f provider-btcpay.yaml
 ```
 
 ### Verify Installation
@@ -73,13 +74,13 @@ The provider expects credentials in JSON format:
 
 ```bash
 # Create the secret directly
-kubectl create secret generic plausible-credentials \
-  --from-literal=credentials='{"apiKey":"YOUR_PLAUSIBLE_API_KEY"}' \
+kubectl create secret generic btcpay-credentials \
+  --from-literal=credentials='{"apiKey":"YOUR_BTCPAY_API_KEY"}' \
   -n crossplane-system
 
 # Or create from a file
-echo '{"apiKey":"YOUR_PLAUSIBLE_API_KEY"}' > credentials.json
-kubectl create secret generic plausible-credentials \
+echo '{"apiKey":"YOUR_BTCPAY_API_KEY"}' > credentials.json
+kubectl create secret generic btcpay-credentials \
   --from-file=credentials=credentials.json \
   -n crossplane-system
 rm credentials.json  # Clean up
@@ -90,20 +91,18 @@ rm credentials.json  # Clean up
 Create a file named `provider-config.yaml`:
 
 ```yaml
-apiVersion: plausible.crossplane.io/v1beta1
+apiVersion: btcpay.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
   name: default
 spec:
+  baseURL: https://your-btcpay-server.com
   credentials:
     source: Secret
     secretRef:
-      name: plausible-credentials
+      name: btcpay-credentials
       namespace: crossplane-system
       key: credentials
-  # For Plausible Cloud, baseURL is optional
-  # For self-hosted, specify your instance URL
-  # baseURL: https://plausible.io
 ```
 
 Apply the configuration:
@@ -114,41 +113,41 @@ kubectl apply -f provider-config.yaml
 ### 3. Verify ProviderConfig
 
 ```bash
-kubectl get providerconfigs.plausible.crossplane.io
-kubectl describe providerconfig.plausible.crossplane.io default
+kubectl get providerconfigs.btcpay.crossplane.io
+kubectl describe providerconfig.btcpay.crossplane.io default
 ```
 
-## Self-Hosted Plausible
+## Self-Hosted BTCPay
 
-If you're using a self-hosted Plausible instance:
+If you're using a self-hosted BTCPay instance:
 
 ```yaml
-apiVersion: plausible.crossplane.io/v1beta1
+apiVersion: btcpay.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
   name: self-hosted
 spec:
+  baseURL: https://btcpay.internal.company.com
   credentials:
     source: Secret
     secretRef:
-      name: plausible-credentials
+      name: btcpay-credentials
       namespace: crossplane-system
       key: credentials
-  # Required for self-hosted instances
-  baseURL: https://analytics.example.com
 ```
 
 ### Multiple ProviderConfigs
 
-You can create multiple ProviderConfigs for different Plausible instances:
+You can create multiple ProviderConfigs for different BTCPay instances:
 
 ```yaml
-# Cloud instance
-apiVersion: plausible.crossplane.io/v1beta1
+# Cloud hosted instance
+apiVersion: btcpay.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
-  name: plausible-cloud
+  name: btcpay-cloud
 spec:
+  baseURL: https://mainnet.demo.btcpayserver.org
   credentials:
     source: Secret
     secretRef:
@@ -157,32 +156,33 @@ spec:
       key: credentials
 ---
 # Self-hosted instance
-apiVersion: plausible.crossplane.io/v1beta1
+apiVersion: btcpay.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
-  name: plausible-selfhosted
+  name: btcpay-internal
 spec:
+  baseURL: https://btcpay.internal.company.com
   credentials:
     source: Secret
     secretRef:
-      name: selfhosted-credentials
+      name: internal-credentials
       namespace: crossplane-system
       key: credentials
-  baseURL: https://analytics.internal.company.com
 ```
 
 Then reference the specific config in your resources:
 
 ```yaml
-apiVersion: site.plausible.crossplane.io/v1alpha1
-kind: Site
+apiVersion: store.btcpay.crossplane.io/v1alpha1
+kind: Store
 metadata:
-  name: my-site
+  name: my-store
 spec:
   providerConfigRef:
-    name: plausible-selfhosted  # Use specific config
+    name: btcpay-internal  # Use specific config
   forProvider:
-    domain: example.com
+    name: "My Store"
+    defaultCurrency: "USD"
 ```
 
 ## Troubleshooting
@@ -200,29 +200,29 @@ spec:
    ```
    API request failed with status 403: Forbidden
    ```
-   - Ensure your API key has Site Provisioning API access
-   - Contact Plausible support if needed
+   - Ensure your API key has sufficient permissions
+   - Verify the API key is not expired or revoked
 
 3. **Connection Errors**
    ```
    failed to send http request
    ```
-   - For self-hosted: verify the baseURL is correct
+   - Verify the baseURL is correct and accessible
    - Check network connectivity from the provider pod
 
 ### Debug Commands
 
 ```bash
 # Check provider logs
-kubectl logs -n crossplane-system deployment/provider-plausible-*
+kubectl logs -n crossplane-system deployment/provider-btcpay-*
 
 # Verify secret contents (be careful with sensitive data)
-kubectl get secret plausible-credentials -n crossplane-system -o jsonpath='{.data.credentials}' | base64 -d
+kubectl get secret btcpay-credentials -n crossplane-system -o jsonpath='{.data.credentials}' | base64 -d
 
 # Check provider config status
-kubectl describe providerconfig.plausible.crossplane.io default
+kubectl describe providerconfig.btcpay.crossplane.io default
 
-# List all Plausible resources
-kubectl get sites.site.plausible.crossplane.io
-kubectl get goals.goal.plausible.crossplane.io
+# List all BTCPay resources
+kubectl get stores.store.btcpay.crossplane.io
+kubectl get invoices.invoice.btcpay.crossplane.io
 ```

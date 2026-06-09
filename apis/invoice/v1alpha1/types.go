@@ -19,7 +19,7 @@ package v1alpha1
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
 )
 
 // InvoiceParameters are the configurable fields of an Invoice.
@@ -261,14 +261,14 @@ type PaymentDetails struct {
 
 // An InvoiceSpec defines the desired state of an Invoice.
 type InvoiceSpec struct {
-	xpv1.ResourceSpec `json:",inline"`
-	ForProvider       InvoiceParameters `json:"forProvider"`
+	xpv2.ManagedResourceSpec `json:",inline"`
+	ForProvider             InvoiceParameters `json:"forProvider"`
 }
 
 // An InvoiceStatus represents the observed state of an Invoice.
 type InvoiceStatus struct {
-	xpv1.ResourceStatus `json:",inline"`
-	AtProvider          InvoiceObservation `json:"atProvider,omitempty"`
+	xpv2.ManagedResourceStatus `json:",inline"`
+	AtProvider                 InvoiceObservation `json:"atProvider,omitempty"`
 }
 
 // +kubebuilder:object:root=true
@@ -282,7 +282,7 @@ type InvoiceStatus struct {
 // +kubebuilder:printcolumn:name="READY",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 // +kubebuilder:subresource:status
-// +kubebuilder:resource:scope=Cluster,categories={crossplane,managed,btcpay}
+// +kubebuilder:resource:scope=Namespaced,categories={crossplane,managed,btcpay}
 type Invoice struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

@@ -1,6 +1,6 @@
 # Development Guide
 
-This guide covers development setup, building, testing, and contributing to the Plausible provider.
+This guide covers development setup, building, testing, and contributing to the BTCPay Server provider.
 
 ## Table of Contents
 - [Development Environment](#development-environment)
@@ -15,7 +15,7 @@ This guide covers development setup, building, testing, and contributing to the 
 
 ### Prerequisites
 
-- Go 1.21+
+- Go 1.26.4+
 - Docker
 - Kind or another Kubernetes cluster
 - Kubectl
@@ -25,8 +25,8 @@ This guide covers development setup, building, testing, and contributing to the 
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/crossplane-contrib/provider-plausible
-   cd provider-plausible
+   git clone https://github.com/rossigee/provider-btcpay
+   cd provider-btcpay
    ```
 
 2. **Install dependencies**
@@ -124,7 +124,7 @@ The package will be at `_output/xpkg/`
 1. **Build and load image**
    ```bash
    make docker-build
-   kind load docker-image crossplane/provider-plausible:latest --name crossplane-dev
+   kind load docker-image crossplane/provider-btcpay:latest --name crossplane-dev
    ```
 
 2. **Install provider**
@@ -132,9 +132,9 @@ The package will be at `_output/xpkg/`
    apiVersion: pkg.crossplane.io/v1
    kind: Provider
    metadata:
-     name: provider-plausible
+     name: provider-btcpay
    spec:
-     package: crossplane/provider-plausible:latest
+     package: crossplane/provider-btcpay:latest
      packagePullPolicy: Never  # Use local image
    ```
 
@@ -162,7 +162,7 @@ Create a test environment:
 
 ```bash
 # 1. Apply test credentials
-kubectl create secret generic plausible-test-creds \
+kubectl create secret generic btcpay-test-creds \
   --from-literal=credentials='{"apiKey":"test-key"}' \
   -n crossplane-system
 
@@ -171,14 +171,15 @@ kubectl apply -f examples/provider/config.yaml
 kubectl apply -f examples/site/site.yaml
 
 # 3. Check resource status
-kubectl describe site.site.plausible.crossplane.io example-site
+kubectl describe store.store.btcpay.crossplane.io example-store
 ```
 
 ### E2E Tests
 
 ```bash
-# Run e2e tests (requires real Plausible API access)
-export PLAUSIBLE_API_KEY="your-test-key"
+# Run e2e tests (requires real BTCPay Server instance)
+export BTCPAY_API_KEY="your-test-key"
+export BTCPAY_BASE_URL="https://your-btcpay-instance.com"
 go test -tags=e2e ./test/e2e/...
 ```
 
@@ -309,7 +310,7 @@ make run
 make run ARGS="--debug"
 
 # In-cluster
-kubectl edit deployment/provider-plausible-*
+kubectl edit deployment/provider-btcpay-*
 # Add --debug to container args
 ```
 
@@ -318,30 +319,30 @@ kubectl edit deployment/provider-plausible-*
 1. **CRD Installation Issues**
    ```bash
    # Reinstall CRDs
-   kubectl delete crd sites.site.plausible.crossplane.io
+   kubectl delete crd stores.store.btcpay.crossplane.io
    make install-crds
    ```
 
 2. **RBAC Issues**
    ```bash
    # Check provider service account permissions
-   kubectl describe clusterrole provider-plausible-*
+   kubectl describe clusterrole provider-btcpay-*
    ```
 
 3. **API Client Issues**
    ```bash
    # Test API connectivity
-   curl -H "Authorization: Bearer YOUR_KEY" https://plausible.io/api/v1/sites
+   curl -H "Authorization: token YOUR_BTCPAY_API_KEY" https://your-btcpay-instance.com/api/v1/stores
    ```
 
 ### Debugging Tools
 
 ```bash
 # Watch provider logs
-kubectl logs -f -n crossplane-system deployment/provider-plausible-*
+kubectl logs -f -n crossplane-system deployment/provider-btcpay-*
 
 # Describe problematic resources
-kubectl describe site.site.plausible.crossplane.io my-site
+kubectl describe store.store.btcpay.crossplane.io my-store
 
 # Check events
 kubectl get events --field-selector involvedObject.name=my-site

@@ -1,46 +1,66 @@
-# Plausible Provider Resources
+# BTCPay Server Provider Resources
 
-This document provides detailed information about all resources supported by the Plausible provider.
+This document provides detailed information about all resources supported by the BTCPay Server provider.
 
 ## Table of Contents
-- [Site Resource](#site-resource)
-- [Goal Resource](#goal-resource)
+- [Store Resource](#store-resource)
+- [Invoice Resource](#invoice-resource)
 - [Resource Relationships](#resource-relationships)
 - [Common Patterns](#common-patterns)
 
-## Site Resource
+## Store Resource
 
-The `Site` resource represents a website in Plausible Analytics.
+The `Store` resource represents a BTCPay Server store for managing payment processing.
 
 ### API Version
-- Group: `site.plausible.crossplane.io`
+- Group: `store.btcpay.crossplane.io`
 - Version: `v1alpha1`
-- Kind: `Site`
+- Kind: `Store`
 
 ### Specification
 
 ```yaml
-apiVersion: site.plausible.crossplane.io/v1alpha1
-kind: Site
+apiVersion: store.btcpay.crossplane.io/v1alpha1
+kind: Store
 metadata:
-  name: my-website
+  name: my-store
 spec:
   forProvider:
-    # Required: The domain name for the site
-    domain: example.com
+    # Required: The display name for the store
+    name: "My Online Store"
     
-    # Optional: Team ID to associate the site with
-    # If not specified, uses the default team
-    teamID: "team-123"
+    # Required: Default currency for the store
+    # Must be a valid currency code (USD, EUR, BTC, etc.)
+    defaultCurrency: "USD"
     
-    # Optional: Timezone for the site
-    # Must be a valid IANA timezone (e.g., "America/New_York", "Europe/London")
-    # Defaults to UTC if not specified
-    timezone: "America/New_York"
+    # Optional: Website URL associated with the store
+    website: "https://mystore.example.com"
     
-    # Optional: New domain for updating an existing site
-    # Only used during updates, leave empty during creation
-    newDomain: "new-example.com"
+    # Optional: Invoice expiration time in seconds (60-86400)
+    invoiceExpiration: 900
+    
+    # Optional: Monitoring expiration time in seconds
+    monitoringExpiration: 3600
+    
+    # Optional: Payment tolerance percentage (0-100)
+    paymentTolerance: 0.5
+    
+    # Optional: Speed policy for confirmation
+    # Valid values: High, Medium, Low
+    speedPolicy: "Medium"
+    
+    # Optional: Network fee mode
+    # Valid values: Never, Always, MultiplePaymentsOnly
+    networkFeeMode: "Never"
+    
+    # Optional: Other configuration options
+    lightningAmountInSatoshi: true
+    lightningPrivateRouteHints: true
+    onChainWithLnInvoiceFallback: true
+    redirectAutomatically: false
+    showRecommendedFee: true
+    recommendedFeeBlockTarget: 60
+    defaultLang: "en"
   
   # Reference to the ProviderConfig
   providerConfigRef:
@@ -52,120 +72,107 @@ spec:
 ```yaml
 status:
   atProvider:
-    # The unique ID assigned by Plausible
-    id: "site-abc123"
+    # The unique store ID assigned by BTCPay
+    id: "store-abc123def456"
     
-    # Current domain of the site
-    domain: "example.com"
+    # Confirmed store name
+    name: "My Online Store"
     
-    # Team ID the site belongs to
-    teamID: "team-123"
+    # Store website
+    website: "https://mystore.example.com"
     
-    # Timestamps
-    createdAt: "2023-01-01T00:00:00Z"
-    updatedAt: "2023-01-02T00:00:00Z"
+    # Confirmed default currency
+    defaultCurrency: "USD"
+    
+    # Invoice expiration setting
+    invoiceExpiration: 900
+    
+    # Available payment methods
+    paymentMethods:
+      - "BTC"
+      - "LTC"
+      - "LightningNetwork"
+    
+    # Creation timestamp
+    createdAt: "2026-06-09T12:00:00Z"
+    
+    # Derivation schemes for payment methods
+    derivationSchemes:
+      BTC: "xpub..."
+      LTC: "xpub..."
   
-  # Crossplane resource conditions
   conditions:
-  - type: Ready
-    status: "True"
-    reason: Available
-    lastTransitionTime: "2023-01-01T00:00:00Z"
+    - type: Ready
+      status: "True"
+      reason: Available
+      message: "Store is ready for use"
+    - type: Synced
+      status: "True"
+      reason: ReconciliationSucceeded
+      message: "Latest observed state matches desired state"
 ```
 
-### Examples
+## Invoice Resource
 
-#### Basic Site
-```yaml
-apiVersion: site.plausible.crossplane.io/v1alpha1
-kind: Site
-metadata:
-  name: company-blog
-spec:
-  forProvider:
-    domain: blog.company.com
-  providerConfigRef:
-    name: default
-```
-
-#### Site with Team and Timezone
-```yaml
-apiVersion: site.plausible.crossplane.io/v1alpha1
-kind: Site
-metadata:
-  name: regional-site
-spec:
-  forProvider:
-    domain: uk.company.com
-    teamID: "uk-team"
-    timezone: "Europe/London"
-  providerConfigRef:
-    name: default
-```
-
-#### Updating a Site Domain
-```yaml
-apiVersion: site.plausible.crossplane.io/v1alpha1
-kind: Site
-metadata:
-  name: company-site
-spec:
-  forProvider:
-    domain: old-domain.com
-    newDomain: new-domain.com  # This triggers a domain update
-  providerConfigRef:
-    name: default
-```
-
-### Important Notes
-
-1. **Domain Uniqueness**: Domains must be unique within your Plausible account
-2. **Domain Updates**: Use the `newDomain` field to update a site's domain
-3. **Timezone**: Once set, timezone cannot be changed via the API
-4. **Team Association**: Team ID cannot be changed after creation
-
-## Goal Resource
-
-The `Goal` resource represents a conversion goal in Plausible Analytics.
+The `Invoice` resource represents a payment invoice in BTCPay Server.
 
 ### API Version
-- Group: `goal.plausible.crossplane.io`
+- Group: `invoice.btcpay.crossplane.io`
 - Version: `v1alpha1`
-- Kind: `Goal`
+- Kind: `Invoice`
 
 ### Specification
 
 ```yaml
-apiVersion: goal.plausible.crossplane.io/v1alpha1
-kind: Goal
+apiVersion: invoice.btcpay.crossplane.io/v1alpha1
+kind: Invoice
 metadata:
-  name: my-goal
+  name: order-001-invoice
 spec:
   forProvider:
-    # Site association (use one of the following methods)
+    # Required: Reference to the store
+    storeRef:
+      name: my-store
+      namespace: default
     
-    # Method 1: Direct domain reference
-    siteDomain: "example.com"
+    # Required: Invoice amount
+    amount: 100.50
     
-    # Method 2: Reference to a Site resource
-    siteDomainRef:
-      name: my-website
+    # Required: Currency code
+    currency: "USD"
     
-    # Method 3: Selector (not yet implemented)
-    # siteDomainSelector:
-    #   matchLabels:
-    #     environment: production
+    # Optional: Order ID for tracking
+    orderID: "ORDER-001"
     
-    # Required: Type of goal
-    # Must be either "event" or "page"
-    goalType: event
+    # Optional: Item description
+    itemDesc: "Monthly Subscription"
     
-    # Required for event goals: The event name to track
-    eventName: "Signup"
+    # Optional: Item code/SKU
+    itemCode: "SUB-001"
     
-    # Required for page goals: The page path to track
-    pagePath: "/thank-you"
+    # Optional: Buyer email address
+    buyerEmail: "customer@example.com"
+    
+    # Optional: Notification URL for webhooks
+    notificationURL: "https://api.example.com/webhooks/btcpay"
+    
+    # Optional: Redirect URL after payment
+    redirectURL: "https://example.com/payment-success"
+    
+    # Optional: Custom metadata
+    metadata:
+      orderId: "ORDER-001"
+      customerId: "CUST-123"
+      environment: "production"
+    
+    # Optional: Other configuration
+    physical: false
+    taxIncluded: false
+    extendedNotifications: false
+    fullNotifications: false
+    checkoutQueryString: "utm_source=website"
   
+  # Reference to the ProviderConfig
   providerConfigRef:
     name: default
 ```
@@ -175,249 +182,170 @@ spec:
 ```yaml
 status:
   atProvider:
-    # The unique ID assigned by Plausible
-    id: "goal-xyz789"
+    # The unique invoice ID assigned by BTCPay
+    id: "invoice-xyz789"
     
-    # Goal type (event or page)
-    goalType: "event"
+    # Store ID
+    storeId: "store-abc123def456"
     
-    # Event name (for event goals)
-    eventName: "Signup"
+    # Invoice amount in the specified currency
+    amount: 100.50
     
-    # Page path (for page goals)
-    pagePath: ""
+    # Currency code
+    currency: "USD"
     
-    # Creation timestamp
-    createdAt: "2023-01-01T00:00:00Z"
+    # Invoice type
+    type: "standard"
+    
+    # Checkout link for payment
+    checkoutLink: "https://btcpay.example.com/i/invoice-xyz789"
+    
+    # Invoice status
+    # Values: new, processing, expired, paid, confirmed, failed, archived
+    status: "new"
+    
+    # Additional status information
+    additionalStatus: "paid"
+    
+    # Whether the invoice is archived
+    archived: false
+    
+    # Payment methods available
+    paymentMethods:
+      - paymentMethod: "BTC"
+        cryptoCode: "BTC"
+        destination: "bc1q..."
+        rate: "26500.00"
+        paid: false
+        totalPaid: 0
+        due: 0.00378612
+    
+    # Timestamps
+    createdTime: "2026-06-09T12:00:00Z"
+    expirationTime: "2026-06-09T12:15:00Z"
+    monitoringExpiration: "2026-06-09T13:00:00Z"
   
   conditions:
-  - type: Ready
-    status: "True"
-    reason: Available
+    - type: Ready
+      status: "True"
+      reason: Available
+      message: "Invoice is ready for payment processing"
+    - type: Synced
+      status: "True"
+      reason: ReconciliationSucceeded
+      message: "Latest observed state matches desired state"
 ```
-
-### Examples
-
-#### Event Goal
-```yaml
-apiVersion: goal.plausible.crossplane.io/v1alpha1
-kind: Goal
-metadata:
-  name: signup-goal
-spec:
-  forProvider:
-    siteDomainRef:
-      name: my-website
-    goalType: event
-    eventName: "Signup"
-  providerConfigRef:
-    name: default
-```
-
-#### Page Goal
-```yaml
-apiVersion: goal.plausible.crossplane.io/v1alpha1
-kind: Goal
-metadata:
-  name: conversion-goal
-spec:
-  forProvider:
-    siteDomain: "example.com"
-    goalType: page
-    pagePath: "/purchase/complete"
-  providerConfigRef:
-    name: default
-```
-
-#### Multiple Goals for One Site
-```yaml
-# Newsletter signup
-apiVersion: goal.plausible.crossplane.io/v1alpha1
-kind: Goal
-metadata:
-  name: newsletter-goal
-spec:
-  forProvider:
-    siteDomainRef:
-      name: company-site
-    goalType: event
-    eventName: "Newsletter Signup"
-  providerConfigRef:
-    name: default
----
-# Contact form submission
-apiVersion: goal.plausible.crossplane.io/v1alpha1
-kind: Goal
-metadata:
-  name: contact-goal
-spec:
-  forProvider:
-    siteDomainRef:
-      name: company-site
-    goalType: event
-    eventName: "Contact Form"
-  providerConfigRef:
-    name: default
----
-# Thank you page visit
-apiVersion: goal.plausible.crossplane.io/v1alpha1
-kind: Goal
-metadata:
-  name: thankyou-goal
-spec:
-  forProvider:
-    siteDomainRef:
-      name: company-site
-    goalType: page
-    pagePath: "/thank-you"
-  providerConfigRef:
-    name: default
-```
-
-### Important Notes
-
-1. **Goal Types**: Only "event" and "page" types are supported
-2. **Event Names**: Must match exactly what your website sends
-3. **Page Paths**: Should include the leading slash
-4. **Immutability**: Goals cannot be updated after creation
-5. **Uniqueness**: The combination of site + goal type + event/page must be unique
 
 ## Resource Relationships
 
-### Site → Goals Relationship
+### Invoice References Store
 
-Goals depend on Sites. The relationship can be established in two ways:
-
-1. **Direct Domain Reference**
-   ```yaml
-   siteDomain: "example.com"
-   ```
-
-2. **Resource Reference**
-   ```yaml
-   siteDomainRef:
-     name: my-website
-   ```
-
-Using resource references is recommended as it:
-- Creates an explicit dependency
-- Ensures the site exists before creating the goal
-- Automatically handles site deletion order
-
-### Deletion Behavior
-
-- Deleting a Site does NOT automatically delete its Goals
-- Goals must be explicitly deleted before removing a Site
-- Use Kubernetes finalizers or owner references for cascading deletion
-
-## Common Patterns
-
-### Complete Site Setup
+Invoices use a cross-reference pattern to link to stores:
 
 ```yaml
-# 1. Create the site
-apiVersion: site.plausible.crossplane.io/v1alpha1
-kind: Site
+apiVersion: invoice.btcpay.crossplane.io/v1alpha1
+kind: Invoice
 metadata:
-  name: ecommerce-site
-  labels:
-    app: ecommerce
-    environment: production
+  name: order-002-invoice
 spec:
   forProvider:
-    domain: shop.example.com
-    timezone: "America/New_York"
-  providerConfigRef:
-    name: default
----
-# 2. Create conversion goals
-apiVersion: goal.plausible.crossplane.io/v1alpha1
-kind: Goal
-metadata:
-  name: ecommerce-purchase
-  labels:
-    app: ecommerce
-    goal-type: conversion
-spec:
-  forProvider:
-    siteDomainRef:
-      name: ecommerce-site
-    goalType: event
-    eventName: "Purchase"
-  providerConfigRef:
-    name: default
----
-apiVersion: goal.plausible.crossplane.io/v1alpha1
-kind: Goal
-metadata:
-  name: ecommerce-add-to-cart
-  labels:
-    app: ecommerce
-    goal-type: engagement
-spec:
-  forProvider:
-    siteDomainRef:
-      name: ecommerce-site
-    goalType: event
-    eventName: "Add to Cart"
+    storeRef:
+      name: my-store  # References a Store in the same namespace
+      namespace: default
+    amount: 50.00
+    currency: "USD"
   providerConfigRef:
     name: default
 ```
 
-### Multi-Environment Setup
+## Common Patterns
+
+### Creating Resources in Different Namespaces
 
 ```yaml
-# Development site
-apiVersion: site.plausible.crossplane.io/v1alpha1
-kind: Site
+---
+# Store in default namespace
+apiVersion: store.btcpay.crossplane.io/v1alpha1
+kind: Store
 metadata:
-  name: app-dev
-  labels:
-    environment: development
+  name: store-prod
+  namespace: default
 spec:
   forProvider:
-    domain: dev.app.example.com
+    name: "Production Store"
+    defaultCurrency: "USD"
   providerConfigRef:
     name: default
 ---
-# Production site
-apiVersion: site.plausible.crossplane.io/v1alpha1
-kind: Site
+# Invoice in payment namespace referencing store in default
+apiVersion: invoice.btcpay.crossplane.io/v1alpha1
+kind: Invoice
 metadata:
-  name: app-prod
-  labels:
-    environment: production
+  name: invoice-001
+  namespace: payment
 spec:
   forProvider:
-    domain: app.example.com
-    timezone: "America/New_York"
+    storeRef:
+      name: store-prod
+      namespace: default  # Cross-namespace reference
+    amount: 100.00
+    currency: "USD"
+  providerConfigRef:
+    name: default
+```
+
+### Multiple Stores Configuration
+
+```yaml
+---
+apiVersion: store.btcpay.crossplane.io/v1alpha1
+kind: Store
+metadata:
+  name: store-usd
+spec:
+  forProvider:
+    name: "USD Store"
+    defaultCurrency: "USD"
   providerConfigRef:
     name: default
 ---
-# Shared goal configuration for both environments
-apiVersion: goal.plausible.crossplane.io/v1alpha1
-kind: Goal
+apiVersion: store.btcpay.crossplane.io/v1alpha1
+kind: Store
 metadata:
-  name: signup-goal-dev
+  name: store-eur
 spec:
   forProvider:
-    siteDomainRef:
-      name: app-dev
-    goalType: event
-    eventName: "User Signup"
+    name: "EUR Store"
+    defaultCurrency: "EUR"
   providerConfigRef:
     name: default
----
-apiVersion: goal.plausible.crossplane.io/v1alpha1
-kind: Goal
+```
+
+### GitOps Integration
+
+For GitOps workflows, stores and invoices can be version-controlled:
+
+```bash
+# Create directory structure
+mkdir -p btcpay/stores btcpay/invoices
+
+# Store configurations
+cat > btcpay/stores/prod.yaml << EOF
+apiVersion: store.btcpay.crossplane.io/v1alpha1
+kind: Store
 metadata:
-  name: signup-goal-prod
+  name: prod-store
 spec:
   forProvider:
-    siteDomainRef:
-      name: app-prod
-    goalType: event
-    eventName: "User Signup"
+    name: "Production Store"
+    defaultCurrency: "USD"
+    website: "https://prod.example.com"
   providerConfigRef:
     name: default
+EOF
+
+# Sync with Flux/ArgoCD
+git add btcpay/
+git commit -m "Add BTCPay production store configuration"
+git push
 ```

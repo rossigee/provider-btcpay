@@ -19,7 +19,7 @@ package v1alpha1
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
 )
 
 // StoreParameters are the configurable fields of a Store.
@@ -174,14 +174,14 @@ type StoreObservation struct {
 
 // A StoreSpec defines the desired state of a Store.
 type StoreSpec struct {
-	xpv1.ResourceSpec `json:",inline"`
-	ForProvider       StoreParameters `json:"forProvider"`
+	xpv2.ManagedResourceSpec `json:",inline"`
+	ForProvider             StoreParameters `json:"forProvider"`
 }
 
 // A StoreStatus represents the observed state of a Store.
 type StoreStatus struct {
-	xpv1.ResourceStatus `json:",inline"`
-	AtProvider          StoreObservation `json:"atProvider,omitempty"`
+	xpv2.ManagedResourceStatus `json:",inline"`
+	AtProvider                 StoreObservation `json:"atProvider,omitempty"`
 }
 
 // +kubebuilder:object:root=true
@@ -195,7 +195,7 @@ type StoreStatus struct {
 // +kubebuilder:printcolumn:name="SYNCED",type="string",JSONPath=".status.conditions[?(@.type=='Synced')].status"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 // +kubebuilder:subresource:status
-// +kubebuilder:resource:scope=Cluster,categories={crossplane,managed,btcpay}
+// +kubebuilder:resource:scope=Namespaced,categories={crossplane,managed,btcpay}
 type Store struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

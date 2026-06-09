@@ -71,10 +71,10 @@ spec:
 ```
 
 ### Status Conditions
-Use Crossplane's standard conditions:
-- `xpv1.Available()` - Resource ready
-- `xpv1.Creating()` - Resource being created
-- `xpv1.Deleting()` - Resource being deleted
+Use Crossplane's standard conditions (v2 API):
+- `xpv2.Available()` - Resource ready
+- `xpv2.Creating()` - Resource being created
+- `xpv2.Deleting()` - Resource being deleted
 
 ### Error Handling
 - Always wrap errors with context using `errors.Wrap()`
@@ -142,8 +142,16 @@ When implementing new resources:
 5. Create examples in `examples/<resource>/`
 6. Add integration tests in `test/e2e/`
 
-## Known Issues
+## Implementation Status
 
-- Some documentation still references "Plausible" instead of "BTCPay" (template artifacts)
-- Makefile contains `XPKGS = provider-plausible` instead of `provider-btcpay`
-- Additional resource controllers need implementation beyond API definitions
+**✅ Complete**:
+- Store and Invoice resources with full CRUD operations
+- Crossplane v2 migration with xpv2 API types
+- CI/CD pipelines (lint, test, build, release, security scanning)
+- Comprehensive security scanning (CodeQL, gosec, govulncheck, TruffleHog)
+- Test coverage with unit tests
+
+**⚠️ Planned**:
+- Additional resource controllers: User, Webhook, Guest, SharedLink (APIs defined, controllers pending)
+- Integration tests (e2e) require real BTCPay server instance
+- Enhanced documentation with examples for advanced use cases

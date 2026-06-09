@@ -17,64 +17,44 @@ limitations under the License.
 
 package v1alpha1
 
-import xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+import xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
 
 // GetCondition of this Store.
-func (mg *Store) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
+func (mg *Store) GetCondition(ct xpv2.ConditionType) xpv2.Condition {
 	return mg.Status.GetCondition(ct)
 }
 
-// GetDeletionPolicy of this Store.
-func (mg *Store) GetDeletionPolicy() xpv1.DeletionPolicy {
-	return mg.Spec.DeletionPolicy
-}
-
 // GetManagementPolicies of this Store.
-func (mg *Store) GetManagementPolicies() xpv1.ManagementPolicies {
+func (mg *Store) GetManagementPolicies() xpv2.ManagementPolicies {
 	return mg.Spec.ManagementPolicies
 }
 
 // GetProviderConfigReference of this Store.
-func (mg *Store) GetProviderConfigReference() *xpv1.Reference {
+func (mg *Store) GetProviderConfigReference() *xpv2.ProviderConfigReference {
 	return mg.Spec.ProviderConfigReference
 }
 
-// GetPublishConnectionDetailsTo of this Store.
-func (mg *Store) GetPublishConnectionDetailsTo() *xpv1.PublishConnectionDetailsTo {
-	return mg.Spec.PublishConnectionDetailsTo
-}
-
 // GetWriteConnectionSecretToReference of this Store.
-func (mg *Store) GetWriteConnectionSecretToReference() *xpv1.SecretReference {
+func (mg *Store) GetWriteConnectionSecretToReference() *xpv2.LocalSecretReference {
 	return mg.Spec.WriteConnectionSecretToReference
 }
 
 // SetConditions of this Store.
-func (mg *Store) SetConditions(c ...xpv1.Condition) {
+func (mg *Store) SetConditions(c ...xpv2.Condition) {
 	mg.Status.SetConditions(c...)
 }
 
-// SetDeletionPolicy of this Store.
-func (mg *Store) SetDeletionPolicy(r xpv1.DeletionPolicy) {
-	mg.Spec.DeletionPolicy = r
-}
-
 // SetManagementPolicies of this Store.
-func (mg *Store) SetManagementPolicies(r xpv1.ManagementPolicies) {
+func (mg *Store) SetManagementPolicies(r xpv2.ManagementPolicies) {
 	mg.Spec.ManagementPolicies = r
 }
 
 // SetProviderConfigReference of this Store.
-func (mg *Store) SetProviderConfigReference(r *xpv1.Reference) {
+func (mg *Store) SetProviderConfigReference(r *xpv2.ProviderConfigReference) {
 	mg.Spec.ProviderConfigReference = r
 }
 
-// SetPublishConnectionDetailsTo of this Store.
-func (mg *Store) SetPublishConnectionDetailsTo(r *xpv1.PublishConnectionDetailsTo) {
-	mg.Spec.PublishConnectionDetailsTo = r
-}
-
 // SetWriteConnectionSecretToReference of this Store.
-func (mg *Store) SetWriteConnectionSecretToReference(r *xpv1.SecretReference) {
+func (mg *Store) SetWriteConnectionSecretToReference(r *xpv2.LocalSecretReference) {
 	mg.Spec.WriteConnectionSecretToReference = r
 }

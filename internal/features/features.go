@@ -15,18 +15,3 @@ limitations under the License.
 */
 
 package features
-
-import "github.com/crossplane/crossplane-runtime/pkg/feature"
-
-// Feature flags.
-const (
-	// EnableAlphaManagementPolicies enables alpha support for
-	// Management Policies. See the below design for more details.
-	// https://github.com/crossplane/crossplane/blob/91edeae3fcac96c6c8a1759a723981eea4bb77e4/design/design-doc-observe-only-resources.md
-	EnableAlphaManagementPolicies feature.Flag = "EnableAlphaManagementPolicies"
-
-	// EnableAlphaExternalSecretStores enables alpha support for
-	// External Secret Stores. See the below design for more details.
-	// https://github.com/crossplane/crossplane/blob/main/design/design-doc-external-secret-stores.md
-	EnableAlphaExternalSecretStores feature.Flag = "EnableAlphaExternalSecretStores"
-)

@@ -28,10 +28,9 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-
-	"github.com/crossplane/crossplane-runtime/pkg/resource"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
+	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	"github.com/rossigee/provider-btcpay/apis/v1beta1"
 )
 
@@ -88,19 +87,10 @@ func NewClient(cfg Config) *Client {
 }
 
 // GetConfig extracts the BTCPay client configuration from a ProviderConfig
-func GetConfig(ctx context.Context, c client.Client, mg resource.Managed) (*Config, error) {
+func GetConfig(ctx context.Context, c client.Client, pcName string) (*Config, error) {
 	pc := &v1beta1.ProviderConfig{}
-	pcRef := mg.GetProviderConfigReference()
-	if pcRef == nil {
-		return nil, errors.New(errNoProviderConfig)
-	}
-	if err := c.Get(ctx, client.ObjectKey{Name: pcRef.Name}, pc); err != nil {
+	if err := c.Get(ctx, client.ObjectKey{Name: pcName}, pc); err != nil {
 		return nil, errors.Wrap(err, errGetProviderConfig)
-	}
-
-	t := resource.NewProviderConfigUsageTracker(c, &v1beta1.ProviderConfigUsage{})
-	if err := t.Track(ctx, mg); err != nil {
-		return nil, errors.Wrap(err, errTrackUsage)
 	}
 
 	data, err := resource.CommonCredentialExtractor(ctx, pc.Spec.Credentials.Source, c, pc.Spec.Credentials.CommonCredentialSelectors)
