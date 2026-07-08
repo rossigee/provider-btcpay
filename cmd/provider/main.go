@@ -22,20 +22,20 @@ import (
 	"path/filepath"
 	"time"
 
-	"gopkg.in/alecthomas/kingpin.v2"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/cache"
-	"sigs.k8s.io/controller-runtime/pkg/healthz"
-	"sigs.k8s.io/controller-runtime/pkg/log/zap"
-
 	xpcontroller "github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/feature"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
+	"gopkg.in/alecthomas/kingpin.v2"
 
 	"github.com/rossigee/provider-btcpay/apis"
 	"github.com/rossigee/provider-btcpay/internal/controller"
 	"github.com/rossigee/provider-btcpay/internal/tracing"
+
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/cache"
+	"sigs.k8s.io/controller-runtime/pkg/healthz"
+	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 )
 
 func main() {
@@ -51,7 +51,6 @@ func main() {
 	)
 
 	kingpin.MustParse(app.Parse(os.Args[1:]))
-
 
 	zl := zap.New(zap.UseDevMode(*debug))
 	log := logging.NewLogrLogger(zl.WithName("provider-btcpay"))

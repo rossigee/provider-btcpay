@@ -19,12 +19,11 @@ package clients
 import (
 	"context"
 	"encoding/json"
+	"github.com/google/go-cmp/cmp"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
-
-	"github.com/google/go-cmp/cmp"
 )
 
 func TestClient_CreateStore(t *testing.T) {

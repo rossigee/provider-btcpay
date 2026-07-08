@@ -22,15 +22,18 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/pkg/errors"
+
+	"github.com/rossigee/provider-btcpay/apis"
+	"github.com/rossigee/provider-btcpay/apis/v1beta1"
+
+	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
+
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
-
-	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
-	"github.com/rossigee/provider-btcpay/apis"
-	"github.com/rossigee/provider-btcpay/apis/v1beta1"
 )
 
 func TestGetConfig(t *testing.T) {

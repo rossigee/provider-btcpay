@@ -19,11 +19,10 @@ package v1alpha1
 import (
 	"reflect"
 
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"sigs.k8s.io/controller-runtime/pkg/scheme"
 )
 
-// Package type metadata.
 const (
 	Group   = "invoice.btcpay.crossplane.io"
 	Version = "v1alpha1"
@@ -35,7 +34,7 @@ var (
 
 	// SchemeBuilder is used to add go types to the GroupVersionKind scheme
 	//nolint:staticcheck
-	SchemeBuilder = &scheme.Builder{GroupVersion: SchemeGroupVersion}
+	SchemeBuilder = runtime.NewSchemeBuilder(addKnownTypes)
 )
 
 // Invoice type metadata.
@@ -46,9 +45,17 @@ var (
 	InvoiceGroupVersionKind = SchemeGroupVersion.WithKind(InvoiceKind)
 )
 
-func init() {
-	SchemeBuilder.Register(&Invoice{}, &InvoiceList{})
-}
-
 // AddToScheme adds the types in this group-version to the given scheme.
 var AddToScheme = SchemeBuilder.AddToScheme
+
+func addKnownTypes(s *runtime.Scheme) error {
+	s.AddKnownTypes(SchemeGroupVersion,
+		&Invoice{},
+		&InvoiceList{},
+	)
+	return nil
+}
+
+func init() {
+	SchemeBuilder.Register(addKnownTypes)
+}

@@ -17,9 +17,8 @@ limitations under the License.
 package v1beta1
 
 import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // A ProviderConfigSpec defines the desired state of a ProviderConfig.
@@ -86,7 +85,28 @@ type ProviderConfigUsage struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	xpv2.TypedProviderConfigUsage `json:",inline"`
+	ProviderConfigReference xpv2.ProviderConfigReference `json:"providerConfigRef"`
+	ResourceReference       xpv2.TypedReference          `json:"resourceRef"`
+}
+
+// GetProviderConfigReference returns the provider config reference.
+func (p *ProviderConfigUsage) GetProviderConfigReference() xpv2.ProviderConfigReference {
+	return p.ProviderConfigReference
+}
+
+// SetProviderConfigReference sets the provider config reference.
+func (p *ProviderConfigUsage) SetProviderConfigReference(r xpv2.ProviderConfigReference) {
+	p.ProviderConfigReference = r
+}
+
+// GetResourceReference returns the resource reference.
+func (p *ProviderConfigUsage) GetResourceReference() xpv2.TypedReference {
+	return p.ResourceReference
+}
+
+// SetResourceReference sets the resource reference.
+func (p *ProviderConfigUsage) SetResourceReference(r xpv2.TypedReference) {
+	p.ResourceReference = r
 }
 
 // +kubebuilder:object:root=true

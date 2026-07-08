@@ -19,21 +19,22 @@ package store
 import (
 	"context"
 
-	"github.com/pkg/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
 	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/feature"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
+	"github.com/pkg/errors"
 
-	"github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
+	storev1alpha1 "github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
 	apisv1beta1 "github.com/rossigee/provider-btcpay/apis/v1beta1"
 	"github.com/rossigee/provider-btcpay/internal/clients"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -51,7 +52,7 @@ const (
 
 // Setup adds a controller that reconciles Store managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
-	name := managed.ControllerName(v1alpha1.StoreGroupKind)
+	name := managed.ControllerName(storev1alpha1.StoreGroupKind)
 
 	opts := []managed.ReconcilerOption{
 		managed.WithExternalConnector(&connector{
@@ -67,14 +68,14 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	}
 
 	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(v1alpha1.StoreGroupVersionKind),
+		resource.ManagedKind(storev1alpha1.StoreGroupVersionKind),
 		opts...)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
 		WithEventFilter(resource.DesiredStateChanged()).
-		For(&v1alpha1.Store{}).
+		For(&storev1alpha1.Store{}).
 		Complete(ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter))
 }
 
@@ -91,7 +92,7 @@ type connector struct {
 // 3. Getting the credentials specified by the ProviderConfig.
 // 4. Using the credentials to form a client.
 func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
-	cr, ok := mg.(*v1alpha1.Store)
+	cr, ok := mg.(*storev1alpha1.Store)
 	if !ok {
 		return nil, errors.New(errNotStore)
 	}
@@ -121,7 +122,7 @@ type external struct {
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
-	cr := mg.(*v1alpha1.Store)
+	cr := mg.(*storev1alpha1.Store)
 
 	var externalName string
 	if cr.Annotations != nil {
@@ -185,7 +186,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
-	cr := mg.(*v1alpha1.Store)
+	cr := mg.(*storev1alpha1.Store)
 
 	cr.Status.SetConditions(xpv2.Creating())
 
@@ -235,7 +236,7 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
-	cr := mg.(*v1alpha1.Store)
+	cr := mg.(*storev1alpha1.Store)
 
 	if cr.Status.AtProvider.ID == "" {
 		return managed.ExternalUpdate{}, errors.New(errStoreNotFound)
@@ -275,7 +276,7 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.ExternalDelete, error) {
-	cr := mg.(*v1alpha1.Store)
+	cr := mg.(*storev1alpha1.Store)
 
 	if cr.Status.AtProvider.ID == "" {
 		return managed.ExternalDelete{}, nil // Nothing to delete
@@ -297,7 +298,7 @@ func (c *external) Disconnect(ctx context.Context) error {
 }
 
 // isUpToDate checks if the Store resource is up to date with the desired state
-func (c *external) isUpToDate(cr *v1alpha1.Store, store *clients.Store) bool {
+func (c *external) isUpToDate(cr *storev1alpha1.Store, store *clients.Store) bool {
 	if cr.Spec.ForProvider.Name != store.Name {
 		return false
 	}

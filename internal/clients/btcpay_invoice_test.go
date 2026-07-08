@@ -20,11 +20,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/google/go-cmp/cmp"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/google/go-cmp/cmp"
 )
 
 func TestClient_CreateInvoice(t *testing.T) {

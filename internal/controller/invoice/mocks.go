@@ -18,7 +18,6 @@ package invoice
 
 import (
 	"context"
-
 	"github.com/rossigee/provider-btcpay/internal/clients"
 )
 
