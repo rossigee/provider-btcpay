@@ -52,7 +52,6 @@ func main() {
 
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 
-	shutdownTracing(context.Background())
 
 	zl := zap.New(zap.UseDevMode(*debug))
 	log := logging.NewLogrLogger(zl.WithName("provider-btcpay"))
