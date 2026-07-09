@@ -151,8 +151,9 @@ test.coverage: generate
 reviewable: go.mod.tidy test.unit.safe go.fmt go.vet.limited
 	@echo "Running govulncheck..."
 	@cp go.mod go.mod.bak && cp go.sum go.sum.bak
-	@GOWORK=$$(mktemp -d) go install golang.org/x/vuln/cmd/govulncheck@v1.5.0 || { mv go.mod.bak go.mod 2>/dev/null; mv go.sum.bak go.sum 2>/dev/null; exit 1; }
+	@GOWORK=$$(mktemp -d)/go.work && echo "go 1.24" > $$GOWORK && GOWORK=$$GOWORK go install golang.org/x/vuln/cmd/govulncheck@v1.5.0 || { rm -f $$GOWORK_DIR/go.work 2>/dev/null; rmdir $$GOWORK_DIR 2>/dev/null; mv go.mod.bak go.mod 2>/dev/null; mv go.sum.bak go.sum 2>/dev/null; exit 1; }
 	@(GOFLAGS=-mod=mod GOWORK=$$GOWORK go run -mod=mod golang.org/x/vuln/cmd/govulncheck ./... 2>&1 || true) | tee /tmp/govulncheck.out >/dev/null; \
+	rm -f $$GOWORK_DIR/go.work 2>/dev/null; rmdir $$GOWORK_DIR 2>/dev/null; \
 	mv go.mod.bak go.mod && mv go.sum.bak go.sum; \
 	if grep -q "^Vulnerability #" /tmp/govulncheck.out; then \
 	  FIXED=$$(grep -c "Fixed in: N/A" /tmp/govulncheck.out || true); \
@@ -167,6 +168,7 @@ reviewable: go.mod.tidy test.unit.safe go.fmt go.vet.limited
 	  echo "No vulnerabilities found."; \
 	fi; \
 	rm -f /tmp/govulncheck.out
+	@go mod tidy
 	@echo "✅ Code is reviewable"
 
 go.mod.tidy:
