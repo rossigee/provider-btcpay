@@ -17,7 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
-	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -173,13 +173,13 @@ type StoreObservation struct {
 
 // A StoreSpec defines the desired state of a Store.
 type StoreSpec struct {
-	xpv2.ManagedResourceSpec `json:",inline"`
+	xpv1.ManagedResourceSpec `json:",inline"`
 	ForProvider              StoreParameters `json:"forProvider"`
 }
 
 // A StoreStatus represents the observed state of a Store.
 type StoreStatus struct {
-	xpv2.ManagedResourceStatus `json:",inline"`
+	xpv1.ManagedResourceStatus `json:",inline"`
 	AtProvider                 StoreObservation `json:"atProvider,omitempty"`
 }
 

@@ -17,7 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
-	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -260,13 +260,13 @@ type PaymentDetails struct {
 
 // An InvoiceSpec defines the desired state of an Invoice.
 type InvoiceSpec struct {
-	xpv2.ManagedResourceSpec `json:",inline"`
+	xpv1.ManagedResourceSpec `json:",inline"`
 	ForProvider              InvoiceParameters `json:"forProvider"`
 }
 
 // An InvoiceStatus represents the observed state of an Invoice.
 type InvoiceStatus struct {
-	xpv2.ManagedResourceStatus `json:",inline"`
+	xpv1.ManagedResourceStatus `json:",inline"`
 	AtProvider                 InvoiceObservation `json:"atProvider,omitempty"`
 }
 

@@ -26,8 +26,9 @@ import (
 	"github.com/rossigee/provider-btcpay/apis"
 	"github.com/rossigee/provider-btcpay/apis/v1beta1"
 
-	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
+	_ "github.com/crossplane/crossplane/apis/v2/core/v2" // keep import for scheme side-effects if any; values come from v1beta1 types
 
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -107,10 +108,10 @@ func getProviderConfig() *v1beta1.ProviderConfig {
 		Spec: v1beta1.ProviderConfigSpec{
 			BaseURL: ptrs("https://example.com"),
 			Credentials: v1beta1.ProviderCredentials{
-				Source: xpv2.CredentialsSourceSecret,
-				CommonCredentialSelectors: xpv2.CommonCredentialSelectors{
-					SecretRef: &xpv2.SecretKeySelector{
-						SecretReference: xpv2.SecretReference{
+				Source: "Secret",
+				CommonCredentialSelectors: xpv1.CommonCredentialSelectors{
+					SecretRef: &xpv1.SecretKeySelector{
+						SecretReference: xpv1.SecretReference{
 							Name:      "my-secret",
 							Namespace: "default",
 						},

@@ -1,5 +1,5 @@
 /*
-Copyright 2023 The Crossplane Authors.
+Copyright 2025 The Crossplane Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,59 +19,13 @@ package v1beta1
 import (
 	"reflect"
 
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-)
-
-const (
-	Group   = "btcpay.crossplane.io"
-	Version = "v1beta1"
-)
-
-var (
-	// SchemeGroupVersion is group version used to register these objects
-	SchemeGroupVersion = schema.GroupVersion{Group: Group, Version: Version}
-
-	// SchemeBuilder is used to add go types to the GroupVersionKind scheme
-	//nolint:staticcheck
-	SchemeBuilder = runtime.NewSchemeBuilder(addKnownTypes)
-	AddToScheme   = SchemeBuilder.AddToScheme
 )
 
 // ProviderConfig type metadata.
 var (
 	ProviderConfigKind             = reflect.TypeOf(ProviderConfig{}).Name()
-	ProviderConfigGroupKind        = schema.GroupKind{Group: Group, Kind: ProviderConfigKind}.String()
+	ProviderConfigGroupKind        = schema.GroupKind{Group: Group, Kind: ProviderConfigKind}
 	ProviderConfigKindAPIVersion   = ProviderConfigKind + "." + SchemeGroupVersion.String()
 	ProviderConfigGroupVersionKind = SchemeGroupVersion.WithKind(ProviderConfigKind)
-
-	// StoreConfigGroupVersionKind is an alias for ProviderConfigGroupVersionKind
-	StoreConfigGroupVersionKind = ProviderConfigGroupVersionKind
 )
-
-// ProviderConfigUsage type metadata.
-var (
-	ProviderConfigUsageKind             = reflect.TypeOf(ProviderConfigUsage{}).Name()
-	ProviderConfigUsageGroupKind        = schema.GroupKind{Group: Group, Kind: ProviderConfigUsageKind}
-	ProviderConfigUsageKindAPIVersion   = ProviderConfigUsageKind + "." + SchemeGroupVersion.String()
-	ProviderConfigUsageGroupVersionKind = SchemeGroupVersion.WithKind(ProviderConfigUsageKind)
-
-	ProviderConfigUsageListKind             = reflect.TypeOf(ProviderConfigUsageList{}).Name()
-	ProviderConfigUsageListGroupKind        = schema.GroupKind{Group: Group, Kind: ProviderConfigUsageListKind}
-	ProviderConfigUsageListKindAPIVersion   = ProviderConfigUsageListKind + "." + SchemeGroupVersion.String()
-	ProviderConfigUsageListGroupVersionKind = SchemeGroupVersion.WithKind(ProviderConfigUsageListKind)
-)
-
-func addKnownTypes(s *runtime.Scheme) error {
-	s.AddKnownTypes(SchemeGroupVersion,
-		&ProviderConfig{},
-		&ProviderConfigList{},
-		&ProviderConfigUsage{},
-		&ProviderConfigUsageList{},
-	)
-	return nil
-}
-
-func init() {
-	SchemeBuilder.Register(addKnownTypes)
-}

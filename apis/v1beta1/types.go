@@ -17,8 +17,9 @@ limitations under the License.
 package v1beta1
 
 import (
-	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 // A ProviderConfigSpec defines the desired state of a ProviderConfig.
@@ -37,14 +38,23 @@ type ProviderConfigSpec struct {
 type ProviderCredentials struct {
 	// Source of the provider credentials.
 	// +kubebuilder:validation:Enum=Secret
-	Source xpv2.CredentialsSource `json:"source"`
+	Source xpv1.CredentialsSource `json:"source"`
 
-	xpv2.CommonCredentialSelectors `json:",inline"`
+	xpv1.CommonCredentialSelectors `json:",inline"`
 }
+
+// CommonCredentialSelectors mirrors xpv1 for test usage.
+type CommonCredentialSelectors = xpv1.CommonCredentialSelectors
+
+// SecretKeySelector mirrors xpv1 for test usage.
+type SecretKeySelector = xpv1.SecretKeySelector
+
+// SecretReference mirrors xpv1 for test usage.
+type SecretReference = xpv1.SecretReference
 
 // A ProviderConfigStatus reflects the observed state of a ProviderConfig.
 type ProviderConfigStatus struct {
-	xpv2.ProviderConfigStatus `json:",inline"`
+	xpv1.ProviderConfigStatus `json:",inline"`
 }
 
 // +kubebuilder:object:root=true
@@ -85,27 +95,27 @@ type ProviderConfigUsage struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	ProviderConfigReference xpv2.ProviderConfigReference `json:"providerConfigRef"`
-	ResourceReference       xpv2.TypedReference          `json:"resourceRef"`
+	ProviderConfigReference xpv1.ProviderConfigReference `json:"providerConfigRef"`
+	ResourceReference       xpv1.TypedReference          `json:"resourceRef"`
 }
 
 // GetProviderConfigReference returns the provider config reference.
-func (p *ProviderConfigUsage) GetProviderConfigReference() xpv2.ProviderConfigReference {
+func (p *ProviderConfigUsage) GetProviderConfigReference() xpv1.ProviderConfigReference {
 	return p.ProviderConfigReference
 }
 
 // SetProviderConfigReference sets the provider config reference.
-func (p *ProviderConfigUsage) SetProviderConfigReference(r xpv2.ProviderConfigReference) {
+func (p *ProviderConfigUsage) SetProviderConfigReference(r xpv1.ProviderConfigReference) {
 	p.ProviderConfigReference = r
 }
 
 // GetResourceReference returns the resource reference.
-func (p *ProviderConfigUsage) GetResourceReference() xpv2.TypedReference {
+func (p *ProviderConfigUsage) GetResourceReference() xpv1.TypedReference {
 	return p.ResourceReference
 }
 
 // SetResourceReference sets the resource reference.
-func (p *ProviderConfigUsage) SetResourceReference(r xpv2.TypedReference) {
+func (p *ProviderConfigUsage) SetResourceReference(r xpv1.TypedReference) {
 	p.ResourceReference = r
 }
 
@@ -117,3 +127,18 @@ type ProviderConfigUsageList struct {
 	metav1.ListMeta `json:"metadata,omitempty"`
 	Items           []ProviderConfigUsage `json:"items"`
 }
+
+// ProviderConfigUsageGroupVersionKind is the GroupVersionKind for ProviderConfigUsage
+var ProviderConfigUsageGroupVersionKind = schema.GroupVersionKind{
+	Group:   Group,
+	Version: Version,
+	Kind:    "ProviderConfigUsage",
+}
+
+// ProviderConfigUsageListGroupVersionKind is the GroupVersionKind for ProviderConfigUsageList
+var ProviderConfigUsageListGroupVersionKind = schema.GroupVersionKind{
+	Group:   Group,
+	Version: Version,
+	Kind:    "ProviderConfigUsageList",
+}
+

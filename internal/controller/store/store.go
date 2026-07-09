@@ -52,7 +52,7 @@ const (
 
 // Setup adds a controller that reconciles Store managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
-	name := managed.ControllerName(storev1alpha1.StoreGroupKind)
+	name := managed.ControllerName(storev1alpha1.StoreGroupKind.String())
 
 	opts := []managed.ReconcilerOption{
 		managed.WithExternalConnector(&connector{

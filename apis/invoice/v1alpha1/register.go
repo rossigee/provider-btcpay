@@ -1,5 +1,5 @@
 /*
-Copyright 2023 The Crossplane Authors.
+Copyright 2025 The Crossplane Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,43 +19,21 @@ package v1alpha1
 import (
 	"reflect"
 
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-)
-
-const (
-	Group   = "invoice.btcpay.crossplane.io"
-	Version = "v1alpha1"
-)
-
-var (
-	// SchemeGroupVersion is group version used to register these objects
-	SchemeGroupVersion = schema.GroupVersion{Group: Group, Version: Version}
-
-	// SchemeBuilder is used to add go types to the GroupVersionKind scheme
-	//nolint:staticcheck
-	SchemeBuilder = runtime.NewSchemeBuilder(addKnownTypes)
 )
 
 // Invoice type metadata.
 var (
 	InvoiceKind             = reflect.TypeOf(Invoice{}).Name()
-	InvoiceGroupKind        = schema.GroupKind{Group: Group, Kind: InvoiceKind}.String()
+	InvoiceGroupKind        = schema.GroupKind{Group: Group, Kind: InvoiceKind}
 	InvoiceKindAPIVersion   = InvoiceKind + "." + SchemeGroupVersion.String()
 	InvoiceGroupVersionKind = SchemeGroupVersion.WithKind(InvoiceKind)
 )
 
-// AddToScheme adds the types in this group-version to the given scheme.
-var AddToScheme = SchemeBuilder.AddToScheme
-
-func addKnownTypes(s *runtime.Scheme) error {
-	s.AddKnownTypes(SchemeGroupVersion,
-		&Invoice{},
-		&InvoiceList{},
-	)
-	return nil
-}
-
-func init() {
-	SchemeBuilder.Register(addKnownTypes)
-}
+// StoreReference type metadata.
+var (
+	StoreReferenceKind             = reflect.TypeOf(StoreReference{}).Name()
+	StoreReferenceGroupKind        = schema.GroupKind{Group: Group, Kind: StoreReferenceKind}
+	StoreReferenceKindAPIVersion   = StoreReferenceKind + "." + SchemeGroupVersion.String()
+	StoreReferenceGroupVersionKind = SchemeGroupVersion.WithKind(StoreReferenceKind)
+)

@@ -56,7 +56,7 @@ const (
 
 // Setup adds a controller that reconciles Invoice managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
-	name := managed.ControllerName(invoicev1alpha1.InvoiceGroupKind)
+	name := managed.ControllerName(invoicev1alpha1.InvoiceGroupKind.String())
 
 	opts := []managed.ReconcilerOption{
 		managed.WithExternalConnector(&connector{

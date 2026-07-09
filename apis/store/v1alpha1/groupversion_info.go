@@ -14,18 +14,32 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+// Package v1alpha1 contains the v1alpha1 group store.btcpay.crossplane.io resources of the provider.
+// +kubebuilder:object:generate=true
+// +groupName=store.btcpay.crossplane.io
+// +versionName=v1alpha1
 package v1alpha1
 
 import (
-	"reflect"
-
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-// Store type metadata.
-var (
-	StoreKind             = reflect.TypeOf(Store{}).Name()
-	StoreGroupKind        = schema.GroupKind{Group: Group, Kind: StoreKind}
-	StoreKindAPIVersion   = StoreKind + "." + SchemeGroupVersion.String()
-	StoreGroupVersionKind = SchemeGroupVersion.WithKind(StoreKind)
+const (
+	Group   = "store.btcpay.crossplane.io"
+	Version = "v1alpha1"
 )
+
+var (
+	SchemeGroupVersion = schema.GroupVersion{Group: Group, Version: Version}
+	SchemeBuilder      = runtime.NewSchemeBuilder(addKnownTypes)
+	AddToScheme        = SchemeBuilder.AddToScheme
+)
+
+func addKnownTypes(s *runtime.Scheme) error {
+	s.AddKnownTypes(SchemeGroupVersion,
+		&Store{},
+		&StoreList{},
+	)
+	return nil
+}
