@@ -168,7 +168,7 @@ reviewable: go.mod.tidy test.unit.safe go.fmt go.vet.limited
 	  echo "No vulnerabilities found."; \
 	fi; \
 	rm -f /tmp/govulncheck.out
-	@go mod tidy
+	@git checkout go.mod go.sum
 	@echo "✅ Code is reviewable"
 
 go.mod.tidy:
