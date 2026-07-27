@@ -57,12 +57,9 @@ func main() {
 
 	shutdownTracing := tracing.Init("provider-btcpay")
 	defer shutdownTracing(context.Background())
-	if *debug {
-		// The controller-runtime runs with a no-op logger by default. It is
-		// *very* verbose even at info level, so we only provide it a real
-		// logger when we're running in debug mode.
-		ctrl.SetLogger(zl)
-	}
+	// The controller-runtime runs with a no-op logger by default. Always set it
+	// to ensure logs are displayed. In debug mode, it will be more verbose.
+	ctrl.SetLogger(zl)
 
 	log.Debug("Starting", "sync-period", syncPeriod.String())
 
