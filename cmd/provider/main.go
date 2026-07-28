@@ -27,6 +27,8 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
 	"gopkg.in/alecthomas/kingpin.v2"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/kubernetes/scheme"
 
 	"github.com/rossigee/provider-btcpay/apis"
 	"github.com/rossigee/provider-btcpay/internal/controller"
@@ -68,7 +70,12 @@ func main() {
 		kingpin.FatalIfError(err, "Cannot get API server rest config")
 	}
 
+	s := runtime.NewScheme()
+	kingpin.FatalIfError(scheme.AddToScheme(s), "Cannot add k8s types to scheme")
+	kingpin.FatalIfError(apis.AddToScheme(s), "Cannot add BTCPay APIs to scheme")
+
 	mgr, err := ctrl.NewManager(ratelimiter.LimitRESTConfig(cfg, *maxReconcileRate), ctrl.Options{
+		Scheme: s,
 		Cache: cache.Options{
 			SyncPeriod: syncPeriod,
 		},
@@ -94,10 +101,6 @@ func main() {
 	if *enableManagementPolicies {
 		o.Features.Enable(feature.EnableBetaManagementPolicies)
 		log.Info("Beta feature enabled", "flag", feature.EnableBetaManagementPolicies)
-	}
-
-	if err := apis.AddToScheme(mgr.GetScheme()); err != nil {
-		kingpin.FatalIfError(err, "Cannot add BTCPay APIs to scheme")
 	}
 
 	if err := controller.Setup(mgr, o); err != nil {

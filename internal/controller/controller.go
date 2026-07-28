@@ -18,8 +18,8 @@ package controller
 
 import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
-	"github.com/rossigee/provider-btcpay/internal/controller/config"
 	"github.com/rossigee/provider-btcpay/internal/controller/invoice"
+	"github.com/rossigee/provider-btcpay/internal/controller/providerconfig"
 	"github.com/rossigee/provider-btcpay/internal/controller/store"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
@@ -27,8 +27,10 @@ import (
 // Setup creates all BTCPay controllers with the supplied logger and adds them to
 // the supplied manager.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
+	if err := providerconfig.Setup(mgr); err != nil {
+		return err
+	}
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
-		config.Setup,
 		store.Setup,
 		invoice.Setup,
 	} {
