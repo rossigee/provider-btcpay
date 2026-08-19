@@ -21,15 +21,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
-	"github.com/pkg/errors"
-	"github.com/rossigee/provider-btcpay/apis/v1beta1"
 	"io"
 	"net/http"
 	"net/url"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"strings"
 	"time"
+
+	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
+	"github.com/pkg/errors"
+	"github.com/rossigee/provider-btcpay/apis/v1beta1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (

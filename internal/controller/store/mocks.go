@@ -18,6 +18,7 @@ package store
 
 import (
 	"context"
+
 	"github.com/rossigee/provider-btcpay/internal/clients"
 )
 
