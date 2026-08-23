@@ -135,3 +135,6 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for deta
 ## License
 
 provider-btcpay is under the Apache 2.0 license.
+## Implementation
+
+This provider is a native Crossplane controller that directly implements the provider APIs without using Terraform or upjet scaffolding. This approach yields smaller binaries, simpler code, and reduced dependencies.
