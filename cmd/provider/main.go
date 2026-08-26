@@ -26,6 +26,8 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/feature"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
+	invv1alpha1 "github.com/rossigee/provider-btcpay/apis/invoice/v1alpha1"
+	storev1alpha1 "github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
 	"gopkg.in/alecthomas/kingpin.v2"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes/scheme"
@@ -38,6 +40,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+	"sigs.k8s.io/controller-runtime/pkg/metrics"
+	metricserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
+
+	"github.com/crossplane/crossplane-runtime/v2/pkg/statemetrics"
 )
 
 func main() {
@@ -50,6 +56,8 @@ func main() {
 		maxReconcileRate         = app.Flag("max-reconcile-rate", "The global maximum rate per second at which resources may checked for drift from the desired state.").Default("10").Int()
 		syncPeriod               = app.Flag("sync", "How often all resources will be double-checked for drift from the desired state.").Short('s').Default("1h").Duration()
 		enableManagementPolicies = app.Flag("enable-management-policies", "Enable support for management policies.").Default("true").OverrideDefaultFromEnvar("ENABLE_MANAGEMENT_POLICIES").Bool()
+		pollStateMetricInterval  = app.Flag("poll-state-metric", "State metric recording interval").Default("5s").Duration()
+		metricsBindAddress       = app.Flag("metrics-bind-address", "The address the metrics endpoint binds to.").Default(":8080").String()
 	)
 
 	kingpin.MustParse(app.Parse(os.Args[1:]))
@@ -85,9 +93,20 @@ func main() {
 		LeaderElectionResourceLock: "leases",
 		LeaseDuration:              func() *time.Duration { d := 60 * time.Second; return &d }(),
 		RenewDeadline:              func() *time.Duration { d := 50 * time.Second; return &d }(),
+		Metrics: metricserver.Options{
+			BindAddress: *metricsBindAddress,
+		},
 	})
 	if err != nil {
 		kingpin.FatalIfError(err, "Cannot create controller manager")
+	}
+
+	mrStateMetrics := statemetrics.NewMRStateMetrics()
+	metrics.Registry.MustRegister(mrStateMetrics)
+
+	mo := xpcontroller.MetricOptions{
+		PollStateMetricInterval: *pollStateMetricInterval,
+		MRStateMetrics:          mrStateMetrics,
 	}
 
 	o := xpcontroller.Options{
@@ -96,6 +115,7 @@ func main() {
 		PollInterval:            *pollInterval,
 		GlobalRateLimiter:       ratelimiter.NewGlobal(*maxReconcileRate),
 		Features:                &feature.Flags{},
+		MetricOptions:           &mo,
 	}
 
 	if *enableManagementPolicies {
@@ -106,6 +126,9 @@ func main() {
 	if err := controller.Setup(mgr, o); err != nil {
 		kingpin.FatalIfError(err, "Cannot setup BTCPay controllers")
 	}
+
+	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &storev1alpha1.StoreList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for Store")
+	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &invv1alpha1.InvoiceList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for Invoice")
 
 	kingpin.FatalIfError(mgr.AddHealthzCheck("healthz", healthz.Ping), "Cannot add health check")
 	kingpin.FatalIfError(mgr.AddReadyzCheck("readyz", healthz.Ping), "Cannot add ready check")
