@@ -119,7 +119,7 @@ go run test_manual.go
    make docker-build
    
    # Load into kind cluster
-   kind load docker-image provider-btcpay:v0.1.0-dev --name btcpay-test
+   kind load docker-image provider-btcpay:v0.7.0-dev --name btcpay-test
    ```
 
 4. **Install provider CRDs**:

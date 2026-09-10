@@ -11,7 +11,7 @@ A [Crossplane](https://crossplane.io/) provider for managing [BTCPay Server](htt
 
 ## Container Registry
 
-- **Primary**: `ghcr.io/rossigee/provider-btcpay:v0.2.0`
+- **Primary**: `ghcr.io/rossigee/provider-btcpay:v0.7.0`
 
 ## Overview
 
@@ -36,7 +36,7 @@ This provider enables you to manage BTCPay Server resources using Kubernetes Cus
 ### Installation
 
 ```bash
-kubectl crossplane install provider ghcr.io/rossigee/provider-btcpay:v0.2.0
+kubectl crossplane install provider ghcr.io/rossigee/provider-btcpay:v0.7.0
 ```
 
 ### Configuration
