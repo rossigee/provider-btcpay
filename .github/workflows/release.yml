@@ -78,7 +78,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: xpkg
-          path: _output/xpkg/linux_amd64/provider-btcpay-${{ steps.version.outputs.version }}.xpkg
+          path: _output/xpkg/
 
   publish:
     runs-on: ubuntu-24.04
