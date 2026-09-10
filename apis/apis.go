@@ -19,7 +19,9 @@ package apis
 
 import (
 	invoicev1alpha1 "github.com/rossigee/provider-btcpay/apis/invoice/v1alpha1"
+	invoicev1beta1 "github.com/rossigee/provider-btcpay/apis/invoice/v1beta1"
 	storev1alpha1 "github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
+	storev1beta1 "github.com/rossigee/provider-btcpay/apis/store/v1beta1"
 	"github.com/rossigee/provider-btcpay/apis/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
@@ -29,7 +31,9 @@ func init() {
 	AddToSchemes = append(AddToSchemes,
 		v1beta1.AddToScheme,
 		storev1alpha1.AddToScheme,
+		storev1beta1.AddToScheme,
 		invoicev1alpha1.AddToScheme,
+		invoicev1beta1.AddToScheme,
 	)
 }
 
