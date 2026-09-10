@@ -72,7 +72,8 @@ jobs:
 
           export BRANCH_NAME="master"
 
-          make build.all build.artifacts
+          # Build only amd64 to simplify release workflow
+          make build.all build.artifacts PLATFORMS=linux_amd64
 
       - name: Upload XPKG Artifact
         uses: actions/upload-artifact@v7
