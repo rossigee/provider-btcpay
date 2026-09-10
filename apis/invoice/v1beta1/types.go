@@ -21,6 +21,38 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+func (in *Invoice) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
+	return in.Status.GetCondition(ct)
+}
+
+func (in *Invoice) SetConditions(c ...xpv1.Condition) {
+	in.Status.SetConditions(c...)
+}
+
+func (in *Invoice) GetProviderConfigReference() *xpv1.ProviderConfigReference {
+	return in.Spec.ProviderConfigReference
+}
+
+func (in *Invoice) SetProviderConfigReference(ref *xpv1.ProviderConfigReference) {
+	in.Spec.ProviderConfigReference = ref
+}
+
+func (in *Invoice) GetWriteConnectionSecretToReference() *xpv1.LocalSecretReference {
+	return in.Spec.WriteConnectionSecretToReference
+}
+
+func (in *Invoice) SetWriteConnectionSecretToReference(ref *xpv1.LocalSecretReference) {
+	in.Spec.WriteConnectionSecretToReference = ref
+}
+
+func (in *Invoice) GetManagementPolicies() xpv1.ManagementPolicies {
+	return in.Spec.ManagementPolicies
+}
+
+func (in *Invoice) SetManagementPolicies(mp xpv1.ManagementPolicies) {
+	in.Spec.ManagementPolicies = mp
+}
+
 type InvoiceParameters struct {
 	StoreRef              StoreReference          `json:"storeRef"`
 	Amount                float64                 `json:"amount"`

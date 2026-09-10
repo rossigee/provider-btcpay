@@ -100,7 +100,7 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           name: xpkg
-          path: _output/xpkg/linux_amd64/
+          path: _output/xpkg/
 
       - name: Setup Go
         uses: actions/setup-go@v7

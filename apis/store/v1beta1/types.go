@@ -21,6 +21,38 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+func (in *Store) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
+	return in.Status.GetCondition(ct)
+}
+
+func (in *Store) SetConditions(c ...xpv1.Condition) {
+	in.Status.SetConditions(c...)
+}
+
+func (in *Store) GetProviderConfigReference() *xpv1.ProviderConfigReference {
+	return in.Spec.ProviderConfigReference
+}
+
+func (in *Store) SetProviderConfigReference(ref *xpv1.ProviderConfigReference) {
+	in.Spec.ProviderConfigReference = ref
+}
+
+func (in *Store) GetWriteConnectionSecretToReference() *xpv1.LocalSecretReference {
+	return in.Spec.WriteConnectionSecretToReference
+}
+
+func (in *Store) SetWriteConnectionSecretToReference(ref *xpv1.LocalSecretReference) {
+	in.Spec.WriteConnectionSecretToReference = ref
+}
+
+func (in *Store) GetManagementPolicies() xpv1.ManagementPolicies {
+	return in.Spec.ManagementPolicies
+}
+
+func (in *Store) SetManagementPolicies(mp xpv1.ManagementPolicies) {
+	in.Spec.ManagementPolicies = mp
+}
+
 // StoreParameters are the configurable fields of a Store.
 type StoreParameters struct {
 	// Name is the display name of the store in BTCPay Server.
