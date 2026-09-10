@@ -19,10 +19,8 @@ package controller
 import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 	"github.com/rossigee/provider-btcpay/internal/controller/invoice"
-	"github.com/rossigee/provider-btcpay/internal/controller/invoicev1beta1"
 	"github.com/rossigee/provider-btcpay/internal/controller/providerconfig"
 	"github.com/rossigee/provider-btcpay/internal/controller/store"
-	"github.com/rossigee/provider-btcpay/internal/controller/storev1beta1"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
@@ -34,9 +32,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	}
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
 		store.Setup,
-		storev1beta1.Setup,
 		invoice.Setup,
-		invoicev1beta1.Setup,
 	} {
 		if err := setup(mgr, o); err != nil {
 			return err
