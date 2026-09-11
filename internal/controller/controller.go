@@ -20,11 +20,9 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 	"github.com/rossigee/provider-btcpay/internal/controller/apikey"
 	"github.com/rossigee/provider-btcpay/internal/controller/guest"
-	"github.com/rossigee/provider-btcpay/internal/controller/invoice"
 	"github.com/rossigee/provider-btcpay/internal/controller/invoicev1beta1"
 	"github.com/rossigee/provider-btcpay/internal/controller/providerconfig"
 	"github.com/rossigee/provider-btcpay/internal/controller/sharedlink"
-	"github.com/rossigee/provider-btcpay/internal/controller/store"
 	"github.com/rossigee/provider-btcpay/internal/controller/storev1beta1"
 	"github.com/rossigee/provider-btcpay/internal/controller/user"
 	"github.com/rossigee/provider-btcpay/internal/controller/webhook"
@@ -38,9 +36,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		return err
 	}
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
-		store.Setup,
 		storev1beta1.Setup,
-		invoice.Setup,
 		invoicev1beta1.Setup,
 		webhook.Setup,
 		user.Setup,
