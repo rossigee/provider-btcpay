@@ -40,9 +40,19 @@ type MockBTCPayClient struct {
 	CreateWebhookFunc func(ctx context.Context, storeID string, req clients.CreateWebhookRequest) (*clients.Webhook, error)
 	UpdateWebhookFunc func(ctx context.Context, storeID, webhookID string, req clients.UpdateWebhookRequest) (*clients.Webhook, error)
 	DeleteWebhookFunc func(ctx context.Context, storeID, webhookID string) error
+
+	GetUserFunc    func(ctx context.Context, userID string) (*clients.User, error)
+	ListUsersFunc  func(ctx context.Context) ([]clients.User, error)
+	CreateUserFunc func(ctx context.Context, req clients.CreateUserRequest) (*clients.User, error)
+	UpdateUserFunc func(ctx context.Context, userID string, req clients.UpdateUserRequest) (*clients.User, error)
+	DeleteUserFunc func(ctx context.Context, userID string) error
+
+	GetApiKeyFunc    func(ctx context.Context, apiKeyID string) (*clients.ApiKey, error)
+	ListApiKeysFunc  func(ctx context.Context) ([]clients.ApiKey, error)
+	CreateApiKeyFunc func(ctx context.Context, req clients.CreateApiKeyRequest) (*clients.ApiKey, error)
+	DeleteApiKeyFunc func(ctx context.Context, apiKeyID string) error
 }
 
-// Store operations
 func (m *MockBTCPayClient) GetStore(ctx context.Context, storeID string) (*clients.Store, error) {
 	if m.GetStoreFunc != nil {
 		return m.GetStoreFunc(ctx, storeID)
@@ -78,7 +88,6 @@ func (m *MockBTCPayClient) DeleteStore(ctx context.Context, storeID string) erro
 	return nil
 }
 
-// Invoice operations
 func (m *MockBTCPayClient) GetInvoice(ctx context.Context, storeID, invoiceID string) (*clients.Invoice, error) {
 	if m.GetInvoiceFunc != nil {
 		return m.GetInvoiceFunc(ctx, storeID, invoiceID)
@@ -138,6 +147,69 @@ func (m *MockBTCPayClient) UpdateWebhook(ctx context.Context, storeID, webhookID
 func (m *MockBTCPayClient) DeleteWebhook(ctx context.Context, storeID, webhookID string) error {
 	if m.DeleteWebhookFunc != nil {
 		return m.DeleteWebhookFunc(ctx, storeID, webhookID)
+	}
+	return nil
+}
+
+func (m *MockBTCPayClient) GetUser(ctx context.Context, userID string) (*clients.User, error) {
+	if m.GetUserFunc != nil {
+		return m.GetUserFunc(ctx, userID)
+	}
+	return nil, nil
+}
+
+func (m *MockBTCPayClient) ListUsers(ctx context.Context) ([]clients.User, error) {
+	if m.ListUsersFunc != nil {
+		return m.ListUsersFunc(ctx)
+	}
+	return nil, nil
+}
+
+func (m *MockBTCPayClient) CreateUser(ctx context.Context, req clients.CreateUserRequest) (*clients.User, error) {
+	if m.CreateUserFunc != nil {
+		return m.CreateUserFunc(ctx, req)
+	}
+	return nil, nil
+}
+
+func (m *MockBTCPayClient) UpdateUser(ctx context.Context, userID string, req clients.UpdateUserRequest) (*clients.User, error) {
+	if m.UpdateUserFunc != nil {
+		return m.UpdateUserFunc(ctx, userID, req)
+	}
+	return nil, nil
+}
+
+func (m *MockBTCPayClient) DeleteUser(ctx context.Context, userID string) error {
+	if m.DeleteUserFunc != nil {
+		return m.DeleteUserFunc(ctx, userID)
+	}
+	return nil
+}
+
+func (m *MockBTCPayClient) GetApiKey(ctx context.Context, apiKeyID string) (*clients.ApiKey, error) {
+	if m.GetApiKeyFunc != nil {
+		return m.GetApiKeyFunc(ctx, apiKeyID)
+	}
+	return nil, nil
+}
+
+func (m *MockBTCPayClient) ListApiKeys(ctx context.Context) ([]clients.ApiKey, error) {
+	if m.ListApiKeysFunc != nil {
+		return m.ListApiKeysFunc(ctx)
+	}
+	return nil, nil
+}
+
+func (m *MockBTCPayClient) CreateApiKey(ctx context.Context, req clients.CreateApiKeyRequest) (*clients.ApiKey, error) {
+	if m.CreateApiKeyFunc != nil {
+		return m.CreateApiKeyFunc(ctx, req)
+	}
+	return nil, nil
+}
+
+func (m *MockBTCPayClient) DeleteApiKey(ctx context.Context, apiKeyID string) error {
+	if m.DeleteApiKeyFunc != nil {
+		return m.DeleteApiKeyFunc(ctx, apiKeyID)
 	}
 	return nil
 }

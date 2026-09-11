@@ -76,6 +76,19 @@ type BTCPayClient interface {
 	CreateWebhook(ctx context.Context, storeID string, req CreateWebhookRequest) (*Webhook, error)
 	UpdateWebhook(ctx context.Context, storeID, webhookID string, req UpdateWebhookRequest) (*Webhook, error)
 	DeleteWebhook(ctx context.Context, storeID, webhookID string) error
+
+	// User operations
+	GetUser(ctx context.Context, userID string) (*User, error)
+	ListUsers(ctx context.Context) ([]User, error)
+	CreateUser(ctx context.Context, req CreateUserRequest) (*User, error)
+	UpdateUser(ctx context.Context, userID string, req UpdateUserRequest) (*User, error)
+	DeleteUser(ctx context.Context, userID string) error
+
+	// API Key operations
+	GetApiKey(ctx context.Context, apiKeyID string) (*ApiKey, error)
+	ListApiKeys(ctx context.Context) ([]ApiKey, error)
+	CreateApiKey(ctx context.Context, req CreateApiKeyRequest) (*ApiKey, error)
+	DeleteApiKey(ctx context.Context, apiKeyID string) error
 }
 
 // Client is a BTCPay Server API client
@@ -533,6 +546,174 @@ func (c *Client) UpdateWebhook(ctx context.Context, storeID, webhookID string, r
 // DeleteWebhook deletes a webhook
 func (c *Client) DeleteWebhook(ctx context.Context, storeID, webhookID string) error {
 	resp, err := c.doRequest(ctx, "DELETE", fmt.Sprintf("/stores/%s/webhooks/%s", storeID, webhookID), nil)
+	if err != nil {
+		return err
+	}
+
+	return parseResponse(resp, nil)
+}
+
+// User represents a BTCPay Server user
+type User struct {
+	ID              string `json:"id"`
+	Email           string `json:"email"`
+	Name            string `json:"name,omitempty"`
+	IsAdministrator bool   `json:"isAdministrator"`
+	EmailConfirmed  bool   `json:"emailConfirmed"`
+	Approved        bool   `json:"approved"`
+	Disabled        bool   `json:"disabled"`
+	Created         string `json:"created,omitempty"`
+}
+
+// CreateUserRequest represents a request to create a user
+type CreateUserRequest struct {
+	Email           string  `json:"email"`
+	Name            *string `json:"name,omitempty"`
+	IsAdministrator *bool   `json:"isAdministrator,omitempty"`
+	Password        *string `json:"password,omitempty"`
+}
+
+// UpdateUserRequest represents a request to update a user
+type UpdateUserRequest struct {
+	Name            *string `json:"name,omitempty"`
+	IsAdministrator *bool   `json:"isAdministrator,omitempty"`
+	EmailConfirmed  *bool   `json:"emailConfirmed,omitempty"`
+	Approved        *bool   `json:"approved,omitempty"`
+	Disabled        *bool   `json:"disabled,omitempty"`
+}
+
+// GetUser retrieves a user by ID
+func (c *Client) GetUser(ctx context.Context, userID string) (*User, error) {
+	resp, err := c.doRequest(ctx, "GET", fmt.Sprintf("/users/%s", userID), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var user User
+	if err := parseResponse(resp, &user); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+// ListUsers retrieves all users
+func (c *Client) ListUsers(ctx context.Context) ([]User, error) {
+	resp, err := c.doRequest(ctx, "GET", "/users", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var users []User
+	if err := parseResponse(resp, &users); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+// CreateUser creates a new user
+func (c *Client) CreateUser(ctx context.Context, req CreateUserRequest) (*User, error) {
+	resp, err := c.doRequest(ctx, "POST", "/users", req)
+	if err != nil {
+		return nil, err
+	}
+
+	var user User
+	if err := parseResponse(resp, &user); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+// UpdateUser updates an existing user
+func (c *Client) UpdateUser(ctx context.Context, userID string, req UpdateUserRequest) (*User, error) {
+	resp, err := c.doRequest(ctx, "PUT", fmt.Sprintf("/users/%s", userID), req)
+	if err != nil {
+		return nil, err
+	}
+
+	var user User
+	if err := parseResponse(resp, &user); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+// DeleteUser deletes a user
+func (c *Client) DeleteUser(ctx context.Context, userID string) error {
+	resp, err := c.doRequest(ctx, "DELETE", fmt.Sprintf("/users/%s", userID), nil)
+	if err != nil {
+		return err
+	}
+
+	return parseResponse(resp, nil)
+}
+
+// ApiKey represents a BTCPay Server API key
+type ApiKey struct {
+	ID          string   `json:"id"`
+	Label       string   `json:"label"`
+	Permissions []string `json:"permissions"`
+	ApiKey      string   `json:"apiKey,omitempty"`
+}
+
+// CreateApiKeyRequest represents a request to create an API key
+type CreateApiKeyRequest struct {
+	Label       string   `json:"label"`
+	Permissions []string `json:"permissions"`
+}
+
+// GetApiKey retrieves an API key by ID
+func (c *Client) GetApiKey(ctx context.Context, apiKeyID string) (*ApiKey, error) {
+	resp, err := c.doRequest(ctx, "GET", fmt.Sprintf("/api-keys/%s", apiKeyID), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var apiKey ApiKey
+	if err := parseResponse(resp, &apiKey); err != nil {
+		return nil, err
+	}
+
+	return &apiKey, nil
+}
+
+// ListApiKeys retrieves all API keys
+func (c *Client) ListApiKeys(ctx context.Context) ([]ApiKey, error) {
+	resp, err := c.doRequest(ctx, "GET", "/api-keys", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var apiKeys []ApiKey
+	if err := parseResponse(resp, &apiKeys); err != nil {
+		return nil, err
+	}
+
+	return apiKeys, nil
+}
+
+// CreateApiKey creates a new API key
+func (c *Client) CreateApiKey(ctx context.Context, req CreateApiKeyRequest) (*ApiKey, error) {
+	resp, err := c.doRequest(ctx, "POST", "/api-keys", req)
+	if err != nil {
+		return nil, err
+	}
+
+	var apiKey ApiKey
+	if err := parseResponse(resp, &apiKey); err != nil {
+		return nil, err
+	}
+
+	return &apiKey, nil
+}
+
+// DeleteApiKey deletes an API key
+func (c *Client) DeleteApiKey(ctx context.Context, apiKeyID string) error {
+	resp, err := c.doRequest(ctx, "DELETE", fmt.Sprintf("/api-keys/%s", apiKeyID), nil)
 	if err != nil {
 		return err
 	}
