@@ -14,9 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package v1beta1 contains the v1beta1 group btcpay.crossplane.io resources of the provider.
+// Package v1beta1 contains the v1beta1 group btcpay.m.crossplane.io resources of the provider.
 // +kubebuilder:object:generate=true
-// +groupName=btcpay.crossplane.io
+// +groupName=btcpay.m.crossplane.io
 // +versionName=v1beta1
 package v1beta1
 
@@ -27,7 +27,7 @@ import (
 )
 
 const (
-	Group   = "btcpay.crossplane.io"
+	Group   = "btcpay.m.crossplane.io"
 	Version = "v1beta1"
 )
 
