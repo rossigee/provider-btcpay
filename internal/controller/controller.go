@@ -23,6 +23,7 @@ import (
 	"github.com/rossigee/provider-btcpay/internal/controller/providerconfig"
 	"github.com/rossigee/provider-btcpay/internal/controller/store"
 	"github.com/rossigee/provider-btcpay/internal/controller/storev1beta1"
+	"github.com/rossigee/provider-btcpay/internal/controller/webhook"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
@@ -37,6 +38,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		storev1beta1.Setup,
 		invoice.Setup,
 		invoicev1beta1.Setup,
+		webhook.Setup,
 	} {
 		if err := setup(mgr, o); err != nil {
 			return err

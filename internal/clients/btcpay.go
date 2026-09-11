@@ -69,6 +69,13 @@ type BTCPayClient interface {
 	ListInvoices(ctx context.Context, storeID string) ([]Invoice, error)
 	CreateInvoice(ctx context.Context, storeID string, req CreateInvoiceRequest) (*Invoice, error)
 	ArchiveInvoice(ctx context.Context, storeID, invoiceID string) error
+
+	// Webhook operations
+	GetWebhook(ctx context.Context, storeID, webhookID string) (*Webhook, error)
+	ListWebhooks(ctx context.Context, storeID string) ([]Webhook, error)
+	CreateWebhook(ctx context.Context, storeID string, req CreateWebhookRequest) (*Webhook, error)
+	UpdateWebhook(ctx context.Context, storeID, webhookID string, req UpdateWebhookRequest) (*Webhook, error)
+	DeleteWebhook(ctx context.Context, storeID, webhookID string) error
 }
 
 // Client is a BTCPay Server API client
@@ -427,6 +434,105 @@ func (c *Client) CreateInvoice(ctx context.Context, storeID string, req CreateIn
 // ArchiveInvoice archives an invoice (soft delete)
 func (c *Client) ArchiveInvoice(ctx context.Context, storeID, invoiceID string) error {
 	resp, err := c.doRequest(ctx, "DELETE", fmt.Sprintf("/stores/%s/invoices/%s", storeID, invoiceID), nil)
+	if err != nil {
+		return err
+	}
+
+	return parseResponse(resp, nil)
+}
+
+// Webhook represents a BTCPay Server webhook
+type Webhook struct {
+	ID                  string   `json:"id"`
+	StoreID             string   `json:"storeId,omitempty"`
+	URL                 string   `json:"url"`
+	Enabled             bool     `json:"enabled"`
+	AutomaticRedelivery bool     `json:"automaticRedelivery"`
+	AuthorizedEvents    []string `json:"authorizedEvents,omitempty"`
+	Secret              string   `json:"secret,omitempty"`
+}
+
+// CreateWebhookRequest represents a request to create a webhook
+type CreateWebhookRequest struct {
+	URL                 string   `json:"url"`
+	Enabled             *bool    `json:"enabled,omitempty"`
+	AutomaticRedelivery *bool    `json:"automaticRedelivery,omitempty"`
+	AuthorizedEvents    []string `json:"authorizedEvents,omitempty"`
+	Secret              *string  `json:"secret,omitempty"`
+}
+
+// UpdateWebhookRequest represents a request to update a webhook
+type UpdateWebhookRequest struct {
+	URL                 string   `json:"url"`
+	Enabled             *bool    `json:"enabled,omitempty"`
+	AutomaticRedelivery *bool    `json:"automaticRedelivery,omitempty"`
+	AuthorizedEvents    []string `json:"authorizedEvents,omitempty"`
+	Secret              *string  `json:"secret,omitempty"`
+}
+
+// GetWebhook retrieves a webhook by ID
+func (c *Client) GetWebhook(ctx context.Context, storeID, webhookID string) (*Webhook, error) {
+	resp, err := c.doRequest(ctx, "GET", fmt.Sprintf("/stores/%s/webhooks/%s", storeID, webhookID), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var webhook Webhook
+	if err := parseResponse(resp, &webhook); err != nil {
+		return nil, err
+	}
+
+	return &webhook, nil
+}
+
+// ListWebhooks retrieves all webhooks for a store
+func (c *Client) ListWebhooks(ctx context.Context, storeID string) ([]Webhook, error) {
+	resp, err := c.doRequest(ctx, "GET", fmt.Sprintf("/stores/%s/webhooks", storeID), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var webhooks []Webhook
+	if err := parseResponse(resp, &webhooks); err != nil {
+		return nil, err
+	}
+
+	return webhooks, nil
+}
+
+// CreateWebhook creates a new webhook
+func (c *Client) CreateWebhook(ctx context.Context, storeID string, req CreateWebhookRequest) (*Webhook, error) {
+	resp, err := c.doRequest(ctx, "POST", fmt.Sprintf("/stores/%s/webhooks", storeID), req)
+	if err != nil {
+		return nil, err
+	}
+
+	var webhook Webhook
+	if err := parseResponse(resp, &webhook); err != nil {
+		return nil, err
+	}
+
+	return &webhook, nil
+}
+
+// UpdateWebhook updates an existing webhook
+func (c *Client) UpdateWebhook(ctx context.Context, storeID, webhookID string, req UpdateWebhookRequest) (*Webhook, error) {
+	resp, err := c.doRequest(ctx, "PUT", fmt.Sprintf("/stores/%s/webhooks/%s", storeID, webhookID), req)
+	if err != nil {
+		return nil, err
+	}
+
+	var webhook Webhook
+	if err := parseResponse(resp, &webhook); err != nil {
+		return nil, err
+	}
+
+	return &webhook, nil
+}
+
+// DeleteWebhook deletes a webhook
+func (c *Client) DeleteWebhook(ctx context.Context, storeID, webhookID string) error {
+	resp, err := c.doRequest(ctx, "DELETE", fmt.Sprintf("/stores/%s/webhooks/%s", storeID, webhookID), nil)
 	if err != nil {
 		return err
 	}

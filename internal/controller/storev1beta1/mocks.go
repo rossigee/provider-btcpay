@@ -34,6 +34,12 @@ type MockBTCPayClient struct {
 	ListInvoicesFunc   func(ctx context.Context, storeID string) ([]clients.Invoice, error)
 	CreateInvoiceFunc  func(ctx context.Context, storeID string, req clients.CreateInvoiceRequest) (*clients.Invoice, error)
 	ArchiveInvoiceFunc func(ctx context.Context, storeID, invoiceID string) error
+
+	GetWebhookFunc    func(ctx context.Context, storeID, webhookID string) (*clients.Webhook, error)
+	ListWebhooksFunc  func(ctx context.Context, storeID string) ([]clients.Webhook, error)
+	CreateWebhookFunc func(ctx context.Context, storeID string, req clients.CreateWebhookRequest) (*clients.Webhook, error)
+	UpdateWebhookFunc func(ctx context.Context, storeID, webhookID string, req clients.UpdateWebhookRequest) (*clients.Webhook, error)
+	DeleteWebhookFunc func(ctx context.Context, storeID, webhookID string) error
 }
 
 // Store operations
@@ -97,6 +103,41 @@ func (m *MockBTCPayClient) CreateInvoice(ctx context.Context, storeID string, re
 func (m *MockBTCPayClient) ArchiveInvoice(ctx context.Context, storeID, invoiceID string) error {
 	if m.ArchiveInvoiceFunc != nil {
 		return m.ArchiveInvoiceFunc(ctx, storeID, invoiceID)
+	}
+	return nil
+}
+
+func (m *MockBTCPayClient) GetWebhook(ctx context.Context, storeID, webhookID string) (*clients.Webhook, error) {
+	if m.GetWebhookFunc != nil {
+		return m.GetWebhookFunc(ctx, storeID, webhookID)
+	}
+	return nil, nil
+}
+
+func (m *MockBTCPayClient) ListWebhooks(ctx context.Context, storeID string) ([]clients.Webhook, error) {
+	if m.ListWebhooksFunc != nil {
+		return m.ListWebhooksFunc(ctx, storeID)
+	}
+	return nil, nil
+}
+
+func (m *MockBTCPayClient) CreateWebhook(ctx context.Context, storeID string, req clients.CreateWebhookRequest) (*clients.Webhook, error) {
+	if m.CreateWebhookFunc != nil {
+		return m.CreateWebhookFunc(ctx, storeID, req)
+	}
+	return nil, nil
+}
+
+func (m *MockBTCPayClient) UpdateWebhook(ctx context.Context, storeID, webhookID string, req clients.UpdateWebhookRequest) (*clients.Webhook, error) {
+	if m.UpdateWebhookFunc != nil {
+		return m.UpdateWebhookFunc(ctx, storeID, webhookID, req)
+	}
+	return nil, nil
+}
+
+func (m *MockBTCPayClient) DeleteWebhook(ctx context.Context, storeID, webhookID string) error {
+	if m.DeleteWebhookFunc != nil {
+		return m.DeleteWebhookFunc(ctx, storeID, webhookID)
 	}
 	return nil
 }

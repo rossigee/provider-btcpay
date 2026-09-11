@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package store
+package webhook
 
 import (
 	"context"
@@ -42,7 +42,6 @@ type MockBTCPayClient struct {
 	DeleteWebhookFunc func(ctx context.Context, storeID, webhookID string) error
 }
 
-// Store operations
 func (m *MockBTCPayClient) GetStore(ctx context.Context, storeID string) (*clients.Store, error) {
 	if m.GetStoreFunc != nil {
 		return m.GetStoreFunc(ctx, storeID)
@@ -78,7 +77,6 @@ func (m *MockBTCPayClient) DeleteStore(ctx context.Context, storeID string) erro
 	return nil
 }
 
-// Invoice operations
 func (m *MockBTCPayClient) GetInvoice(ctx context.Context, storeID, invoiceID string) (*clients.Invoice, error) {
 	if m.GetInvoiceFunc != nil {
 		return m.GetInvoiceFunc(ctx, storeID, invoiceID)

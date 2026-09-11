@@ -23,6 +23,7 @@ import (
 	storev1alpha1 "github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
 	storev1beta1 "github.com/rossigee/provider-btcpay/apis/store/v1beta1"
 	"github.com/rossigee/provider-btcpay/apis/v1beta1"
+	webhookv1alpha1 "github.com/rossigee/provider-btcpay/apis/webhook/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
@@ -34,6 +35,7 @@ func init() {
 		storev1beta1.AddToScheme,
 		invoicev1alpha1.AddToScheme,
 		invoicev1beta1.AddToScheme,
+		webhookv1alpha1.AddToScheme,
 	)
 }
 
