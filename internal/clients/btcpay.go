@@ -89,6 +89,18 @@ type BTCPayClient interface {
 	ListApiKeys(ctx context.Context) ([]ApiKey, error)
 	CreateApiKey(ctx context.Context, req CreateApiKeyRequest) (*ApiKey, error)
 	DeleteApiKey(ctx context.Context, apiKeyID string) error
+
+	// Guest operations
+	GetGuest(ctx context.Context, storeID, guestID string) (*Guest, error)
+	ListGuests(ctx context.Context, storeID string) ([]Guest, error)
+	CreateGuest(ctx context.Context, storeID string, req CreateGuestRequest) (*Guest, error)
+	DeleteGuest(ctx context.Context, storeID, guestID string) error
+
+	// SharedLink operations
+	GetSharedLink(ctx context.Context, storeID, linkID string) (*SharedLink, error)
+	ListSharedLinks(ctx context.Context, storeID string) ([]SharedLink, error)
+	CreateSharedLink(ctx context.Context, storeID string, req CreateSharedLinkRequest) (*SharedLink, error)
+	DeleteSharedLink(ctx context.Context, storeID, linkID string) error
 }
 
 // Client is a BTCPay Server API client
@@ -718,6 +730,126 @@ func (c *Client) DeleteApiKey(ctx context.Context, apiKeyID string) error {
 		return err
 	}
 
+	return parseResponse(resp, nil)
+}
+
+// Guest represents a BTCPay guest checkout
+type Guest struct {
+	ID      string `json:"id"`
+	StoreID string `json:"storeId,omitempty"`
+	Email   string `json:"email"`
+	Name    string `json:"name,omitempty"`
+}
+
+// CreateGuestRequest represents a request to create a guest
+type CreateGuestRequest struct {
+	Email string  `json:"email"`
+	Name  *string `json:"name,omitempty"`
+}
+
+// SharedLink represents a BTCPay shared payment link
+type SharedLink struct {
+	ID          string  `json:"id"`
+	StoreID     string  `json:"storeId,omitempty"`
+	Amount      float64 `json:"amount,omitempty"`
+	Currency    string  `json:"currency,omitempty"`
+	Description string  `json:"description,omitempty"`
+	URL         string  `json:"url,omitempty"`
+}
+
+// CreateSharedLinkRequest represents a request to create a shared link
+type CreateSharedLinkRequest struct {
+	Amount      *float64 `json:"amount,omitempty"`
+	Currency    *string  `json:"currency,omitempty"`
+	Description *string  `json:"description,omitempty"`
+}
+
+// GetGuest retrieves a guest by ID
+func (c *Client) GetGuest(ctx context.Context, storeID, guestID string) (*Guest, error) {
+	resp, err := c.doRequest(ctx, "GET", fmt.Sprintf("/stores/%s/guests/%s", storeID, guestID), nil)
+	if err != nil {
+		return nil, err
+	}
+	var guest Guest
+	if err := parseResponse(resp, &guest); err != nil {
+		return nil, err
+	}
+	return &guest, nil
+}
+
+func (c *Client) ListGuests(ctx context.Context, storeID string) ([]Guest, error) {
+	resp, err := c.doRequest(ctx, "GET", fmt.Sprintf("/stores/%s/guests", storeID), nil)
+	if err != nil {
+		return nil, err
+	}
+	var guests []Guest
+	if err := parseResponse(resp, &guests); err != nil {
+		return nil, err
+	}
+	return guests, nil
+}
+
+func (c *Client) CreateGuest(ctx context.Context, storeID string, req CreateGuestRequest) (*Guest, error) {
+	resp, err := c.doRequest(ctx, "POST", fmt.Sprintf("/stores/%s/guests", storeID), req)
+	if err != nil {
+		return nil, err
+	}
+	var guest Guest
+	if err := parseResponse(resp, &guest); err != nil {
+		return nil, err
+	}
+	return &guest, nil
+}
+
+func (c *Client) DeleteGuest(ctx context.Context, storeID, guestID string) error {
+	resp, err := c.doRequest(ctx, "DELETE", fmt.Sprintf("/stores/%s/guests/%s", storeID, guestID), nil)
+	if err != nil {
+		return err
+	}
+	return parseResponse(resp, nil)
+}
+
+func (c *Client) GetSharedLink(ctx context.Context, storeID, linkID string) (*SharedLink, error) {
+	resp, err := c.doRequest(ctx, "GET", fmt.Sprintf("/stores/%s/payment-links/%s", storeID, linkID), nil)
+	if err != nil {
+		return nil, err
+	}
+	var link SharedLink
+	if err := parseResponse(resp, &link); err != nil {
+		return nil, err
+	}
+	return &link, nil
+}
+
+func (c *Client) ListSharedLinks(ctx context.Context, storeID string) ([]SharedLink, error) {
+	resp, err := c.doRequest(ctx, "GET", fmt.Sprintf("/stores/%s/payment-links", storeID), nil)
+	if err != nil {
+		return nil, err
+	}
+	var links []SharedLink
+	if err := parseResponse(resp, &links); err != nil {
+		return nil, err
+	}
+	return links, nil
+}
+
+func (c *Client) CreateSharedLink(ctx context.Context, storeID string, req CreateSharedLinkRequest) (*SharedLink, error) {
+	resp, err := c.doRequest(ctx, "POST", fmt.Sprintf("/stores/%s/payment-links", storeID), req)
+	if err != nil {
+		return nil, err
+	}
+	var link SharedLink
+	if err := parseResponse(resp, &link); err != nil {
+		return nil, err
+	}
+	return &link, nil
+}
+
+func (c *Client) DeleteSharedLink(ctx context.Context, storeID, linkID string) error {
+	resp, err := c.doRequest(ctx, "DELETE", fmt.Sprintf("/stores/%s/payment-links/%s", storeID, linkID), nil)
+	if err != nil {
+		return err
+	}
 	return parseResponse(resp, nil)
 }
 
