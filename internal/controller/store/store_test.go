@@ -26,7 +26,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
-	storev1alpha1 "github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
+	storev1beta1 "github.com/rossigee/provider-btcpay/apis/store/v1beta1"
 	"github.com/rossigee/provider-btcpay/internal/clients"
 )
 
@@ -36,21 +36,21 @@ func TestObserve(t *testing.T) {
 	storeID := "test-store-id"
 
 	cases := map[string]struct {
-		cr      *storev1alpha1.Store
+		cr      *storev1beta1.Store
 		mock    *MockBTCPayClient
 		want    managed.ExternalObservation
 		wantErr bool
 	}{
 		"StoreNotFound": {
-			cr: &storev1alpha1.Store{
+			cr: &storev1beta1.Store{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:              "test-store",
 					UID:               types.UID("test-uid"),
 					Generation:        1,
 					CreationTimestamp: metav1.Now(),
 				},
-				Spec: storev1alpha1.StoreSpec{
-					ForProvider: storev1alpha1.StoreParameters{
+				Spec: storev1beta1.StoreSpec{
+					ForProvider: storev1beta1.StoreParameters{
 						Name: "test-store",
 					},
 				},
@@ -66,22 +66,22 @@ func TestObserve(t *testing.T) {
 			wantErr: false,
 		},
 		"StoreFoundUpToDate": {
-			cr: &storev1alpha1.Store{
+			cr: &storev1beta1.Store{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:              "test-store",
 					UID:               types.UID("test-uid"),
 					Generation:        1,
 					CreationTimestamp: metav1.Now(),
 				},
-				Spec: storev1alpha1.StoreSpec{
-					ForProvider: storev1alpha1.StoreParameters{
+				Spec: storev1beta1.StoreSpec{
+					ForProvider: storev1beta1.StoreParameters{
 						Name:              "test-store",
 						DefaultCurrency:   "USD",
 						InvoiceExpiration: int32Ptr(3600),
 					},
 				},
-				Status: storev1alpha1.StoreStatus{
-					AtProvider: storev1alpha1.StoreObservation{
+				Status: storev1beta1.StoreStatus{
+					AtProvider: storev1beta1.StoreObservation{
 						ID: storeID,
 					},
 				},
@@ -107,20 +107,20 @@ func TestObserve(t *testing.T) {
 			wantErr: false,
 		},
 		"StoreFoundNeedsUpdate": {
-			cr: &storev1alpha1.Store{
+			cr: &storev1beta1.Store{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:              "test-store",
 					UID:               types.UID("test-uid"),
 					Generation:        1,
 					CreationTimestamp: metav1.Now(),
 				},
-				Spec: storev1alpha1.StoreSpec{
-					ForProvider: storev1alpha1.StoreParameters{
+				Spec: storev1beta1.StoreSpec{
+					ForProvider: storev1beta1.StoreParameters{
 						Name: "updated-store",
 					},
 				},
-				Status: storev1alpha1.StoreStatus{
-					AtProvider: storev1alpha1.StoreObservation{
+				Status: storev1beta1.StoreStatus{
+					AtProvider: storev1beta1.StoreObservation{
 						ID: storeID,
 					},
 				},
@@ -143,15 +143,15 @@ func TestObserve(t *testing.T) {
 			wantErr: false,
 		},
 		"NoStoreIDYet": {
-			cr: &storev1alpha1.Store{
+			cr: &storev1beta1.Store{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:              "test-store",
 					UID:               types.UID("test-uid"),
 					Generation:        1,
 					CreationTimestamp: metav1.Now(),
 				},
-				Spec: storev1alpha1.StoreSpec{
-					ForProvider: storev1alpha1.StoreParameters{
+				Spec: storev1beta1.StoreSpec{
+					ForProvider: storev1beta1.StoreParameters{
 						Name: "test-store",
 					},
 				},
@@ -189,17 +189,17 @@ func TestCreate(t *testing.T) {
 	ctx := context.Background()
 
 	cases := map[string]struct {
-		cr      *storev1alpha1.Store
+		cr      *storev1beta1.Store
 		mock    *MockBTCPayClient
 		wantErr bool
 	}{
 		"CreateSuccess": {
-			cr: &storev1alpha1.Store{
+			cr: &storev1beta1.Store{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test-store",
 				},
-				Spec: storev1alpha1.StoreSpec{
-					ForProvider: storev1alpha1.StoreParameters{
+				Spec: storev1beta1.StoreSpec{
+					ForProvider: storev1beta1.StoreParameters{
 						Name:            "test-store",
 						DefaultCurrency: "USD",
 					},
@@ -220,12 +220,12 @@ func TestCreate(t *testing.T) {
 			wantErr: false,
 		},
 		"CreateFailure": {
-			cr: &storev1alpha1.Store{
+			cr: &storev1beta1.Store{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test-store",
 				},
-				Spec: storev1alpha1.StoreSpec{
-					ForProvider: storev1alpha1.StoreParameters{
+				Spec: storev1beta1.StoreSpec{
+					ForProvider: storev1beta1.StoreParameters{
 						Name: "test-store",
 					},
 				},
@@ -262,23 +262,23 @@ func TestUpdate(t *testing.T) {
 	ctx := context.Background()
 
 	cases := map[string]struct {
-		cr      *storev1alpha1.Store
+		cr      *storev1beta1.Store
 		mock    *MockBTCPayClient
 		wantErr bool
 	}{
 		"UpdateSuccess": {
-			cr: &storev1alpha1.Store{
+			cr: &storev1beta1.Store{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test-store",
 				},
-				Spec: storev1alpha1.StoreSpec{
-					ForProvider: storev1alpha1.StoreParameters{
+				Spec: storev1beta1.StoreSpec{
+					ForProvider: storev1beta1.StoreParameters{
 						Name:            "updated-store",
 						DefaultCurrency: "EUR",
 					},
 				},
-				Status: storev1alpha1.StoreStatus{
-					AtProvider: storev1alpha1.StoreObservation{
+				Status: storev1beta1.StoreStatus{
+					AtProvider: storev1beta1.StoreObservation{
 						ID: "store-123",
 					},
 				},
@@ -318,17 +318,17 @@ func TestDelete(t *testing.T) {
 	ctx := context.Background()
 
 	cases := map[string]struct {
-		cr      *storev1alpha1.Store
+		cr      *storev1beta1.Store
 		mock    *MockBTCPayClient
 		wantErr bool
 	}{
 		"DeleteSuccess": {
-			cr: &storev1alpha1.Store{
+			cr: &storev1beta1.Store{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test-store",
 				},
-				Status: storev1alpha1.StoreStatus{
-					AtProvider: storev1alpha1.StoreObservation{
+				Status: storev1beta1.StoreStatus{
+					AtProvider: storev1beta1.StoreObservation{
 						ID: "store-123",
 					},
 				},
@@ -344,12 +344,12 @@ func TestDelete(t *testing.T) {
 			wantErr: false,
 		},
 		"DeleteNotFound": {
-			cr: &storev1alpha1.Store{
+			cr: &storev1beta1.Store{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test-store",
 				},
-				Status: storev1alpha1.StoreStatus{
-					AtProvider: storev1alpha1.StoreObservation{
+				Status: storev1beta1.StoreStatus{
+					AtProvider: storev1beta1.StoreObservation{
 						ID: "store-123",
 					},
 				},
@@ -362,7 +362,7 @@ func TestDelete(t *testing.T) {
 			wantErr: false,
 		},
 		"NoStoreID": {
-			cr: &storev1alpha1.Store{
+			cr: &storev1beta1.Store{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test-store",
 				},
@@ -396,13 +396,13 @@ func TestIsUpToDate(t *testing.T) {
 	}
 
 	cases := map[string]struct {
-		cr   *storev1alpha1.Store
+		cr   *storev1beta1.Store
 		want bool
 	}{
 		"UpToDate": {
-			cr: &storev1alpha1.Store{
-				Spec: storev1alpha1.StoreSpec{
-					ForProvider: storev1alpha1.StoreParameters{
+			cr: &storev1beta1.Store{
+				Spec: storev1beta1.StoreSpec{
+					ForProvider: storev1beta1.StoreParameters{
 						Name:              "test-store",
 						DefaultCurrency:   "USD",
 						InvoiceExpiration: int32Ptr(3600),
@@ -412,9 +412,9 @@ func TestIsUpToDate(t *testing.T) {
 			want: true,
 		},
 		"NameChanged": {
-			cr: &storev1alpha1.Store{
-				Spec: storev1alpha1.StoreSpec{
-					ForProvider: storev1alpha1.StoreParameters{
+			cr: &storev1beta1.Store{
+				Spec: storev1beta1.StoreSpec{
+					ForProvider: storev1beta1.StoreParameters{
 						Name:              "different-name",
 						DefaultCurrency:   "USD",
 						InvoiceExpiration: int32Ptr(3600),
@@ -424,9 +424,9 @@ func TestIsUpToDate(t *testing.T) {
 			want: false,
 		},
 		"CurrencyChanged": {
-			cr: &storev1alpha1.Store{
-				Spec: storev1alpha1.StoreSpec{
-					ForProvider: storev1alpha1.StoreParameters{
+			cr: &storev1beta1.Store{
+				Spec: storev1beta1.StoreSpec{
+					ForProvider: storev1beta1.StoreParameters{
 						Name:              "test-store",
 						DefaultCurrency:   "EUR",
 						InvoiceExpiration: int32Ptr(3600),
@@ -452,8 +452,8 @@ func int32Ptr(i int32) *int32 {
 	return &i
 }
 
-var _ resource.Managed = &storev1alpha1.Store{}
+var _ resource.Managed = &storev1beta1.Store{}
 
 func TestStoreImplementsManagedInterface(t *testing.T) {
-	var _ resource.Managed = &storev1alpha1.Store{}
+	var _ resource.Managed = &storev1beta1.Store{}
 }

@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	Group = "store.btcpay.m.crossplane.io"
+	Group = "invoice.btcpay.m.crossplane.io"
 )
 
 var SchemeGroupVersion = schema.GroupVersion{Group: Group, Version: "v1beta1"}

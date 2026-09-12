@@ -21,24 +21,24 @@ import (
 
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 
-	invoicev1alpha1 "github.com/rossigee/provider-btcpay/apis/invoice/v1alpha1"
+	invoicev1beta1 "github.com/rossigee/provider-btcpay/apis/invoice/v1beta1"
 )
 
-var _ resource.Managed = &invoicev1alpha1.Invoice{}
+var _ resource.Managed = &invoicev1beta1.Invoice{}
 
 func TestInvoiceImplementsManagedInterface(t *testing.T) {
-	var _ resource.Managed = &invoicev1alpha1.Invoice{}
+	var _ resource.Managed = &invoicev1beta1.Invoice{}
 }
 
 func TestInvoiceSpecFields(t *testing.T) {
-	cr := &invoicev1alpha1.Invoice{}
+	cr := &invoicev1beta1.Invoice{}
 	_ = cr.Spec.ForProvider.StoreRef
 	_ = cr.Spec.ForProvider.Amount
 	_ = cr.Spec.ForProvider.Currency
 }
 
 func TestInvoiceStatusFields(t *testing.T) {
-	cr := &invoicev1alpha1.Invoice{}
+	cr := &invoicev1beta1.Invoice{}
 	_ = cr.Status.AtProvider.ID
 	_ = cr.Status.AtProvider.StoreID
 	_ = cr.Status.AtProvider.Amount

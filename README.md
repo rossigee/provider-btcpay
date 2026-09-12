@@ -52,7 +52,7 @@ kubectl create secret generic btcpay-credentials \
 Create the ProviderConfig:
 
 ```yaml
-apiVersion: btcpay.crossplane.io/v1beta1
+apiVersion: btcpay.m.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
   name: default
@@ -71,7 +71,7 @@ spec:
 ### Create a Store
 
 ```yaml
-apiVersion: store.btcpay.crossplane.io/v1alpha1
+apiVersion: store.btcpay.m.crossplane.io/v1beta1
 kind: Store
 metadata:
   name: my-store
@@ -88,7 +88,7 @@ spec:
 ### Create an Invoice
 
 ```yaml
-apiVersion: invoice.btcpay.crossplane.io/v1alpha1
+apiVersion: invoice.btcpay.m.crossplane.io/v1beta1
 kind: Invoice
 metadata:
   name: my-invoice
@@ -107,10 +107,20 @@ spec:
 
 ## Resource Types
 
+All resources are namespaced `v1beta1` under per-resource `.m.` API groups for Crossplane v2 multi-tenancy.
+
 | Resource | API Version | Description |
 |----------|-------------|-------------|
-| Store | `store.btcpay.crossplane.io/v1alpha1` | BTCPay store configuration |
-| Invoice | `invoice.btcpay.crossplane.io/v1alpha1` | Payment invoices |
+| Store | `store.btcpay.m.crossplane.io/v1beta1` | BTCPay store configuration |
+| Invoice | `invoice.btcpay.m.crossplane.io/v1beta1` | Payment invoices |
+| ApiKey | `apikey.btcpay.m.crossplane.io/v1beta1` | API keys |
+| Guest | `guest.btcpay.m.crossplane.io/v1beta1` | Guest checkout access |
+| SharedLink | `sharedlink.btcpay.m.crossplane.io/v1beta1` | Shared payment links |
+| User | `user.btcpay.m.crossplane.io/v1beta1` | Server users |
+| Webhook | `webhook.btcpay.m.crossplane.io/v1beta1` | Event webhooks |
+| ProviderConfig | `btcpay.m.crossplane.io/v1beta1` | Provider credentials (cluster-scoped) |
+
+See [docs/index.md](docs/index.md) for the full reference and [API coverage gaps](docs/index.md#api-coverage-gaps).
 
 ## Development
 

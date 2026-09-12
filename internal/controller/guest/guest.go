@@ -27,8 +27,8 @@ import (
 	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
 
-	guestv1alpha1 "github.com/rossigee/provider-btcpay/apis/guest/v1alpha1"
-	storev1alpha1 "github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
+	guestv1beta1 "github.com/rossigee/provider-btcpay/apis/guest/v1beta1"
+	storev1beta1 "github.com/rossigee/provider-btcpay/apis/store/v1beta1"
 	apisv1beta1 "github.com/rossigee/provider-btcpay/apis/v1beta1"
 	"github.com/rossigee/provider-btcpay/internal/clients"
 
@@ -48,7 +48,7 @@ const (
 )
 
 func Setup(mgr ctrl.Manager, o controller.Options) error {
-	name := managed.ControllerName(guestv1alpha1.GuestGroupKind.String())
+	name := managed.ControllerName(guestv1beta1.GuestGroupKind.String())
 	opts := []managed.ReconcilerOption{
 		managed.WithExternalConnector(&connector{
 			kube:  mgr.GetClient(),
@@ -60,8 +60,8 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	if o.Features.Enabled(feature.EnableBetaManagementPolicies) {
 		opts = append(opts, managed.WithManagementPolicies())
 	}
-	r := managed.NewReconciler(mgr, resource.ManagedKind(guestv1alpha1.GuestGroupVersionKind), opts...)
-	return ctrl.NewControllerManagedBy(mgr).Named(name).WithOptions(o.ForControllerRuntime()).WithEventFilter(resource.DesiredStateChanged()).For(&guestv1alpha1.Guest{}).Complete(ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter))
+	r := managed.NewReconciler(mgr, resource.ManagedKind(guestv1beta1.GuestGroupVersionKind), opts...)
+	return ctrl.NewControllerManagedBy(mgr).Named(name).WithOptions(o.ForControllerRuntime()).WithEventFilter(resource.DesiredStateChanged()).For(&guestv1beta1.Guest{}).Complete(ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter))
 }
 
 type connector struct {
@@ -70,7 +70,7 @@ type connector struct {
 }
 
 func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
-	cr, ok := mg.(*guestv1alpha1.Guest)
+	cr, ok := mg.(*guestv1beta1.Guest)
 	if !ok {
 		return nil, errors.New(errNotGuest)
 	}
@@ -95,7 +95,7 @@ type external struct {
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
-	cr := mg.(*guestv1alpha1.Guest)
+	cr := mg.(*guestv1beta1.Guest)
 	if cr.Status.AtProvider.ID == "" {
 		return managed.ExternalObservation{ResourceExists: false}, nil
 	}
@@ -122,7 +122,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
-	cr := mg.(*guestv1alpha1.Guest)
+	cr := mg.(*guestv1beta1.Guest)
 	cr.Status.SetConditions(xpv2.Creating())
 	storeID, err := c.getStoreID(ctx, cr)
 	if err != nil {
@@ -152,7 +152,7 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.ExternalDelete, error) {
-	cr := mg.(*guestv1alpha1.Guest)
+	cr := mg.(*guestv1beta1.Guest)
 	if cr.Status.AtProvider.ID == "" {
 		return managed.ExternalDelete{}, nil
 	}
@@ -170,12 +170,12 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.Ext
 
 func (c *external) Disconnect(ctx context.Context) error { return nil }
 
-func (c *external) getStoreID(ctx context.Context, cr *guestv1alpha1.Guest) (string, error) {
+func (c *external) getStoreID(ctx context.Context, cr *guestv1beta1.Guest) (string, error) {
 	namespace := cr.Namespace
 	if cr.Spec.ForProvider.StoreRef.Namespace != nil {
 		namespace = *cr.Spec.ForProvider.StoreRef.Namespace
 	}
-	store := &storev1alpha1.Store{}
+	store := &storev1beta1.Store{}
 	if err := c.kube.Get(ctx, client.ObjectKey{Name: cr.Spec.ForProvider.StoreRef.Name, Namespace: namespace}, store); err != nil {
 		return "", errors.Wrap(err, errGetStore)
 	}
@@ -185,7 +185,7 @@ func (c *external) getStoreID(ctx context.Context, cr *guestv1alpha1.Guest) (str
 	return store.Status.AtProvider.ID, nil
 }
 
-func (c *external) isUpToDate(cr *guestv1alpha1.Guest, guest *clients.Guest) bool {
+func (c *external) isUpToDate(cr *guestv1beta1.Guest, guest *clients.Guest) bool {
 	if cr.Spec.ForProvider.Email != guest.Email {
 		return false
 	}

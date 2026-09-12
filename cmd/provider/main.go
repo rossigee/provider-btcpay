@@ -26,8 +26,8 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/feature"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
-	invv1alpha1 "github.com/rossigee/provider-btcpay/apis/invoice/v1alpha1"
-	storev1alpha1 "github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
+	invv1beta1 "github.com/rossigee/provider-btcpay/apis/invoice/v1beta1"
+	storev1beta1 "github.com/rossigee/provider-btcpay/apis/store/v1beta1"
 	"gopkg.in/alecthomas/kingpin.v2"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes/scheme"
@@ -127,8 +127,8 @@ func main() {
 		kingpin.FatalIfError(err, "Cannot setup BTCPay controllers")
 	}
 
-	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &storev1alpha1.StoreList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for Store")
-	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &invv1alpha1.InvoiceList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for Invoice")
+	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &storev1beta1.StoreList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for Store")
+	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &invv1beta1.InvoiceList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for Invoice")
 
 	kingpin.FatalIfError(mgr.AddHealthzCheck("healthz", healthz.Ping), "Cannot add health check")
 	kingpin.FatalIfError(mgr.AddReadyzCheck("readyz", healthz.Ping), "Cannot add ready check")

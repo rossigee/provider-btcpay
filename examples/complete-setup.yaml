@@ -3,7 +3,7 @@
 
 ---
 # Provider Configuration
-apiVersion: btcpay.crossplane.io/v1beta1
+apiVersion: btcpay.m.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
   name: golder-btcpay
@@ -18,7 +18,7 @@ spec:
 
 ---
 # Production Bitcoin Store
-apiVersion: store.btcpay.crossplane.io/v1alpha1
+apiVersion: store.btcpay.m.crossplane.io/v1beta1
 kind: Store
 metadata:
   name: golder-production-store
@@ -55,7 +55,7 @@ spec:
 
 ---
 # Development Store for Testing
-apiVersion: store.btcpay.crossplane.io/v1alpha1
+apiVersion: store.btcpay.m.crossplane.io/v1beta1
 kind: Store
 metadata:
   name: golder-dev-store
@@ -85,7 +85,7 @@ spec:
 
 ---
 # Sample Product Purchase Invoice
-apiVersion: invoice.btcpay.crossplane.io/v1alpha1
+apiVersion: invoice.btcpay.m.crossplane.io/v1beta1
 kind: Invoice
 metadata:
   name: infrastructure-consultation
@@ -127,7 +127,7 @@ spec:
 
 ---
 # Lightning Micropayment Example
-apiVersion: invoice.btcpay.crossplane.io/v1alpha1
+apiVersion: invoice.btcpay.m.crossplane.io/v1beta1
 kind: Invoice
 metadata:
   name: api-usage-payment

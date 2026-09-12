@@ -27,7 +27,7 @@ import (
 	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
 
-	storev1alpha1 "github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
+	storev1beta1 "github.com/rossigee/provider-btcpay/apis/store/v1beta1"
 	apisv1beta1 "github.com/rossigee/provider-btcpay/apis/v1beta1"
 	"github.com/rossigee/provider-btcpay/internal/clients"
 
@@ -52,7 +52,7 @@ const (
 
 // Setup adds a controller that reconciles Store managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
-	name := managed.ControllerName(storev1alpha1.StoreGroupKind.String())
+	name := managed.ControllerName(storev1beta1.StoreGroupKind.String())
 
 	opts := []managed.ReconcilerOption{
 		managed.WithExternalConnector(&connector{
@@ -68,14 +68,14 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	}
 
 	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(storev1alpha1.StoreGroupVersionKind),
+		resource.ManagedKind(storev1beta1.StoreGroupVersionKind),
 		opts...)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
 		WithEventFilter(resource.DesiredStateChanged()).
-		For(&storev1alpha1.Store{}).
+		For(&storev1beta1.Store{}).
 		Complete(ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter))
 }
 
@@ -92,7 +92,7 @@ type connector struct {
 // 3. Getting the credentials specified by the ProviderConfig.
 // 4. Using the credentials to form a client.
 func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
-	cr, ok := mg.(*storev1alpha1.Store)
+	cr, ok := mg.(*storev1beta1.Store)
 	if !ok {
 		return nil, errors.New(errNotStore)
 	}
@@ -122,7 +122,7 @@ type external struct {
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
-	cr := mg.(*storev1alpha1.Store)
+	cr := mg.(*storev1beta1.Store)
 
 	var externalName string
 	if cr.Annotations != nil {
@@ -186,7 +186,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
-	cr := mg.(*storev1alpha1.Store)
+	cr := mg.(*storev1beta1.Store)
 
 	cr.Status.SetConditions(xpv2.Creating())
 
@@ -236,7 +236,7 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
-	cr := mg.(*storev1alpha1.Store)
+	cr := mg.(*storev1beta1.Store)
 
 	if cr.Status.AtProvider.ID == "" {
 		return managed.ExternalUpdate{}, errors.New(errStoreNotFound)
@@ -276,7 +276,7 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.ExternalDelete, error) {
-	cr := mg.(*storev1alpha1.Store)
+	cr := mg.(*storev1beta1.Store)
 
 	if cr.Status.AtProvider.ID == "" {
 		return managed.ExternalDelete{}, nil // Nothing to delete
@@ -298,7 +298,7 @@ func (c *external) Disconnect(ctx context.Context) error {
 }
 
 // isUpToDate checks if the Store resource is up to date with the desired state
-func (c *external) isUpToDate(cr *storev1alpha1.Store, store *clients.Store) bool {
+func (c *external) isUpToDate(cr *storev1beta1.Store, store *clients.Store) bool {
 	if cr.Spec.ForProvider.Name != store.Name {
 		return false
 	}

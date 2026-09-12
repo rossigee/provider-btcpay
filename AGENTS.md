@@ -132,10 +132,10 @@ type StoreObservation struct {
 ## Current Implementation Status
 
 **✅ Complete**: Store and Invoice resources with full functionality
-**⚠️ Partial**: User, Webhook, Guest, SharedLink resources (APIs defined, controllers not implemented)
+**✅ Complete**: Store, Invoice, ApiKey, Guest, SharedLink, User, Webhook resources (all namespaced v1beta1)
 
 When implementing new resources:
-1. Define CRD in `apis/<resource>/v1alpha1/`
+1. Define CRD in `apis/<resource>/v1beta1/`
 2. Generate with `make generate`
 3. Implement controller in `internal/controller/<resource>/`
 4. Add BTCPay client methods if needed
@@ -152,6 +152,6 @@ When implementing new resources:
 - Test coverage with unit tests
 
 **⚠️ Planned**:
-- Additional resource controllers: User, Webhook, Guest, SharedLink (APIs defined, controllers pending)
+- Extended Greenfield coverage: pull payments/payouts, refunds, lightning management, payment requests
 - Integration tests (e2e) require real BTCPay server instance
 - Enhanced documentation with examples for advanced use cases

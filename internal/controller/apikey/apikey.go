@@ -27,7 +27,7 @@ import (
 	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
 
-	apikeyv1alpha1 "github.com/rossigee/provider-btcpay/apis/apikey/v1alpha1"
+	apikeyv1beta1 "github.com/rossigee/provider-btcpay/apis/apikey/v1beta1"
 	apisv1beta1 "github.com/rossigee/provider-btcpay/apis/v1beta1"
 	"github.com/rossigee/provider-btcpay/internal/clients"
 
@@ -49,7 +49,7 @@ const (
 
 // Setup adds a controller that reconciles ApiKey managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
-	name := managed.ControllerName(apikeyv1alpha1.ApiKeyGroupKind.String())
+	name := managed.ControllerName(apikeyv1beta1.ApiKeyGroupKind.String())
 
 	opts := []managed.ReconcilerOption{
 		managed.WithExternalConnector(&connector{
@@ -65,14 +65,14 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	}
 
 	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(apikeyv1alpha1.ApiKeyGroupVersionKind),
+		resource.ManagedKind(apikeyv1beta1.ApiKeyGroupVersionKind),
 		opts...)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
 		WithEventFilter(resource.DesiredStateChanged()).
-		For(&apikeyv1alpha1.ApiKey{}).
+		For(&apikeyv1beta1.ApiKey{}).
 		Complete(ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter))
 }
 
@@ -82,7 +82,7 @@ type connector struct {
 }
 
 func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
-	cr, ok := mg.(*apikeyv1alpha1.ApiKey)
+	cr, ok := mg.(*apikeyv1beta1.ApiKey)
 	if !ok {
 		return nil, errors.New(errNotApiKey)
 	}
@@ -110,7 +110,7 @@ type external struct {
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
-	cr := mg.(*apikeyv1alpha1.ApiKey)
+	cr := mg.(*apikeyv1beta1.ApiKey)
 
 	var externalName string
 	if cr.Annotations != nil {
@@ -159,7 +159,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
-	cr := mg.(*apikeyv1alpha1.ApiKey)
+	cr := mg.(*apikeyv1beta1.ApiKey)
 
 	cr.Status.SetConditions(xpv2.Creating())
 
@@ -196,7 +196,7 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.ExternalDelete, error) {
-	cr := mg.(*apikeyv1alpha1.ApiKey)
+	cr := mg.(*apikeyv1beta1.ApiKey)
 
 	if cr.Status.AtProvider.ID == "" {
 		return managed.ExternalDelete{}, nil
@@ -216,7 +216,7 @@ func (c *external) Disconnect(ctx context.Context) error {
 	return nil
 }
 
-func (c *external) isUpToDate(cr *apikeyv1alpha1.ApiKey, apiKey *clients.ApiKey) bool {
+func (c *external) isUpToDate(cr *apikeyv1beta1.ApiKey, apiKey *clients.ApiKey) bool {
 	if cr.Spec.ForProvider.Label != apiKey.Label {
 		return false
 	}

@@ -18,39 +18,32 @@ limitations under the License.
 package apis
 
 import (
-	apikeyv1alpha1 "github.com/rossigee/provider-btcpay/apis/apikey/v1alpha1"
-	guestv1alpha1 "github.com/rossigee/provider-btcpay/apis/guest/v1alpha1"
-	invoicev1alpha1 "github.com/rossigee/provider-btcpay/apis/invoice/v1alpha1"
+	apikeyv1beta1 "github.com/rossigee/provider-btcpay/apis/apikey/v1beta1"
+	guestv1beta1 "github.com/rossigee/provider-btcpay/apis/guest/v1beta1"
 	invoicev1beta1 "github.com/rossigee/provider-btcpay/apis/invoice/v1beta1"
-	sharedlinkv1alpha1 "github.com/rossigee/provider-btcpay/apis/sharedlink/v1alpha1"
-	storev1alpha1 "github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
+	sharedlinkv1beta1 "github.com/rossigee/provider-btcpay/apis/sharedlink/v1beta1"
 	storev1beta1 "github.com/rossigee/provider-btcpay/apis/store/v1beta1"
-	userv1alpha1 "github.com/rossigee/provider-btcpay/apis/user/v1alpha1"
+	userv1beta1 "github.com/rossigee/provider-btcpay/apis/user/v1beta1"
 	"github.com/rossigee/provider-btcpay/apis/v1beta1"
-	webhookv1alpha1 "github.com/rossigee/provider-btcpay/apis/webhook/v1alpha1"
+	webhookv1beta1 "github.com/rossigee/provider-btcpay/apis/webhook/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 func init() {
-	// Register the types with the Scheme so the components can map objects to GroupVersionKinds and back
 	AddToSchemes = append(AddToSchemes,
 		v1beta1.AddToScheme,
-		storev1alpha1.AddToScheme,
 		storev1beta1.AddToScheme,
-		invoicev1alpha1.AddToScheme,
 		invoicev1beta1.AddToScheme,
-		webhookv1alpha1.AddToScheme,
-		userv1alpha1.AddToScheme,
-		apikeyv1alpha1.AddToScheme,
-		guestv1alpha1.AddToScheme,
-		sharedlinkv1alpha1.AddToScheme,
+		apikeyv1beta1.AddToScheme,
+		guestv1beta1.AddToScheme,
+		sharedlinkv1beta1.AddToScheme,
+		userv1beta1.AddToScheme,
+		webhookv1beta1.AddToScheme,
 	)
 }
 
-// AddToSchemes may be used to add all resources defined in the project to a Scheme
 var AddToSchemes runtime.SchemeBuilder
 
-// AddToScheme adds all Resources to the Scheme
 func AddToScheme(s *runtime.Scheme) error {
 	return AddToSchemes.AddToScheme(s)
 }

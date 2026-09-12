@@ -1,6 +1,6 @@
 # Store
 
-**API Version**: `store.btcpay.crossplane.io/v1alpha1`
+**API Version**: `store.btcpay.m.crossplane.io/v1beta1`
 
 The `Store` resource represents a BTCPay Server store for managing payment processing.
 
@@ -36,7 +36,7 @@ The `Store` resource represents a BTCPay Server store for managing payment proce
 ## Example
 
 ```yaml
-apiVersion: store.btcpay.crossplane.io/v1alpha1
+apiVersion: store.btcpay.m.crossplane.io/v1beta1
 kind: Store
 metadata:
   name: my-store

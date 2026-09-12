@@ -171,7 +171,7 @@ kubectl apply -f examples/provider/config.yaml
 kubectl apply -f examples/site/site.yaml
 
 # 3. Check resource status
-kubectl describe store.store.btcpay.crossplane.io example-store
+kubectl describe store.store.btcpay.m.crossplane.io example-store
 ```
 
 ### E2E Tests
@@ -319,7 +319,7 @@ kubectl edit deployment/provider-btcpay-*
 1. **CRD Installation Issues**
    ```bash
    # Reinstall CRDs
-   kubectl delete crd stores.store.btcpay.crossplane.io
+   kubectl delete crd stores.store.btcpay.m.crossplane.io
    make install-crds
    ```
 
@@ -342,7 +342,7 @@ kubectl edit deployment/provider-btcpay-*
 kubectl logs -f -n crossplane-system deployment/provider-btcpay-*
 
 # Describe problematic resources
-kubectl describe store.store.btcpay.crossplane.io my-store
+kubectl describe store.store.btcpay.m.crossplane.io my-store
 
 # Check events
 kubectl get events --field-selector involvedObject.name=my-site

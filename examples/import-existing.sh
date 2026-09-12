@@ -45,7 +45,7 @@ kubectl create secret generic btcpay-credentials \
 
 echo "Creating ProviderConfig..."
 cat <<EOF | kubectl apply -f -
-apiVersion: btcpay.crossplane.io/v1beta1
+apiVersion: btcpay.m.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
   name: import-config
@@ -66,7 +66,7 @@ for store_id in "${STORE_IDS[@]}"; do
     echo "Importing store: $store_id as $store_name"
 
     cat <<EOF | kubectl apply -f -
-apiVersion: store.btcpay.crossplane.io/v1alpha1
+apiVersion: store.btcpay.m.crossplane.io/v1beta1
 kind: Store
 metadata:
   name: $store_name

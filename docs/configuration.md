@@ -91,7 +91,7 @@ rm credentials.json  # Clean up
 Create a file named `provider-config.yaml`:
 
 ```yaml
-apiVersion: btcpay.crossplane.io/v1beta1
+apiVersion: btcpay.m.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
   name: default
@@ -113,8 +113,8 @@ kubectl apply -f provider-config.yaml
 ### 3. Verify ProviderConfig
 
 ```bash
-kubectl get providerconfigs.btcpay.crossplane.io
-kubectl describe providerconfig.btcpay.crossplane.io default
+kubectl get providerconfigs.btcpay.m.crossplane.io
+kubectl describe providerconfig.btcpay.m.crossplane.io default
 ```
 
 ## Self-Hosted BTCPay
@@ -122,7 +122,7 @@ kubectl describe providerconfig.btcpay.crossplane.io default
 If you're using a self-hosted BTCPay instance:
 
 ```yaml
-apiVersion: btcpay.crossplane.io/v1beta1
+apiVersion: btcpay.m.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
   name: self-hosted
@@ -142,7 +142,7 @@ You can create multiple ProviderConfigs for different BTCPay instances:
 
 ```yaml
 # Cloud hosted instance
-apiVersion: btcpay.crossplane.io/v1beta1
+apiVersion: btcpay.m.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
   name: btcpay-cloud
@@ -156,7 +156,7 @@ spec:
       key: credentials
 ---
 # Self-hosted instance
-apiVersion: btcpay.crossplane.io/v1beta1
+apiVersion: btcpay.m.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
   name: btcpay-internal
@@ -173,7 +173,7 @@ spec:
 Then reference the specific config in your resources:
 
 ```yaml
-apiVersion: store.btcpay.crossplane.io/v1alpha1
+apiVersion: store.btcpay.m.crossplane.io/v1beta1
 kind: Store
 metadata:
   name: my-store
@@ -220,9 +220,9 @@ kubectl logs -n crossplane-system deployment/provider-btcpay-*
 kubectl get secret btcpay-credentials -n crossplane-system -o jsonpath='{.data.credentials}' | base64 -d
 
 # Check provider config status
-kubectl describe providerconfig.btcpay.crossplane.io default
+kubectl describe providerconfig.btcpay.m.crossplane.io default
 
 # List all BTCPay resources
-kubectl get stores.store.btcpay.crossplane.io
-kubectl get invoices.invoice.btcpay.crossplane.io
+kubectl get stores.store.btcpay.m.crossplane.io
+kubectl get invoices.invoice.btcpay.m.crossplane.io
 ```

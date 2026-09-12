@@ -138,7 +138,7 @@ type PaymentDetails struct {
 // +kubebuilder:resource:scope=Namespaced,categories={crossplane,managed,btcpay}
 // +genclient
 // +genclient:namespaced
-// +groupName=store.btcpay.m.crossplane.io
+// +groupName=invoice.btcpay.m.crossplane.io
 
 type Invoice struct {
 	metav1.TypeMeta   `json:",inline"`

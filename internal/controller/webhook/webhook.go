@@ -27,9 +27,9 @@ import (
 	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
 
-	storev1alpha1 "github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
+	storev1beta1 "github.com/rossigee/provider-btcpay/apis/store/v1beta1"
 	apisv1beta1 "github.com/rossigee/provider-btcpay/apis/v1beta1"
-	webhookv1alpha1 "github.com/rossigee/provider-btcpay/apis/webhook/v1alpha1"
+	webhookv1beta1 "github.com/rossigee/provider-btcpay/apis/webhook/v1beta1"
 	"github.com/rossigee/provider-btcpay/internal/clients"
 
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -54,7 +54,7 @@ const (
 
 // Setup adds a controller that reconciles Webhook managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
-	name := managed.ControllerName(webhookv1alpha1.WebhookGroupKind.String())
+	name := managed.ControllerName(webhookv1beta1.WebhookGroupKind.String())
 
 	opts := []managed.ReconcilerOption{
 		managed.WithExternalConnector(&connector{
@@ -70,14 +70,14 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	}
 
 	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(webhookv1alpha1.WebhookGroupVersionKind),
+		resource.ManagedKind(webhookv1beta1.WebhookGroupVersionKind),
 		opts...)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
 		WithEventFilter(resource.DesiredStateChanged()).
-		For(&webhookv1alpha1.Webhook{}).
+		For(&webhookv1beta1.Webhook{}).
 		Complete(ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter))
 }
 
@@ -94,7 +94,7 @@ type connector struct {
 // 3. Getting the credentials specified by the ProviderConfig.
 // 4. Using the credentials to form a client.
 func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
-	cr, ok := mg.(*webhookv1alpha1.Webhook)
+	cr, ok := mg.(*webhookv1beta1.Webhook)
 	if !ok {
 		return nil, errors.New(errNotWebhook)
 	}
@@ -125,7 +125,7 @@ type external struct {
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
-	cr := mg.(*webhookv1alpha1.Webhook)
+	cr := mg.(*webhookv1beta1.Webhook)
 
 	if cr.Status.AtProvider.ID == "" {
 		return managed.ExternalObservation{
@@ -166,7 +166,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
-	cr := mg.(*webhookv1alpha1.Webhook)
+	cr := mg.(*webhookv1beta1.Webhook)
 
 	cr.Status.SetConditions(xpv2.Creating())
 
@@ -207,7 +207,7 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
-	cr := mg.(*webhookv1alpha1.Webhook)
+	cr := mg.(*webhookv1beta1.Webhook)
 
 	storeID, err := c.getStoreID(ctx, cr)
 	if err != nil {
@@ -242,7 +242,7 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.ExternalDelete, error) {
-	cr := mg.(*webhookv1alpha1.Webhook)
+	cr := mg.(*webhookv1beta1.Webhook)
 
 	if cr.Status.AtProvider.ID == "" {
 		return managed.ExternalDelete{}, nil
@@ -270,14 +270,14 @@ func (c *external) Disconnect(ctx context.Context) error {
 	return nil
 }
 
-func (c *external) getStoreID(ctx context.Context, cr *webhookv1alpha1.Webhook) (string, error) {
+func (c *external) getStoreID(ctx context.Context, cr *webhookv1beta1.Webhook) (string, error) {
 	storeRef := cr.Spec.ForProvider.StoreRef
 	namespace := cr.Namespace
 	if storeRef.Namespace != nil {
 		namespace = *storeRef.Namespace
 	}
 
-	store := &storev1alpha1.Store{}
+	store := &storev1beta1.Store{}
 	key := client.ObjectKey{Name: storeRef.Name, Namespace: namespace}
 	if err := c.kube.Get(ctx, key, store); err != nil {
 		return "", errors.Wrap(err, errGetStore)
@@ -290,7 +290,7 @@ func (c *external) getStoreID(ctx context.Context, cr *webhookv1alpha1.Webhook) 
 	return store.Status.AtProvider.ID, nil
 }
 
-func (c *external) updateStatus(cr *webhookv1alpha1.Webhook, webhook *clients.Webhook) {
+func (c *external) updateStatus(cr *webhookv1beta1.Webhook, webhook *clients.Webhook) {
 	cr.Status.AtProvider.ID = webhook.ID
 	cr.Status.AtProvider.StoreID = webhook.StoreID
 	cr.Status.AtProvider.URL = webhook.URL
@@ -300,7 +300,7 @@ func (c *external) updateStatus(cr *webhookv1alpha1.Webhook, webhook *clients.We
 	cr.Status.AtProvider.Secret = webhook.Secret
 }
 
-func (c *external) isUpToDate(cr *webhookv1alpha1.Webhook, webhook *clients.Webhook) bool {
+func (c *external) isUpToDate(cr *webhookv1beta1.Webhook, webhook *clients.Webhook) bool {
 	if cr.Spec.ForProvider.URL != webhook.URL {
 		return false
 	}

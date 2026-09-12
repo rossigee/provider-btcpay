@@ -1,4 +1,4 @@
-apiVersion: invoice.btcpay.crossplane.io/v1alpha1
+apiVersion: invoice.btcpay.m.crossplane.io/v1beta1
 kind: Invoice
 metadata:
   name: product-purchase-001

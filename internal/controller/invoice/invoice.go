@@ -28,8 +28,8 @@ import (
 	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
 
-	invoicev1alpha1 "github.com/rossigee/provider-btcpay/apis/invoice/v1alpha1"
-	storev1alpha1 "github.com/rossigee/provider-btcpay/apis/store/v1alpha1"
+	invoicev1beta1 "github.com/rossigee/provider-btcpay/apis/invoice/v1beta1"
+	storev1beta1 "github.com/rossigee/provider-btcpay/apis/store/v1beta1"
 	apisv1beta1 "github.com/rossigee/provider-btcpay/apis/v1beta1"
 	"github.com/rossigee/provider-btcpay/internal/clients"
 
@@ -56,7 +56,7 @@ const (
 
 // Setup adds a controller that reconciles Invoice managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
-	name := managed.ControllerName(invoicev1alpha1.InvoiceGroupKind.String())
+	name := managed.ControllerName(invoicev1beta1.InvoiceGroupKind.String())
 
 	opts := []managed.ReconcilerOption{
 		managed.WithExternalConnector(&connector{
@@ -72,14 +72,14 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	}
 
 	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(invoicev1alpha1.InvoiceGroupVersionKind),
+		resource.ManagedKind(invoicev1beta1.InvoiceGroupVersionKind),
 		opts...)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
 		WithEventFilter(resource.DesiredStateChanged()).
-		For(&invoicev1alpha1.Invoice{}).
+		For(&invoicev1beta1.Invoice{}).
 		Complete(ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter))
 }
 
@@ -96,7 +96,7 @@ type connector struct {
 // 3. Getting the credentials specified by the ProviderConfig.
 // 4. Using the credentials to form a client.
 func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
-	cr, ok := mg.(*invoicev1alpha1.Invoice)
+	cr, ok := mg.(*invoicev1beta1.Invoice)
 	if !ok {
 		return nil, errors.New(errNotInvoice)
 	}
@@ -127,7 +127,7 @@ type external struct {
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
-	cr := mg.(*invoicev1alpha1.Invoice)
+	cr := mg.(*invoicev1beta1.Invoice)
 
 	// If we don't have an ID yet, the resource doesn't exist
 	if cr.Status.AtProvider.ID == "" {
@@ -170,7 +170,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
-	cr := mg.(*invoicev1alpha1.Invoice)
+	cr := mg.(*invoicev1beta1.Invoice)
 
 	cr.Status.SetConditions(xpv2.Creating())
 
@@ -243,7 +243,7 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.ExternalDelete, error) {
-	cr := mg.(*invoicev1alpha1.Invoice)
+	cr := mg.(*invoicev1beta1.Invoice)
 
 	if cr.Status.AtProvider.ID == "" {
 		return managed.ExternalDelete{}, nil // Nothing to delete
@@ -272,8 +272,8 @@ func (c *external) Disconnect(ctx context.Context) error {
 }
 
 // getStoreID retrieves the store ID from the referenced Store resource
-func (c *external) getStoreID(ctx context.Context, cr *invoicev1alpha1.Invoice) (string, error) {
-	store := &storev1alpha1.Store{}
+func (c *external) getStoreID(ctx context.Context, cr *invoicev1beta1.Invoice) (string, error) {
+	store := &storev1beta1.Store{}
 
 	// Use the invoice's namespace if store reference doesn't specify one
 	namespace := cr.Namespace
@@ -298,7 +298,7 @@ func (c *external) getStoreID(ctx context.Context, cr *invoicev1alpha1.Invoice) 
 }
 
 // updateStatus updates the invoice status with observed state
-func (c *external) updateStatus(cr *invoicev1alpha1.Invoice, invoice *clients.Invoice) {
+func (c *external) updateStatus(cr *invoicev1beta1.Invoice, invoice *clients.Invoice) {
 	cr.Status.AtProvider.ID = invoice.ID
 	cr.Status.AtProvider.StoreID = invoice.StoreID
 
@@ -342,10 +342,10 @@ func convertMetadata(metadata map[string]string) map[string]interface{} {
 }
 
 // convertPaymentMethods converts client payment methods to API types
-func convertPaymentMethods(methods []clients.PaymentMethod) []invoicev1alpha1.PaymentMethodDetails {
-	result := make([]invoicev1alpha1.PaymentMethodDetails, len(methods))
+func convertPaymentMethods(methods []clients.PaymentMethod) []invoicev1beta1.PaymentMethodDetails {
+	result := make([]invoicev1beta1.PaymentMethodDetails, len(methods))
 	for i, method := range methods {
-		result[i] = invoicev1alpha1.PaymentMethodDetails{
+		result[i] = invoicev1beta1.PaymentMethodDetails{
 			PaymentMethod:     method.PaymentMethod,
 			CryptoCode:        method.CryptoCode,
 			Destination:       method.Destination,
@@ -363,10 +363,10 @@ func convertPaymentMethods(methods []clients.PaymentMethod) []invoicev1alpha1.Pa
 }
 
 // convertPayments converts client payments to API types
-func convertPayments(payments []clients.Payment) []invoicev1alpha1.PaymentDetails {
-	result := make([]invoicev1alpha1.PaymentDetails, len(payments))
+func convertPayments(payments []clients.Payment) []invoicev1beta1.PaymentDetails {
+	result := make([]invoicev1beta1.PaymentDetails, len(payments))
 	for i, payment := range payments {
-		result[i] = invoicev1alpha1.PaymentDetails{
+		result[i] = invoicev1beta1.PaymentDetails{
 			ID:          payment.ID,
 			Value:       payment.Value,
 			Fee:         payment.Fee,

@@ -31,7 +31,7 @@ import (
 	"github.com/rossigee/provider-btcpay/apis/v1beta1"
 )
 
-const controllerName = "providerconfig.btcpay.crossplane.io"
+const controllerName = "providerconfig.btcpay.m.crossplane.io"
 
 // Setup registers the ProviderConfig controller.
 func Setup(mgr ctrl.Manager) error {

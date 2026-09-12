@@ -28,7 +28,7 @@ import (
 	xpv2 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
 
-	userv1alpha1 "github.com/rossigee/provider-btcpay/apis/user/v1alpha1"
+	userv1beta1 "github.com/rossigee/provider-btcpay/apis/user/v1beta1"
 	apisv1beta1 "github.com/rossigee/provider-btcpay/apis/v1beta1"
 	"github.com/rossigee/provider-btcpay/internal/clients"
 
@@ -53,7 +53,7 @@ const (
 
 // Setup adds a controller that reconciles User managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
-	name := managed.ControllerName(userv1alpha1.UserGroupKind.String())
+	name := managed.ControllerName(userv1beta1.UserGroupKind.String())
 
 	opts := []managed.ReconcilerOption{
 		managed.WithExternalConnector(&connector{
@@ -69,14 +69,14 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	}
 
 	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(userv1alpha1.UserGroupVersionKind),
+		resource.ManagedKind(userv1beta1.UserGroupVersionKind),
 		opts...)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
 		WithEventFilter(resource.DesiredStateChanged()).
-		For(&userv1alpha1.User{}).
+		For(&userv1beta1.User{}).
 		Complete(ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter))
 }
 
@@ -88,7 +88,7 @@ type connector struct {
 }
 
 func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
-	cr, ok := mg.(*userv1alpha1.User)
+	cr, ok := mg.(*userv1beta1.User)
 	if !ok {
 		return nil, errors.New(errNotUser)
 	}
@@ -116,7 +116,7 @@ type external struct {
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
-	cr := mg.(*userv1alpha1.User)
+	cr := mg.(*userv1beta1.User)
 
 	var externalName string
 	if cr.Annotations != nil {
@@ -169,7 +169,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
-	cr := mg.(*userv1alpha1.User)
+	cr := mg.(*userv1beta1.User)
 
 	cr.Status.SetConditions(xpv2.Creating())
 
@@ -204,7 +204,7 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
-	cr := mg.(*userv1alpha1.User)
+	cr := mg.(*userv1beta1.User)
 
 	if cr.Status.AtProvider.ID == "" {
 		return managed.ExternalUpdate{}, errors.New(errUserNotFound)
@@ -237,7 +237,7 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.ExternalDelete, error) {
-	cr := mg.(*userv1alpha1.User)
+	cr := mg.(*userv1beta1.User)
 
 	if cr.Status.AtProvider.ID == "" {
 		return managed.ExternalDelete{}, nil
@@ -257,7 +257,7 @@ func (c *external) Disconnect(ctx context.Context) error {
 	return nil
 }
 
-func (c *external) isUpToDate(cr *userv1alpha1.User, user *clients.User) bool {
+func (c *external) isUpToDate(cr *userv1beta1.User, user *clients.User) bool {
 	if cr.Spec.ForProvider.Email != user.Email {
 		return false
 	}

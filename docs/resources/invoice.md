@@ -1,6 +1,6 @@
 # Invoice
 
-**API Version**: `invoice.btcpay.crossplane.io/v1alpha1`
+**API Version**: `invoice.btcpay.m.crossplane.io/v1beta1`
 
 The `Invoice` resource represents a payment invoice in BTCPay Server.
 
@@ -42,7 +42,7 @@ The `Invoice` resource represents a payment invoice in BTCPay Server.
 ## Example
 
 ```yaml
-apiVersion: invoice.btcpay.crossplane.io/v1alpha1
+apiVersion: invoice.btcpay.m.crossplane.io/v1beta1
 kind: Invoice
 metadata:
   name: order-001-invoice
