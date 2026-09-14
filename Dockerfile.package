@@ -1,0 +1,5 @@
+FROM gcr.io/distroless/static:nonroot
+COPY package/crossplane.yaml /package.yaml
+COPY package/crds/ /crds/
+COPY _output/bin/linux_amd64/provider /bin/provider
+CMD ["/bin/provider"]
