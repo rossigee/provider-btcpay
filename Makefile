@@ -53,6 +53,12 @@ CROSSPLANE_VERSION = 1.19.0
 -include build/makelib/local.xpkg.mk
 -include build/makelib/controlplane.mk
 
+# Force the .xpkg to be built before publish pushes the package.
+# The rossigee/build fork's xpkg.mk defines xpkg.release.publish.<reg>.<pkg>
+# without depending on xpkg.build.<pkg>, so make publish would otherwise try
+# to crossplane xpkg push a non-existent file. See provider-btcpay#73.
+xpkg.release.publish.ghcr.io/rossigee.provider-btcpay: xpkg.build.provider-btcpay
+
 # Targets
 
 # run `make submodules` after cloning the repository for the first time.
