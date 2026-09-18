@@ -18,6 +18,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed test configuration for Kubernetes secret handling
 - Simplified lint configuration using `make lint`
 
+## [v0.19.3] - 2026-09-18
+
+### Fixed
+
+- Align `+versionName=v1beta1` with the `v1beta1/` Go package in 5 doc.go
+  files (apikey, guest, sharedlink, user, webhook). The previous
+  `+versionName=v1alpha1` caused controller-gen to register CRDs as
+  v1alpha1 while the controller-runtime code looked up `*v1beta1.User`
+  etc., resulting in "no matches for kind User in version
+  user.btcpay.m.crossplane.io/v1beta1" and CrashLoopBackOff (588+
+  restarts). All 9 BTCPay CRDs now register as v1beta1.
+
+### Changed
+
+- Replaced custom release workflow with the standardized
+  `release-template.yml` (`make publish ...`) so that the build
+  submodule's `xpkg.mk` / `imagelight.mk` directly produce both
+  container image and `.xpkg` for the same digest.
+
 ## [0.3.0] - 2026-06-09
 
 ### Added
