@@ -17,5 +17,5 @@ limitations under the License.
 // Package v1beta1 contains the v1beta1 group APIKey resources of the BTCPay provider.
 // +kubebuilder:object:generate=true
 // +groupName=apikey.btcpay.m.crossplane.io
-// +versionName=v1alpha1
+// +versionName=v1beta1
 package v1beta1
