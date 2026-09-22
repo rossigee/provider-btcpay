@@ -206,3 +206,6 @@ go.vet.limited:
 	@echo "Running go vet (APIs only)..."
 	@go vet ./apis/*/v*/register.go ./apis/*/v*/doc.go 2>/dev/null || echo "No API files to vet"
 	@echo "✅ go vet limited completed"
+# Neutralize plain image publish for ghcr (xpkg uses same ref; plain push would clobber package.yaml)
+img.release.publish.ghcr.io/rossigee.provider-btcpay:
+	@:
