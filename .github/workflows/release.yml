@@ -1,5 +1,5 @@
 # Standardized Release Template for Crossplane Providers
-# Version: 2026-09-08 - Updated for Go 1.27.1 and modern actions
+# Version: 2026-09-08 - Updated for Go 1.27.2 and modern actions
 #
 # This template handles ALL publishing for releases
 # - Only runs on version tag creation to avoid conflicts with CI
@@ -27,7 +27,7 @@ on:
         type: string
 
 env:
-  GO_VERSION: '1.27.1'
+  GO_VERSION: '1.27.2'
 
 jobs:
   release:
