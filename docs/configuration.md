@@ -51,7 +51,7 @@ metadata:
 spec:
   package: ghcr.io/rossigee/provider-btcpay:latest
   # Optional: specify a specific version
-  # package: ghcr.io/rossigee/provider-btcpay:v0.7.0
+  # package: ghcr.io/rossigee/provider-btcpay:v0.19.9
 ```
 
 Apply the manifest:
