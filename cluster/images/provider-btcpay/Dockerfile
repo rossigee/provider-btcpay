@@ -12,7 +12,7 @@ LABEL org.opencontainers.image.documentation="https://github.com/rossigee/provid
 ARG TARGETOS
 ARG TARGETARCH
 
-ADD bin/${TARGETOS}_${TARGETARCH}/provider /usr/local/bin/provider
+COPY bin/${TARGETOS}_${TARGETARCH}/provider /usr/local/bin/provider
 
 USER 65532:65532
 ENTRYPOINT ["/usr/local/bin/provider"]
