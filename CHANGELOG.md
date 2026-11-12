@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.19.10] - 2026-11-12
+
 ### Changed
+- Built with Go 1.27.4 (previously 1.27.3).
 - Crossplane runtime upgraded to v2.3.2
 - API types migrated from xpv1 to xpv2 (ManagedResourceSpec/Status)
 - CI/CD workflows standardized across all providers
